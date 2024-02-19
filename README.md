@@ -1,1 +1,1 @@
-# MethodesAnalysesSpatiales
+# MethodesAnalyseSpatiale
