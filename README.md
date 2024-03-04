@@ -11,7 +11,11 @@ Le livre a d'ailleurs été écrit intégralement dans R avec [Quatro](https://q
 Le livre est organisé autour de cinq grandes parties.
 
 **Partie 1. Données spatiales et R** 
+
 **Partie 2. Autocorrélation spatiale** 
+
 **Partie 3. Méthodes de répartition ponctuelle et de détections d'agrégats spatiaux** 
+
 **Partie 4. Analyses de données avec des réseaux de transport** 
+
 **Partie 5. Méthodes de régression spatiale et de classification spatiale**
