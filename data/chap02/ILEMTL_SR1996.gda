@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+    <title>ILEMTL_SR1996</title>
+    <layers>
+        <layer>
+            <datasource>
+                <type>ESRI Shapefile</type>
+                <path>ILEMTL_SR1996.shp</path>
+            </datasource>
+            <layername>ILEMTL_SR1996</layername>
+            <title/>
+            <variable_order>
+                <time_ids>
+                    <id>time 0</id>
+                </time_ids>
+                <var>ID</var>
+                <var>HABKM2</var>
+                <var>LM_FCAIS</var>
+                <var>LM_ANGL</var>
+            </variable_order>
+            <custom_classifications/>
+            <weights_entries>
+                <weights>
+                    <title>ILEMTL_SR1996b</title>
+                    <default/>
+                    <meta_info>
+                        <weights_type>threshold</weights_type>
+                        <dist_metric>euclidean</dist_metric>
+                        <dist_units>Meter</dist_units>
+                        <dist_values>centroids</dist_values>
+                        <threshold_val>3169.939570494881</threshold_val>
+                        <path>ILEMTL_SR1996b.gwt</path>
+                        <id_variable>ID</id_variable>
+                        <symmetry>symmetric</symmetry>
+                    </meta_info>
+                </weights>
+            </weights_entries>
+            <default_vars>
+                <default_var>
+                    <name>LM_FCAIS</name>
+                    <time_id>time 0</time_id>
+                </default_var>
+                <default_var>
+                    <name/>
+                    <time_id>time 0</time_id>
+                </default_var>
+                <default_var>
+                    <name/>
+                    <time_id>time 0</time_id>
+                </default_var>
+                <default_var>
+                    <name/>
+                    <time_id>time 0</time_id>
+                </default_var>
+            </default_vars>
+        </layer>
+    </layers>
+</project>
