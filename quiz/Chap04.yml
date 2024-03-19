@@ -1,0 +1,53 @@
+- label: "L'algorithme DBSCAN est basé sur :"
+  type: uc
+  response: 2
+  answers:
+     - "La distance entre les points"
+     - "La densité des points"
+  help: "Relisez au besoin la [section @sec-04111]."
+
+- label : "Avec l'algorithme DBSCAN, vous devez spécifier le nombre de groupes (agrégats)."
+  type: uc
+  response: 2
+  answers:
+     - "Vrai"
+     - "Faux"
+  help: "Relisez au besoin la [section @sec-04111]."
+
+- label: "Quels sont les trois types de points identifiés par DBSCAN?"
+  type: mc
+  response: [1,3,4]
+  answers:
+    - "Points centraux"
+    - "Points médians"
+    - "Points frontières"
+    - "Points aberrants"
+  help: "Relisez au besoin l'encadré à la [section @sec-04111]."
+
+- label: "Quels sont les deux paramètres de l'algorithme DBSCAN?"
+  type: mc
+  response: [1,2]
+  answers:
+     - "Le nombre de points minimum pour identifier les points centraux (MinPts)"
+     - "Le rayon de recherche (epsilon)"
+     - "La distance standard (DS)"
+  help: "Relisez au besoin la [section @sec-04111]."
+  
+- label : "Plus la valeur d'epsilon est grande, plus le nombre d'agrégats diminue."
+  type: uc
+  response: 1
+  answers:
+     - "Vrai"
+     - "Faux"
+  help: "Relisez au besoin la [section @sec-04112]."
+  
+- label: "Quels sont les trois paramètres de l'algorithme ST-DBSCAN?"
+  type: mc
+  response: [1,2,3]
+  answers:
+     - "Le nombre de points minimum pour identifier les points centraux (MinPts)"
+     - "Le rayon de recherche pour la proximité spatiale (eps1)"
+     - "Le rayon de recherche pour la proximité temporelle (eps2)"
+     - "La région d'étude"
+  help: "Relisez au besoin la [section @sec-0412]."
+  

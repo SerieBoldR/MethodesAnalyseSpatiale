@@ -1,0 +1,75 @@
+- label: "Parmi les matrices de pondération spatiale ci-dessous, lesquelles sont des matrices de contiguïté?"
+  type: mc
+  response: [1,2,3,4]
+  answers:
+     - "Partage d’un nœud"
+     - "Partage d’un segment"
+     - "Partage d’un nœud et ordre d’adjacence"
+     - "Partage d’un segment et ordre d’adjacence"
+     - "Connectivité selon la distance"
+  help: "Relisez au besoin la [section @sec-022]."
+
+- label: "En anglais, comment est appelée une matrice selon le partage d'un nœud?"
+  type: uc
+  response: 2
+  answers:
+     - "Rook"
+     - "Queen"
+  help: "Relisez au besoin le début de la [section @sec-022]."
+
+- label: "Comparativement à une matrice de l'inverse de la distance, une matrice de l'inverse de la distance au carré accorde un poids plus important aux entités proches."
+  type: uc
+  response: 1
+  answers:
+     - "Vrai"
+     - "Faux"
+  help: "Relisez au besoin la [section @sec-02223]."
+
+- label: "Quels sont les avantages de la standardisation en ligne des matrices de pondération spatiale?"
+  type: mc
+  response: [1,2,3]
+  answers:
+     - "La somme de chaque ligne est égale à 1."
+     - "La somme de l'ensemble de la matrice est égale au nombre d'entités spatiales."
+     - "La standardisation permet de comparer la dépendance spatiale selon différentes matrices."
+     - "La standardisation augmente la vitesse des calculs."
+  help: "Relisez au besoin la [section @sec-0223]."
+
+- label: "Quelle est la différence entre les deux mesures locales de Getis et Ord?"
+  type: uc
+  response: 1
+  answers:
+     - "Gi* tient compte à la fois des valeurs des entités voisines ou proches, mais aussi de celle de i."
+     - "Contrairement à Gi, Gi* a un z-score."
+  help: "Relisez au besoin la [section @sec-0241]."
+  
+- label: "Parmi les quatre catégories de la typologie basée sur le nuage de points du I de Moran, lesquelles renvoient à de l'autocorrélation spatiale locale positive?"
+  type: mc
+  response: [1,2]
+  answers:
+     - "HH"
+     - "LL"
+     - "HL"
+     - "LH"
+  help: "Relisez au besoin la [section @sec-0243]."
+
+- label: "Le village gaulois correspond à quelle catégorie?"
+  type: uc
+  response: 3
+  answers:
+     - "HH"
+     - "LL"
+     - "HL"
+     - "LH"
+  help: "Relisez au besoin la [section @sec-0243]."
+  
+- label: "Quelles sont les trois manières de tester la significativité des mesures d'autocorrélation globales?"
+  type: mc
+  response: [1, 3, 4]
+  answers:
+     - "Avec l'hypothèse de la normalité"
+     - "En relançant plusieurs fois les calculs"
+     - "Avec l'hypothèse de la randomisation"
+     - "Avec la méthode Monte-Carlo (habituellement avec 999 échantillons)"
+  help: "Relisez au besoin la [section @sec-02313]."
+  

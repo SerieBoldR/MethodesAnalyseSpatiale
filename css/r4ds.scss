@@ -1,0 +1,319 @@
+/*-- scss:defaults --*/
+
+$primary: #352D75 !default;
+$primary-opaque: rgba($primary, 0.8)!default; // Opacité à 80%
+$font-size-root: 18px !default;
+
+/*-- scss:rules --*/
+// css des parties
+.sidebar-navigation .sidebar-item {
+    color: #352D75;
+    opacity: 0.8;
+}
+//css générale du sidebar
+.sidebar-navigation a {
+    color: #352D75;
+    opacity: 0.8;
+}
+//css des chapitres
+div.sidebar-item-container {
+    font-weight: 400;
+    padding-left: 0.5em;
+}
+//chapitre affiché
+div.sidebar-item-container .active {
+  font-weight: 900;
+  color: #352D75;
+}
+
+//Table des matières
+.sidebar nav[role=doc-toc]>h2, .sidebar nav[role=doc-toc]>.h2 {
+    color: #352D75;
+    text-transform: uppercase;
+    font-weight: 900;
+    opacity: 0.8;
+}
+
+//Sections de table des matières
+.sidebar nav[role=doc-toc]>ul li a {
+    color: #352D75;
+    opacity: 0.8;
+}
+//Section affiché
+.sidebar nav[role=doc-toc] ul>li>a.active, .sidebar nav[role=doc-toc] ul>li>ul>li>a.active{
+  font-weight: 900;
+  color: #352D75;
+  opacity: 0.8;
+}
+// Couleur des numéro de sections et de chapitre
+.chapter-number {
+    color: #352d75;
+    text-decoration: none;
+    opacity: 1;
+}
+.header-section-number {
+    color: #352d75;
+    opacity: 0.8;
+}
+
+//Report issue
+.toc-actions a {
+    text-decoration: none;
+    color: #352D75;
+    opacity: 0.8;
+    font-weight: bold;
+}
+#quarto-margin-sidebar .toc-actions .bi:before {
+    margin-top: 0.3rem;
+    font-size: .7rem;
+    color: #352D75;
+    opacity: 0.8;
+    vertical-align: top;
+}
+img.quarto-cover-image {
+  box-shadow: 0 .5rem 1rem rgba(0,0,0,.15);
+}
+
+//Alignement des paragraphes
+p {
+  text-align: justify;
+  margin-bottom: 0.5rem;
+}
+//Images de couverture
+.quarto-cover-image{
+ max-width:60%;
+ margin-left: 30px;
+}
+
+// Quand la souris passe sur une section
+.sidebar nav[role=doc-toc]>ul li a:hover {
+    color: #352D75;
+    opacity: 0.8;
+    font-weight: 900;
+}
+
+// quand la souris passe dessus un chapitre
+div.sidebar-item-container:hover {
+    font-weight: bold;
+    padding-left: 0.5em;
+}
+
+/* figures ------------------------------------------------------ */
+figure>figcaption {
+    margin-top: 0.5em;
+    text-align: center;
+}
+/* Headings ------------------------------------------------------ */
+#title-block-header.quarto-title-block.default .quarto-title h1.title {
+  margin-bottom: 0.5rem;
+  opacity: 0.8; 
+  font-weight: 800;
+  color: #352D75;
+}
+h1 {
+  font-size: 1.8rem;
+  opacity: 0.8; 
+  font-weight: bold;
+  color: #352D75;
+}
+h2 {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+  font-size: 1.6rem;
+  opacity: 0.8; 
+  color: #352D75;
+   border-bottom: 0px;
+}
+h3 { margin-top: 1.5em; font-size: 1.4rem; font-weight: bold; opacity: 0.8; color: #352D75;}
+h4 { margin-top: 1.5em; font-size: 1.2rem; font-weight: normal; opacity: 0.8; color: #352D75;}
+h5 { margin-top: 1.5em; font-size: 1.0rem; font-weight: normal; opacity: 0.8; color: #352D75;}
+
+.header-section-number {
+    color: #352D75;
+}
+.quarto-section-identifier {
+  color: #352D75;
+  font-weight: inherit;
+  opacity: 0.8;
+}
+
+/* Bloc pour le code R ------------------------------------------------ */
+code {
+ color: #373a3c;
+}
+
+code a:any-link{
+ text-decoration: underline;
+ text-decoration-color: #ccc;
+}
+
+// Commentaire avec un seul dièse
+code span.co {
+    color: rgba(53, 45, 117, .7);
+}
+
+// Commentaire avec deux dièses
+code span.do {
+    color: rgba(53, 45, 117, .7);
+	font-style: italic;
+}
+
+pre {
+  background-image: linear-gradient(160deg,#f8f8f8 0,#f1f1f1 100%);
+}
+
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+/* %%%%%%%%%%%%%%%%%%% styles pour les blocs  %%%%%%%%%%%%%%%%%%%%%%% */
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+
+/* pour les messages d'erreur */
+.error_message{
+  color:#b55604;
+  font-family: "Lucida Console";
+}
+
+.bloc_notes, .bloc_aller_loin, .bloc_astuce, .bloc_attention, .bloc_package, .bloc_objectif, .bloc_exercice{
+  margin-top: 1em;
+  margin-bottom: 1em;  
+  border-radius: .25rem;
+  border-left: solid #acacac .3rem;
+  border-right: solid 0.5px silver;
+  border-top: solid 0.5px silver;
+  border-bottom: solid 0.5px silver;
+  background-color:#FAF9FF;
+}
+
+.bloc_notes-icon, .bloc_aller_loin-icon, .bloc_astuce-icon, .bloc_attention-icon, .bloc_package-icon, .bloc_objectif-icon, .bloc_exercice-icon{
+  height: 0.9rem;
+  width: 0.9rem;
+  display: inline-block;
+  content: "";
+  background-repeat: no-repeat;
+  background-size: 0.9rem 0.9rem;
+  margin-top: .5rem;
+  padding-right: 1.25rem;
+}
+
+.bloc_notes-header, .bloc_aller_loin-header, .bloc_astuce-header, .bloc_attention-header, .bloc_package-header, .bloc_objectif-header, .bloc_exercice-header{
+  margin-bottom: 0.5em;
+  border-bottom: none;
+  font-weight: 1000;
+  opacity: 85%;
+  font-size: 0.9rem;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+  display: flex;
+  height: 2em;
+  overflow: hidden;
+}
+
+.bloc_notes-header p, .bloc_aller_loin-header p, .bloc_astuce-header p, .bloc_attention-header p, .bloc_package-header p, .bloc_objectif-header p, .bloc_exercice-header p {
+  padding-top: 0.2em;
+  margin-bottom: 0.5rem;
+}
+
+.bloc_notes-body, .bloc_aller_loin-body, .bloc_astuce-body, .bloc_attention-body, .bloc_package-body, .bloc_objectif-body, .bloc_exercice-body {
+  font-size: 0.9rem;
+  font-weight: 400;
+  padding-left: 0.5em;
+  padding-right: 0.5em;
+}
+
+.bloc_notes-body > :last-child, .bloc_aller_loin-body > :last-child, .bloc_astuce-body > :last-child, .bloc_attention-body > :last-child, .bloc_package-body > :last-child, .bloc_objectif-body > :last-child, .bloc_exercice-body > :last-child {
+  margin-top: 0rem;
+  margin-bottom: 0rem;
+}
+
+/* pour les exercices */
+.bloc_exercice{
+  border-left-color: #e34692 !important;
+}
+.bloc_exercice-header{
+  background-color: #fbe8f2;
+}
+.bloc_exercice-icon{
+  background-image: url(images/BlocExercice.png);
+}
+
+/* pour le aller plus loin */
+.bloc_aller_loin{
+  border-left-color: #eb5f23 !important;
+}
+.bloc_aller_loin-header{
+  background-color:  #fef4ec;
+}
+.bloc_aller_loin-icon{
+  background-image: url(images/BlocAllerPlusLoin.png);
+}
+
+/* pour les avertissements */
+.bloc_attention{
+  border-left-color: #f0ae4e !important;
+}
+.bloc_attention-header{
+  background-color: #fef4ec;
+}
+.bloc_attention-icon {
+  background-image: url(images/BlocAttention.png);
+}
+
+
+/* pour les objectifs */
+.bloc_objectif{
+  border-left-color: #00796d !important;
+}
+.bloc_objectif-header{
+  background-color: #e2efec;
+}
+.bloc_objectif-icon{
+  background-image: url(images/BlocObjectif.png);
+}
+
+/* pour les astuces */
+.bloc_astuce{
+  border-left-color: #31ae74 !important;
+}
+.bloc_astuce-header{
+  background-color: #f0f6ec;
+}
+.bloc_astuce-icon{
+  background-image: url(images/BlocAstuce.png);
+}
+
+/* pour les notes */
+.bloc_notes{
+  border-left-color: #357cc0 !important;
+}
+.bloc_notes-header{
+  background-color: #eef5fb;
+}
+.bloc_notes-icon{
+  background-image: url(images/BlocNote.png);
+}
+
+/* pour les packages */
+.bloc_package{
+  border-left-color: #352c76 !important;
+}
+.bloc_package-header{
+  background-color: #e2e1f2;
+}
+.bloc_package-icon{
+  background-image: url(images/BlocPackage.png);
+}
+
+
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+/* %%%%%%%%%%%%%%%%%%% styles pour les quiz  %%%%%%%%%%%%%%%%%%%%%%%%% */
+/*%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*/
+
+.quizlib-question{margin-bottom:1em}.quizlib-question-answers ul{list-style:none}.quizlib-question-warning{color:#f44336;margin-left:1em;margin-bottom:.5em}.quizlib-correct{color:#4caf50}.quizlib-incorrect{color:#f44336}
+
+.quizlib-question-title{
+  font-weight: bold;
+}
+
+.card {
+  margin-top : 2em;
+}

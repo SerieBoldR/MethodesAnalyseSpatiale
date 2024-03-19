@@ -1,0 +1,87 @@
+- label: "Quels sont les trois principaux problèmes résolus en analyse de réseau?"
+  type: mc
+  response: [1,2,3]
+  answers:
+     - "Trouver le trajet le plus court ou le plus rapide entre deux points (algorithme de Dijkstra)"
+     - "Trouver la route optimale comprenant plusieurs arrêts (problème du voyageur de commerce)"
+     - "Définir des zones de desserte autour d’une origine (algorithme de Dijkstra)"
+     - "Mesurer la dépendance spatiale"
+  help: "Relisez au besoin la [section @sec-0512]."
+  
+- label: "Quels sont les quatre autres problèmes résolus en analyse de réseau?"
+  type: mc
+  response: [1,2,4,5]
+  answers:
+     - "Trouver les k services les plus proches à partir d’une origine"
+     - "Construire une matrice de distance origines-destinations"
+     - "Répartir aléatoirement des points dans un territoire donné"
+     - "Résoudre le problème de tournées de véhicules"
+     - "Réaliser un modèle localisation-affectation"
+  help: "Relisez au besoin la [section @sec-0512]."
+  
+- label: "Quels sont les trois fichiers nécessaires pour construire un réseau multimode avec R5R?"
+  type: mc
+  response: [1,2,4]
+  answers:
+     - "Un fichier pbf pour les données d’OpenStreetMap"
+     - "Un ou plusieurs fichiers GTFS"
+     - "Un fichier pour les bâtiments"
+     - "Un fichier GeoTIFF d’élévation"
+  help: "Relisez au besoin le début de la [section @sec-0512]."
+  
+- label: "Quelle fonction de R5R permet de construire un réseau multimode?"
+  type: uc
+  response: 2
+  answers:
+     - "detailed_itineraries()"
+     - "setup_r5()"     
+     - "travel_time_matrix()"
+  help: "Relisez au besoin la [section @sec-0523]."
+
+- label: "Quelle fonction de R5R permet de construire un itinéraire?"
+  type: uc
+  response: 1
+  answers:
+     - "detailed_itineraries()"
+     - "setup_r5()"     
+     - "travel_time_matrix()"
+  help: "Relisez au besoin la [section @sec-0523]."
+
+- label: "Quelle fonction de R5R permet de construire une matrice origine-destination?"
+  type: uc
+  response: 2
+  answers:
+     - "detailed_itineraries()"
+     - "setup_r5()"     
+     - "travel_time_matrix()"
+  help: "Relisez au besoin la [section @sec-0523]."
+
+- label: "Pour évaluer l'accessibilité selon la conceptualisation de la proximité immédiate, quelle mesure d'accessibilité utilisez-vous?"
+  type: uc
+  response: 1
+  answers:
+     - "Distance entre l’origine et le service le plus proche"
+     - "Nombre de services présents à moins de n mètres ou minutes"     
+     - "Distance moyenne entre une origine et n services"
+     - "Modèles gravitaires et méthodes two-step floating catchment area (2SFCA)"
+  help: "Relisez au besoin la [section @sec-05323]."
+  
+- label: "Pour évaluer l'accessibilité selon la conceptualisation de l’offre et la demande, quelle mesure d'accessibilité utilisez-vous?"
+  type: uc
+  response: 4
+  answers:
+     - "Distance entre l’origine et le service le plus proche"
+     - "Nombre de services présents à moins de n mètres ou minutes"     
+     - "Distance moyenne entre une origine et n services"
+     - "Modèles gravitaires et méthodes two-step floating catchment area (2SFCA)"
+  help: "Relisez au besoin la [section @sec-05323]."
+  
+- label: "Pour évaluer l'accessibilité selon l'offre de services dans l’environnement immédiat, quelle mesure d'accessibilité utilisez-vous?"
+  type: uc
+  response: 2
+  answers:
+     - "Distance entre l’origine et le service le plus proche"
+     - "Nombre de services présents à moins de n mètres ou minutes"     
+     - "Distance moyenne entre une origine et n services"
+     - "Modèles gravitaires et méthodes two-step floating catchment area (2SFCA)"
+  help: "Relisez au besoin la [section @sec-05323]."

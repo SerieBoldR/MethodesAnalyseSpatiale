@@ -1,0 +1,81 @@
+- label: "Quelle est la différence entre le centre point et le point central?"
+  type: uc
+  response: 2
+  answers:
+     - "Le centre moyen peut être pondéré contrairement au point central."
+     - "Le point central est un point qui fait partie du semis de points initial."
+  help: "Relisez au besoin la [section @sec-03112]."
+  
+- label: "Associer la distance standard à chacun des trois semis de points suivants :"
+  type: uc
+  response: 2
+  answers:
+     - "A = 219, B = 347, C = 685"
+     - "A = 685, B = 219, C = 347"
+     - "A = 685, B = 347, C = 219"
+  help: "Relisez au besoin la [section @sec-0312]."
+  image: "images/quiz/Chap03_q02.png"
+  alt_txt: ""
+  
+- label: "Quelles sont les quatre principales manières de représenter graphiquement la dispersion d'un semis de points?"
+  type: mc
+  response: [1,3,4,5]
+  answers:
+     - "Enveloppe convexe"
+     - "Centre moyen et point central"
+     - "Rectangle construit avec les déviations standards des X et des Y"     
+     - "Distance standard"
+     - "Ellipse de déviation de distance standard"
+  help: "Relisez au besoin la [section @sec-03131]."
+
+- label: "Quelles sont les trois principales distributions d'un semis de points?"
+  type: mc
+  response: [1,2,3]
+  answers:
+     - "Distribution dispersée"
+     - "Distribution aléatoire"     
+     - "Distribution concentrée"
+     - "Distribution normale"
+  help: "Relisez au besoin la [section @sec-033]."     
+  
+- label: "À la lecture des résultats de la méthode du plus proche voisin, quelle année a la distribution spatiale la plus concentrée?"
+  type: uc
+  response: 2
+  answers:
+     - "2019"
+     - "2020"     
+     - "2021"     
+     - "2022"     
+  help: "Relisez au besoin la [section @sec-0331]."
+  image: "images/quiz/Chap03_q05.jpg"
+  alt_txt: ""    
+     
+- label: "En analyse des quadrats, quelles sont les trois principales formes utilisées?"
+  type: mc
+  response: [2,3,4]
+  answers:
+     - "Triangle"
+     - "Carré"
+     - "Hexagone"     
+     - "Cercle"     
+  help: "Relisez au besoin la [section @sec-03231]."       
+     
+- label: "Quel est le paramètre influençant le plus les résultats de la méthode KDE?"
+  type: uc
+  response: 2
+  answers:
+     - "La fonction kernel utilisée"     
+     - "La taille du rayon d'influence"     
+  help: "Relisez au besoin la [section @sec-03421]." 
+       
+- label: "Quelles sont les principales fonctions kernel?"
+  type: mc
+  response: [1,2,3,5]
+  answers:
+     - "Gaussienne"
+     - "Quadratique"  
+     - "Uniforme"
+     - "Manhattan"
+     - "Epanechnikov"  
+  help: "Relisez au besoin la [section @sec-03421]."  
+  

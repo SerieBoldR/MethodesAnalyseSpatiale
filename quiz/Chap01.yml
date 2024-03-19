@@ -1,0 +1,75 @@
+- label: "La classe sf est composée de trois éléments :"
+  type: mc
+  response: [1,2,3]
+  answers:
+     - "simple feature geometry (sfg) : géométrie d'une observation"
+     - "simple feature column (sfc) : liste toutes les géométries d'une couche"
+     - "data.fame : données attributaires"
+     - "raster : données images"
+  help: "Relisez au besoin la [section @sec-011142]."
+
+- label: "Laquelle de ces fonctions permet de changer la projection cartographique d'une couche géographique?"
+  type: uc
+  response: 2
+  answers:
+     - "st_crs(x)"
+     - "st_transform(x, crs)"
+     - "st_is_longlat(x)"
+  help: "Relisez au besoin le début de la [section @sec-0121]."
+
+- label: "Laquelle de ces fonctions n'est pas une fonction géométrique sur une couche?"
+  type: uc
+  response: 2
+  answers:
+     - "st_bbox(x)"
+     - "st_union(x)"
+     - "st_point_on_surface(x)"
+     - "st_crop(x, y, xmin, ymin, xmax, ymax)"
+     - "st_centroid(x)"
+  help: "Relisez au besoin la [section @sec-0122]."
+
+- label: "Comparativement à l'algorithme de Douglas et Peucker, que permet l’algorithme de Visvalingam lors de la simplification des contours?"
+  type: uc
+  response: 2
+  answers:
+     - "Il est plus rapide."
+     - "Il permet de conserver les frontières."
+  help: "Relisez au besoin la [section @sec-01224]."
+
+- label: "Tous les points sont compris dans leur enveloppe convexe."
+  type: uc
+  response: 1
+  answers:
+     - "Vrai"
+     - "Faux"
+  help: "Relisez au besoin la [section @sec-01225]."
+
+- label: "Quelles sont les quatre fonctions de mesures géométriques et de récupération des coordonnées géographiques?"
+  type: mc
+  response: [1,2,3,4]
+  answers:
+     - "st_area(x)"
+     - "st_length(x)"
+     - "st_distance(x,y)"
+     - "st_coordinates(x)"
+     - "st_union(x)"
+  help: "Relisez au besoin la [section @sec-0124]."
+
+- label: "Quelle est la différence entre les fonctions st_intersects(x, y) et st_intersection(x, y)?"
+  type: uc
+  response: 2
+  answers:
+     - "Elles génèrent le même résultat."
+     - "La première est une requête spatiale, la seconde renvoie l'intersection entre deux couches."
+     - "La première renvoie l'intersection entre deux couches, la seconde est une requête spatiale."
+  help: "Relisez le deuxième encadré à la [section @sec-0126]."
+
+- label: "Laquelle des fonctions sf permet d'exporter des données vectorielles?"
+  type: uc
+  response: 2
+  answers:
+     - "st_read()"
+     - "st_write()"
+     - "writeRaster()"
+  help: "Relisez au besoin la [section @sec-0141]."
+  

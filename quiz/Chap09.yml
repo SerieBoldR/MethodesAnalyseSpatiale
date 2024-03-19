@@ -1,0 +1,44 @@
+- label: "Les méthodes de classification non supervisée sont appelées ainsi puisque :"
+  type: uc
+  response: 2
+  answers:
+     - le nombre de groupes générés par ces méthodes est déterminé automatiquement
+     - les groupes sont inconnus au préalable et formés automatiquement par ces méthodes
+     - l'exécution de ces algorithmes ne nécessite pas de supervision
+     - aucun paramètre n'est à définir pour exécuter ces méthodes
+  help: "Relisez au besoin la [section @sec-131]."
+  alt_txt: ""
+
+- label : "En quoi se distinguent les méthodes de classifications strictes et floues?"
+  type: uc
+  response: 1
+  answers:
+     - les premières attribuent chaque observation à un seul groupe alors que les secondes évaluent le degré d'appartenance des observations à chaque groupe
+     - les méthodes strictes produisent des classifications comportant un moins grand nombre de degrés de liberté
+     - les méthodes strictes produisent toujours les mêmes résultats, alors que les méthodes floues reposent sur un état initial aléatoire pouvant conduire à des résultats différents
+  help: "Relisez au besoin la [section @sec-131]."
+
+- label: "Quels paramètres doivent être définis pour exécuter l'algorithme c-means?"
+  type: mc
+  response: [1,4]
+  answers:
+    - "k, soit le nombre de groupes à obtenir"
+    - "alpha, soit le paramètre contrôlant la vitesse de convergence"
+    - "lambda, soit la probabilité minimale qu'une observation appartiennent à un groupe"
+    - "m, soit le paramètre controlant le niveau de flou dans une classification floue"
+  help : "Relisez au besoin la [section @sec-1344]."
+
+- label: "La classification ascendante hiérarchique nécessite de calculer : "
+  type: mc
+  response: [2,4]
+  answers:
+    - "la distance entre chaque observation et ses k plus proches voisins"
+    - "la distance entre l'ensemble des paires d'observations"
+    - "la probabilité pour chaque observation d'appartenir à chaque groupe"
+    - "un dendrogramme, soit une structure hiérarchique permettant de conserver l'ordre dans lequel les groupes sont formés par l'algorithme"
+  help : "Relisez au besoin la [section @sec-133]."
+
+- label: "Pour effectuer une classification non supervisée floue utilisant comme centres de groupes de réelles observations plutôt que des moyennes fictives, quelle méthode peut-on utiliser?"
+  type: stat
+  response: "c-medoids"
+  help : "Relisez au besoin la [section @sec-1344]."

@@ -1,0 +1,78 @@
+- label: "Qu'est-ce que la dépendance spatiale d'un modèle de régression?"
+  type: uc
+  response: 2
+  answers:
+     - "Lorsque les variables indépendantes sont fortement corrélées entre elles."
+     - "Lorsque les résidus du modèle sont fortement autocorrélés spatialement."
+  help: "Relisez au besoin la [section @sec-0711]."
+  
+- label: "Dans un modèle SLX, l'autocorrélation est introduite au niveau de :"
+  type: uc
+  response: 2
+  answers:
+     - "Variable dépendante"
+     - "Variables indépendantes"
+     - "Terme d'erreur"
+     - "Variable dépendante et variables indépendantes"
+     - "Variable dépendante et terme d'erreur"
+  help: "Relisez au besoin la [section @sec-07121]."
+  
+- label: "Dans un modèle SAR, l'autocorrélation est introduite au niveau de :"
+  type: uc
+  response: 1
+  answers:
+     - "Variable dépendante"
+     - "Variables indépendantes"
+     - "Terme d'erreur"
+  help: "Relisez au besoin la [section @sec-07122]."
+  
+- label: "Dans un modèle SEM, l'autocorrélation est introduite au niveau de :"
+  type: uc
+  response: 3
+  answers:
+     - "Variable dépendante"
+     - "Variables indépendantes"
+     - "Terme d'erreur"
+  help: "Relisez au besoin la [section @sec-07123]."
+
+- label: "Dans un modèle mixte SDM, l'autocorrélation est introduite au niveau de :"
+  type: mc
+  response: [1,2]
+  answers:
+     - "Variable dépendante"
+     - "Variables indépendantes"
+     - "Terme d'erreur"
+  help: "Relisez au besoin la [section @sec-07124]."
+
+- label: "Dans un modèle SDEM, l'autocorrélation est introduite au niveau de :"
+  type: mc
+  response: [2,3]
+  answers:
+     - "Variable dépendante"
+     - "Variables indépendantes"
+     - "Terme d'erreur"
+  help: "Relisez au besoin la [section @sec-07125]."    
+
+- label: "Comment est intégré l'espace dans un modèle généralisé additif?"
+  type: uc
+  response: 2
+  answers:
+     - "Avec une variable spatialement décalée"
+     - "Avec une spline bivariée sur les coordonnées x et y"
+  help: "Relisez au besoin la [section @sec-0721]."
+
+- label: "Un modèle de régression géographiquement pondérée permet d'explorer"
+  type: uc
+  response: 1
+  answers:
+     - "L'instabilité spatiale du modèle"
+     - "La dépendance du modèle" 
+  help: "Relisez le deuxième encadré à la [section @sec-0731]."
+
+- label: "Un modèle de régression géographiquement pondérée produit autant de régressions que d'entités spatiales dans le jeu de données à l'étude."
+  type: uc
+  response: 1
+  answers:
+     - "Vrai"
+     - "Faux" 
+  help: "Relisez le deuxième encadré à la [section @sec-0731]."

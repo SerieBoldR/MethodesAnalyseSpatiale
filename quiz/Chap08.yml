@@ -1,0 +1,80 @@
+- label: "Quelles sont les méthodes de classification non supervisée avec une contrainte spatiale?"
+  type: mc
+  response: [1,2,4]
+  answers:
+     - "Algorithmes AZP (Automatic Zoning Problem)."
+     - "Algorithmes SKATER."
+     - "Classification floue c-moyennes spatiale."
+     - "Algorithmes REDCAP."
+     - "Méthode ClustGeo."
+  help: "Relisez l'introduction du [chapitre @sec-chap08]."
+  
+- label: "Quelles sont les méthodes de classification non supervisée avec une dimensions spatiale?"
+  type: mc
+  response: [3,5]
+  answers:
+     - "Algorithmes AZP (Automatic Zoning Problem)."
+     - "Algorithmes SKATER."
+     - "Classification floue c-moyenne spatiale."
+     - "Algorithmes REDCAP."
+     - "Méthode ClustGeo."
+  help: "Relisez l'introduction de la [section @sec-chap08]."
+  
+- label: "La classification ascendante hiérarchique et la classification le k-moyennes sont des méthodes de classification non supervisée qui ne prennent pas en compte l'espace :"
+  type: uc
+  response: 1
+  answers:
+     - "Vrai"
+     - "Faux"
+  help: "Relisez au besoin la [section @sec-chap08]."
+  
+- label: "La méthode de classification avec contrainte spatiale produit des régions non discontinues (sans mitage spatial) :"
+  type: uc
+  response: 1
+  answers:
+     - "Vrai"
+     - "Faux"
+  help: "Relisez au besoin la [section @sec-081]."
+
+- label: "L'algorithme SKATER est basé sur :"
+  type: uc
+  response: 2
+  answers:
+     - "Une matrice de distances."
+     - "Un arbre couvrant de poids minimal."
+     - "Le I de Moran."
+  help: "Relisez au besoin la [section @sec-0812]."
+
+- label: "La méthode ClustGeo est basée sur deux matrices :"
+  type: mc
+  response: [1,2]
+  answers:
+     - "Une matrice sémantique calculée sur p variables caractérisant les unités spatiales (D0)."
+     - "Une matrice spatiale calculée à partir des distances euclidiennes entre les unités spatiales (D1)."
+     - "Une matrice spatialement décalée de la matrice sémantique original (Ds)."
+  help: "Relisez au besoin la [section @sec-0821]."    
+
+- label: "La méthode c-moyennes spatiale floue est :"
+  type: mc
+  response: [1,3]
+  answers:
+     - "Une matrice sémantique calculée sur p variables caractérisant les unités spatiales (D0)."
+     - "Une matrice spatiale calculée à partir des distances euclidiennes entre les unités spatiales (D1)."
+     - "Une matrice spatialement décalée de la matrice sémantique original (Ds)."
+  help: "Relisez au besoin la [section @sec-0812]."
+
+- label: "Le paramètre alpha de la méthode ClustGeo permet de définir le poids accordé à la matrice spatiale. Son intervalle de variation est de :"
+  type: uc
+  response: 1
+  answers:
+     - "0 à 1."
+     - "0 à l'infini." 
+  help: "Relisez le deuxième encadré à la [section @sec-08211]."
+
+- label: "Le paramètre alpha de la classification c-moyennes spatiale floue permet de définir le poids accordé à la matrice spatialement décalée. Son intervalle de variation est de :"
+  type: uc
+  response: 2
+  answers:
+     - "0 à 1."
+     - "0 à l'infini." 
+  help: "Relisez le deuxième encadré à la [section @sec-08211]."

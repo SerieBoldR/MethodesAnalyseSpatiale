@@ -1,0 +1,71 @@
+- label: "Quels problèmes posent l'utilisation des méthodes classiques d'analyse spatiale pour des données se produisant sur un réseau?"
+  type: mc
+  response: [1,4,5]
+  answers:
+     - "La distance euclidienne tend à sous-estimer les distances réelles."
+     - "La distance euclidienne tend à surestimer les distances réelles."
+     - "Le réseau est un espace comportant davantage de dimensions qu'un espace planaire."
+     - "Le réseau est un espace ne respectant pas les hypothèses d'homogénéité et d'isotropie de l'espace planaire."
+     - "Les méthodes classiques analysent des portions de l'espace en dehors du réseau."
+  help: "Relisez au besoin la [section @sec-061]."
+
+- label: "Pour adapter la méthode classique du Kernel Density Estimate, il est nécessaire de :"
+  type: mc
+  response: [1,2,3]
+  answers:
+     - "Utiliser une distance réseau plutôt qu'euclidienne."
+     - "N'estimer les densités que le long des lixels représentant des fragments réguliers du réseau."
+     - "Adapter la fonction de Kernel pour tenir compte de la division de la masse aux intersections."
+     - "Appliquer une pénalité aux portions du réseau avec peu d'évènements."
+  help: "Relisez au besoin le début de la [section @sec-062]."
+
+- label: "Pour une NKDE, il est uniquement possible de calculer des densités selon une bandwidth fixe."
+  type: uc
+  response: 2
+  answers:
+     - "Vrai"
+     - "Faux"
+  help: "Relisez au besoin la [section @sec-06111]."
+
+- label: "Contrairement à la KDE classique, la NKDE est moins sensible au choix de la bandwidth."
+  type: uc
+  response: 2
+  answers:
+     - "Vrai"
+     - "Faux"
+  help: "Relisez au besoin la [section @sec-06114]."
+
+- label: "L'extension spatio-temporelle du NKDE (TNKDE) consiste à :"
+  type: uc
+  response: 2
+  answers:
+     - "Calculer une somme des densités spatiales et temporelles des évènements le long du réseau."
+     - "Calculer le produit des densités spatiales et temporelles des évènements le long du réseau."
+     - "Calculer l'intégrale des densités spatiales et temporelles des évènements le long du réseau."
+  help: "Relisez au besoin la [section @sec-0621]."
+
+- label: "Pour une TNKDE, il est uniquement possible de calculer des densités selon une bandwidth fixe."
+  type: uc
+  response: 2
+  answers:
+     - "Vrai"
+     - "Faux"
+  help: "Relisez au besoin la [section @sec-0621]."
+  
+  
+- label: "Les méthodes KDE, NKDE, et TNKDE peuvent être vues comme :"
+  type: uc
+  response: 1
+  answers:
+     - "Des méthodes descriptives visant à résumer un grand ensemble d'évènements en une carte de chaleur plus facilement interprétable."
+     - "Des méthodes inférentielles permettant de déterminer statistiquement la présence de points chauds ou de points froids."
+     - "Des algorithmes de type boite noire réduisant la dimensionnalité des données."
+  help: "Relisez au besoin la [section @sec-062]."
+  
+- label: "L'utilisation d'une distance réseau plutôt qu'euclidienne pour un algorithme DBSCAN risque de :"
+  type: uc
+  response: 2
+  answers:
+     - "Augmenter la taille des groupes détectés par l'algorithme, car la recherche de voisin sera plus facile sur le réseau"
+     - "Réduire la taille des groupes formés par l'algorithme, car la distance euclidienne tend à sous-estimer les distances réelles sur le réseau"
+  help: "Relisez au besoin la [section @sec-064]."
