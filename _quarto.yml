@@ -1,0 +1,134 @@
+project:
+  type: book
+  output-dir: livre
+license: CC BY-SA
+latex-auto-install: true
+
+lang: fr
+language:
+  title-block-author-plural: "Auteurs"
+  repo-action-links-issue: "Signaler un problème ou<br>formuler une suggestion"
+crossref:
+  fig-prefix: figure
+  tbl-prefix: tableau
+  sec-prefix: section
+  eq-prefix: équation
+  fig-title: Figure
+  tbl-title: Tableau
+  eq-title: Équation
+book:
+  title: 'Méthodes d’analyse spatiale : un grand bol d’R'
+  search: true
+  author: 
+    - name: Philippe Apparicio
+      url: https://www.usherbrooke.ca/recherche/fr/specialistes/details/philippe.apparicio
+      affiliation: Département de géomatique appliquée<br>Université de Sherbrooke
+      affiliation-url: https://www.usherbrooke.ca/geomatique/
+    - name: Jérémy Gelb
+      url: https://scholar.google.com/citations?user=oFofDScAAAAJ&hl=fr
+      affiliation: Autorité régionale de transport métropolitain
+      affiliation-url: https://www.artm.quebec/
+  date: today
+  date-format: YYYY-MM-DD
+  reader-mode: false
+  page-footer:
+    left: |
+      Méthodes d’analyse spatiale : un grand bol d’R.
+    right: |
+      Ce livre a été réalisé avec <a href="https://quarto.org/">Quarto</a>.
+  cover-image: images/introduction/Couverture_16_01-01.png
+  favicon: images/introduction/Couverture_16_01-01.png
+  site-url: https://github.com/SerieBoldR/MethodesAnalyseSpatiale/livre/index.html
+  repo-url: https://github.com/SerieBoldR/MethodesAnalyseSpatiale
+  repo-branch: main
+  repo-actions:
+  - issue
+  # downloads: pdf
+  chapters:
+  - index.qmd
+  - 00-auteurs.qmd
+  - part: Partie 1. Données spatiales et R
+  - 01-ManipulationDonneesSpatiales.qmd
+  - part: Partie 2. Autocorrélation spatiale
+  - 02-Autocorrelation.qmd
+  - part: Partie 3. Méthodes de répartition ponctuelle et de détections d’agrégats spatiaux
+  - 03-MethodesRepartitionPonctuelle.qmd
+  - 04-AgregatsSpatiaux.qmd
+  - part: Partie 4. Analyses de données avec des réseaux de transport
+  - 05-AnalyseReseau.qmd
+  - 06-AnalyseReseauEvenements.qmd
+  - part: Partie 5. Régressions spatiales et classifications spatiales
+  - 07-RegressionSpatiales.qmd
+  - 08-ClassificationsSpatiales.qmd
+  - part: Partie 6. Exercices et bibliographie
+  - 10-Exercices.qmd
+  - references.qmd
+      
+bibliography: references.bib
+csl: StyleINRS.csl
+
+format:
+  html:
+    colorlinks: true
+    css: css/quizlib.min.css
+    theme:
+      light:
+      - cosmo
+      - css/r4ds.scss
+    code-link: true
+    fontsize: 11pt
+    mainfont: Helvetica Neue,Helvetica,Arial,sans-serif
+    monofont: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace
+  # pdf:
+  #   pdf-engine: pdflatex
+  #   documentclass: scrbook
+  #   papersize: letter
+  #   keep-tex: true
+  #   classoption: 
+  #     # Remove odd-even page breaks (for printing PDF)
+  #     - open=any
+  #     - twoside=false # don't use even/odd pages, no blank pages
+  #     # pass french to book class (babel will see it automatically)
+  #     - french
+  #   output: "Méthodes_analyse_spatiale.pdf"
+  #   hyperrefoptions: 
+  #     - pdfstartview={XYZ null null 0.75}
+  #     - pdfpagemode=UseOutlines
+  #     - pdfdisplaydoctitle=true
+  #     - pdfpagelayout=SinglePage
+  #     - pdfstartpage=1
+  #   geometry:
+  #     - top=20mm
+  #     - left=15mm
+  #     - right=15mm
+  #     - heightrounded
+  #   fontfamily: libertinus
+  #   fontfamilyoptions: 
+  #     - p
+  #   lof: false
+  #   lot: false
+  #   toc: true
+  #   toc-depth: 3
+  #   code-block-border-left: false
+  #   fontsize: 11pt
+  #   urlcolor: Green4
+  #   citecolor: violet
+  #   linkcolor: violet
+  #   colorlinks: true
+  #   include-in-header: 
+  #     - tex-hacks/color-tables.tex
+  #     - tex-hacks/code-font.tex
+  #     - tex-hacks/fix-unicode-chars.tex
+  #     - tex-hacks/image-on-title-page.tex
+  #     - tex-hacks/callout.tex
+  #   header-includes:
+  #     - \renewcommand{\thepart}{} % Enlever numérotation des parties
+  #     - \setcounter{secnumdepth}{3} % Activer la numérotation des sections jusqu'au niveau des sous-sections
+
+
+
+
+
+
+
+

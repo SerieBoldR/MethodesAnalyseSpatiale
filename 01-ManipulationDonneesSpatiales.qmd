@@ -1,0 +1,2637 @@
+# Manipulation des données spatiales dans R {#sec-chap01}
+
+Dans ce chapitre, nous décrivons comment importer, manipuler et cartographier des données spatiales dans R. Pour une description plus détaillée du langage de programmation R -- objets et expression, opérateurs, structures de données (vecteurs, matrices, *arrays*, *DataFrame*), importation et manipulation de données --, lisez le chapitre intitulé [*Prise en main avec R*](https://laeq.github.io/LivreMethoQuantBolR/chap01.html) [@RBoldAir].
+
+::: bloc_package
+::: bloc_package-header
+::: bloc_package-icon
+:::
+
+**Liste des *packages* utilisés dans ce chapitre**
+:::
+
+::: bloc_package-body
+-   Pour importer et manipuler des fichiers géographiques :
+    -   `sf` pour importer et manipuler des données vectorielles.
+    -   `rmapshaper` pour simplifier des géométries en conservant la topologie.
+    -   `terra` pour importer et manipuler des données *raster*.
+    -   `gpx` pour importer des coordonnées GPS au format *GPS eXchange Format*.
+    -   `foot` pour créer des enveloppes orientées sur les géométries.
+    -   `concaveman` pour créer des enveloppes concaves.
+-   Pour cartographier des données :
+    -   `ggplot2` est un *package* pour construire des graphiques qui peut être aussi utilisé pour visualiser des données spatiales.
+    -   `tmap` pour construire des cartes thématiques.
+    -   `RColorBrewer` pour construire une palette de couleur.
+    -   `ggpurb` pour combiner des graphiques et des cartes.
+-   Pour importer des tables attributaires :
+    -   `foreign` pour importer des fichiers *dBase*.
+    -   `xlsx` pour importer des fichiers Excel.
+:::
+:::
+
+::: bloc_attention
+::: bloc_attention-header
+::: bloc_attention-icon
+:::
+
+**Pas de panique!**
+:::
+
+::: bloc_attention-body
+Ce document comprend de nombreuses notions sur l'importation, la manipulation et la cartographie de données spatiales dans R, soit des opérations que vous avez l'habitude de réaliser dans ArcGIS Pro ou QGIS.
+
+Prenez le temps de lire ce premier chapitre à tête reposée et assurez-vous de bien comprendre chaque notion avant de passer à la suivante. L'objectif n'est pas de maîtriser parfaitement la syntaxe R pour toutes les opérations dès la première semaine!
+
+Vous allez manipuler de nombreuses données spatiales avec R au fil de la lecture du livre. Par conséquent, n'hésitez pas à revenir sur ce chapitre lorsque nécessaire; considérez-le comme un aide-mémoire.
+:::
+:::
+
+## Importation de données géographiques {#sec-011}
+
+::: bloc_notes
+::: bloc_notes-header
+::: bloc_notes-icon
+:::
+
+**Quels *packages* choisir pour importer et manipuler des données spatiales?**
+:::
+
+::: bloc_notes-body
+Pour les données vectorielles, il existe deux principaux *packages* (équivalent d'une librairie dans Python) : `sp` [@PackageSP1; @PackageSP2] et `sf` [@PackageSF]. Puisque le *package* `sp` est progressivement délaissé par R, il est donc fortement conseillé d'utiliser `sf`.
+
+Pour les données *raster*, il est possible d'utiliser les *packages* `raster` [@PackageRaster] et `terra` [@PackageTerra], dont le dernier, plus récent, semblerait plus rapide.
+
+Cette transition de `sp` à `sf` et de `raster` à `terra` est assez récente et encore en cours durant l'écriture de ce livre. Il existe encore de nombreux *packages* basés sur `sp` et `raster`. Il est donc possible que vous ayez à les utiliser, car leur transition n'est peut-être pas encore effectuée. Notez que la façon dont ces anciens *packages* intègrent les données vectorielles et matricielles dans R est très différente de celle des nouveaux *packages*. À titre d'exemple, la fonction `sp::readOGR` lit un fichier *shapefile*, tout comme la fonction `sf::st_read`, mais la première produit un objet de type `SpatialDataFrame`, alors que la seconde produit un `tbl_df`. Dans le premier cas, les géométries et les données sont stockées dans deux éléments séparés, alors que dans le second cas, le `tbl_df` est un `data.frame` avec une colonne contenant les géométries.
+
+Pour les personnes intéressées aux motivations ayant conduit à cette transition, consultez cet excellent [article de blog](https://r-spatial.org/r/2022/04/12/evolution.html). Il existe deux raisons principales : le mainteneur des *packages* `rgdal` et `rgeos` servant de fondation à `raster` et `sp` a pris sa retraite. À cela s'ajoutent le côté « vieille école » de ces *packages* (ayant plus de 20 ans!) et l'apparition de *packages* plus modernes. Il s'agit d'un bon exemple de ce qui peut arriver dans une communauté *open source* et des évolutions constantes de l'environnement R.
+
+En résumé, privilégiez l'utilisation de `sf` et de `terra.`
+
+Il convient d'installer les deux *packages*. Notez que l'installation d'un *package* requiert une connexion Internet, car R accède au répertoire de *packages* *CRAN* pour télécharger le *package* et l'installer sur votre ordinateur. Cette opération est réalisée avec la fonction `install.packages("nom du package").` Notez qu'une fois que le *package* est installé, il est enregistré localement sur votre ordinateur et y reste à moins de le désinstaller avec la fonction `remove.packages("nom du package").`
+
+Autrement dit, il n'est pas nécessaire de les installer à chaque ouverture de R! Pour utiliser les fonctions d'un *package*, vous devez préalablement le charger avec la fonction `library("Nom du package")` (équivalent à la fonction `import` de Python).
+
+Pour plus d'informations sur l'installation et le chargement de *packages*, consultez la [section suivante](https://laeq.github.io/LivreMethoQuantBolR/sect012.html#sect0123) [@RBoldAir].
+:::
+:::
+
+### Importation de données vectorielles {#sec-0111}
+
+La fonction `st_read` de `sf` permet d'importer une multitude de formats de données géographiques, comme des fichiers *shapefile* (`shp`), *GeoPackage* (`GPKG`), *GeoJSON* (`geojson`), *sqlite* (`sqlite`), *geodatabase d'ESRI* (`FileGDB`), *Geoconcept* (`gxt`), *Keyhole Markup Language* (`kml`), *Geography Markup Language* (`gml`), etc.
+
+#### Importation d'un fichier *shapefile* {#sec-01111}
+
+Le code R ci-dessous permet d'importer des couches géographiques au format *shapefile*. Notez que la fonction `list.files(pattern = ".shp")` renvoie préalablement la liste des couches *shapefile* présentes dans le dossier de travail.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+
+## Chargement des packages
+library("sf")
+library("terra")
+library("tmap")
+library("ggplot2")
+library("ggpubr")
+library("foreign")
+library("xlsx")
+library("rmapshaper")
+library("RColorBrewer")
+## Obtention d'une liste des shapefiles dans le dossier de travail
+list.files(path = "data/chap01/shp", pattern = ".shp")
+## Importation des shapefiles avec sf
+Arrondissements <- st_read("data/chap01/shp/Arrondissements.shp", quiet=TRUE)
+InstallationSport <- st_read("data/chap01/shp/Installations_sportives_et_recreatives.shp", quiet=TRUE)
+PistesCyclables <- st_read("data/chap01/shp/Pistes_cyclables.shp", quiet=TRUE)
+Rues <- st_read("data/chap01/shp/Segments_de_rue.shp", quiet=TRUE)
+```
+
+Regardons à présent la structure des couches importées. Pour ce faire, nous utilisons la fonction `head(nom du DataFrame, n=2)`; notez que le paramètre `n` permet de spécifier le nombre des premiers enregistrements à afficher. Les informations suivantes sont ainsi disponibles :
+
+-   `6 fields` : six champs attributaires (`TYPE`, `DETAIL`, `NOM`, `SURFACE`, `ECLAIRAGE`, `OBJECTID`).
+
+-   `Geometry type POINT` : le type de géométrie est **point**.
+
+-   `Bounding box:  xmin: -8009681 ymin: 5686891 xmax: -8001939 ymax: 5696536` : les quatre coordonnées définissant l'enveloppe de la couche.
+
+-   `Projected CRS: WGS 84 / Pseudo-Mercator` : la projection cartographique. Ici, une projection cartographique utilisée par Google Maps et OpenStreetMap.
+
+-   La géométrie est enregistrée dans le champ `geometry`. Pour le premier enregistrement, nous avons la valeur `POINT (-8001939 5686891)`, soit un point avec les coordonnées géographiques (x,y) entre parenthèses.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+head(InstallationSport, n=2)   # Visualisation des deux premiers enregistrements
+names(InstallationSport)       # Noms de champs (colonnes)
+View(InstallationSport)        # Afficher l'ensemble de la table attributaire
+```
+
+Explorons les types de géométries et la projection des autres couches avec le code ci-dessous. En résumé, les types de géométries sont :
+
+-   Des géométries simples
+
+    -   `point` : un seul point.
+
+    -   `linestring` : une séquence de deux points et plus formant une ligne.
+
+    -   `polygon` : un seul polygone formé par une séquence de points pouvant contenir un ou plusieurs polygones intérieurs formant des trous.
+
+-   Des géométries multiples
+
+    -   `multipoint` : plusieurs points pour une même observation.
+
+    -   `multilinestring` : plusieurs lignes pour une même observation.
+
+    -   `multipolygon` : plusieurs polygones pour une même observation.
+
+-   Une collection de géométries (`Geometrycollection`) qui peut contenir différents types de géométries décrites ci-dessus pour une même observation.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+head(PistesCyclables, n=2)
+head(Rues, n=2)
+head(Arrondissements, n=2)
+```
+
+Visualisons quelques couches importées avec `ggplot()`.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+## Arrondissements et rues
+ggplot()+ geom_sf(data = Arrondissements, lwd = .8)+
+  geom_sf(data = Rues, aes(colour = TYPESEGMEN))
+## Arrondissements, pistes cyclables et installations sportives
+ggplot()+ geom_sf(data = Arrondissements, lwd = .8)+
+  geom_sf(data = PistesCyclables, aes(colour = NOM), lwd = .5)+
+  geom_sf(data = InstallationSport)
+```
+
+#### Importation d'une couche dans un *GeoPackage* {#sec-01112}
+
+Pour importer une couche stockée dans un *GeoPackage* (GPKG), vous devez spécifier le fichier et la couche avec respectivement les paramètres `dsn` et `layer` de la fonction `st_read`. Le code ci-dessous permet d'importer les secteurs de recensement de la région métropolitaine de recensement de Sherbrooke pour l'année 2021.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+## Importation d'une couche dans un GPKG
+SR.RMRSherb <- st_read(dsn = "data/chap01/gpkg/Recen2021Sherbrooke.gpkg", 
+                       layer = "SherbSR", quiet=TRUE)
+## Affichage des deux premiers enregistrements
+head(SR.RMRSherb, n=2)
+## Visualisation rapide des secteurs avec ggplot
+ggplot()+ geom_sf(data = SR.RMRSherb, lwd = .5)
+```
+
+#### Importation d'une couche dans une *geodatabase* d'ESRI {#sec-01113}
+
+La logique est la même qu'avec un *GeoPackage*, nous spécifions le chemin de la *geodatabase* et la couche avec les paramètres `dsn` et `layer`.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+AffectDuTerritoire <- st_read(dsn = "data/chap01/geodatabase/Sherbrooke.gdb", 
+                              layer = "AffectationsDuTerritoire", quiet=TRUE)
+## Visualisation des affectations du sol avec ggplot
+ggplot()+ geom_sf(data = AffectDuTerritoire, aes(fill = TYPE), lwd = .2)
+```
+
+#### Importation de données GPS {#sec-01114}
+
+En géomatique appliquée, il est fréquent de collecter des données sur le terrain avec un appareil GPS. Les données ainsi collectées peuvent être enregistrées dans différents formats de données dépendamment de l'appareil GPS utilisé : *GPS eXchange Format* (GPX), *Garmin's Flexible and Interoperable Data Transfer* (FIT), *Training Center XML* (TCX), etc.
+
+##### Importation de coordonnées GPS longitude/latitude au format *csv* {#sec-011142}
+
+Une personne ayant collecté des données sur le terrain pourrait aussi vous les transmettre dans un fichier *csv* (fichier texte délimité par des virgules). Il convient d'importer le fichier de coordonnées GPS dans R dans un *DataFrame* (avec la fonction `read.csv`). Une fois importé, nous constatons qu'il comprend trois champs :
+
+-   `id` : un champ identifiant avec des valeurs uniques.
+
+-   `lon` : longitude.
+
+-   `lat` : latitude.
+
+Les points sont projetés en longitude/latitude (WGS84 long/lat, EPSG : 4326).
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+## Importation du fichier csv
+PointsGPS <- read.csv("data/chap01/gps/pointsGPS.csv")
+head(PointsGPS)
+```
+
+Pour convertir le *DataFrame* en un objet `sf`, nous utilisons la fonction `st_as_sf` en spécifiant les champs pour les coordonnées et la projection cartographique.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+## Importation du fichier csv
+PointsGPS <- st_as_sf(PointsGPS, coords = c("lon","lat"), crs = 4326)
+```
+
+Les points ainsi créés sont localisés dans la ville de Sherbrooke.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+## Affichage des points avec le package tmap
+tmap_mode("view") ## Mode actif de tmap
+tm_shape(PointsGPS)+
+  tm_dots(size = 0.05, shape = 21, col = "red")
+```
+
+##### Importation de coordonnées GPS au format *GPX* {#sec-011141}
+
+Le format [GPX](https://fr.wikipedia.org/wiki/GPX_(format_de_fichier)) est certainement le format de stockage et d'échange de coordonnées GPS le plus utilisé. Les informations géographiques (x,y) et temporelles (date et heure) sont respectivement enregistrées en degrés longitude/latitude (projection WSG) (WGS84, EPSG : 4326) et en temps universel coordonné (UTC, format ISO 8601).
+
+Pour importer un fichier GPX, nous utilisons le *package* `gpx`. S'il n'est pas installé sur votre ordinateur, lancez la commande `install.packages("gpx")` dans la console de R; n'oubliez pas de le charger avec `library("gpx")`! Ensuite, importez le fichier GPX avec la fonction `read_gpx`, enregistrez la trace GPS dans un *DataFrame* et convertissez-la en objet `sf`.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+library("gpx")
+## Importation du fichier GPX
+TraceGPS <- read_gpx("data/chap01/gps/TraceGPS.gpx")
+## Cette trace GPS comprend trois listes : routes, tracks et waypoints
+## Les points sont stockés dans tracks
+names(TraceGPS)
+## Pour visualiser les données, il suffit de lancer la ligne
+## ci-dessous (mise en commentaire car le résultat est un peu long...)
+# head(TraceGPS)
+TraceGPS <- TraceGPS$tracks$`ID1_PA_2021-12-03_TRAJET01.gpx`
+## Conversion du DataFrame en objet sf
+TraceGPS <- st_as_sf(TraceGPS, coords = c("Longitude","Latitude"), crs = 4326)
+## Visualisation des premiers enregistrements
+head(TraceGPS, n=2)
+```
+
+La trace GPS correspond à un trajet réalisé à vélo à Abidjan (Côte d'Ivoire) le 3 décembre 2021. Cette trace a été obtenue avec une montre Garmin et comprend un point chaque seconde.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+tmap_mode("view")
+tm_basemap(leaflet::providers$OpenStreetMap)+
+tm_shape(TraceGPS)+
+  tm_dots(size = 0.001, shape = 21, col = "red")
+```
+
+::: bloc_aller_loin
+::: bloc_aller_loin-header
+::: bloc_aller_loin-icon
+:::
+
+**La structure de la classe `sf`**
+:::
+
+::: bloc_aller_loin-body
+La classe `sf` est composée de trois éléments (@fig-ClasseSf) :
+
+-   L'objet **`simple feature geometry (sfg)`** est la géométrie d'une observation. Tel que vu plus haut, elle est une géométrie simple (`point`, `linestring`, `polygon`), multiple (`multipoint`, `multilinestring`, `multipolygon`) ou une collection de géométries différentes (`Geometrycollection`). Pour définir chacune de ces géométries, nous utilisons les méthodes `st_point()`, `st_linestring()`, `st_polygon()`, `st_multipoint()`, `st_multilinestring()`, `st_multipolygon()` et `Geometrycollection()`.
+
+-   L'objet **`simple feature column (sfc)`** est simplement une liste de `simple feature geometry (sfg)`. Elle représente la colonne `geometry` d'une couche vectorielle `sf`.
+
+-   L'objet **`data.frame`** correspond à la table attributaire.
+
+Une **`simple feature`** correspond ainsi à une observation (ligne) d'un objet `sf`, soit une entité spatiale comprenant l'information sémantique (attributs) et l'information spatiale (géométrie).
+
+![Structure de la classe `sf`](images/Chap01/ClassSFFinal.png){#fig-ClasseSf width="90%" fig-align="center"}
+
+Voyons un exemple concret : créons une couche `sf` comprenant les trois entités spatiales décrites dans la @fig-ClasseSf.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+## Création des géométries : simple feature geometry (sfg)
+point1 = st_point(c(-8001939, 5686891))
+point2 = st_point(c(-8009681, 5696536))
+point3 = st_point(c(-7998695, 5689743))
+## Création d'une liste de géométries : simple feature geometry (sfc)
+## avec la projection cartographique EPSG 3857
+points_sfc = st_sfc(point1, point2, point3, crs = 3857)
+## Création de la table attributaire : objet data.frame
+table_attr = data.frame(TYPE = c("Aréna", "Aréna","Aréna"),
+                       NOM = c("Aréna Eugène-Lalonde", 
+                               "Aréna Philippe-Bergeron",
+                               "Centre Julien-Ducharme"),
+                       OBJECTID = c(1, 2, 3))
+## Création de l'objet sf
+Arena_sf = st_sf(table_attr, geometry = points_sfc)
+## Le résultat est bien identique à celui de la figure ci-dessus
+head(Arena_sf)
+```
+:::
+:::
+
+### Importation de données *raster* {#sec-0112}
+
+La fonction `terra::rast` permet d'importer des images de différents formats (GeoTiff, ESRI, ENVI, ERDAS, BIN, GRID, etc.). Nous importons ci-dessous quatre feuillets de [modèles numériques d'altitude (MNA) à l'échelle du 1/20000](https://www.donneesquebec.ca/recherche/dataset/modeles-numeriques-d-altitude-a-l-echelle-de-1-20-000) couvrant la ville de Sherbrooke. La @fig-MNA présente l'un d'entre eux.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-MNA
+#| fig-align: center
+#| fig-cap: "Modèle numérique d'élévation au 1/20000 (feuillet f21e05_101)"
+#| out-width: 65%
+## Liste des fichiers GeoTIFF dans le dossier
+list.files(path="data/chap01/raster", pattern = ".tif")
+## Importation des fichiers
+f21e05_101 <- terra::rast("data/chap01/raster/f21e05_101.tif")
+f21e05_201 <- terra::rast("data/chap01/raster/f21e05_201.tif")
+f31h08_102 <- terra::rast("data/chap01/raster/f31h08_102.tif")
+f31h08_202 <- terra::rast("data/chap01/raster/f31h08_202.tif")
+f21e12_101 <- terra::rast("data/chap01/raster/f21e12_101.tif")
+## Visualisation des informations sur l'image f21e05_101
+f21e05_101
+# Visualisation de l'image
+terra::plot(f21e05_101, 
+     main="Modèle numérique d'altitude à l’échelle de 1/20 000 (f21e05_101)")
+```
+
+## Manipulation de données vectorielles {#sec-012}
+
+::: bloc_objectif
+::: bloc_objectif-header
+::: bloc_objectif-icon
+:::
+
+***Package*** `sf` **et opérations géométriques**
+:::
+
+::: bloc_objectif-body
+Le *package* `sf` est une librairie extrêmement complète permettant de réaliser une multitude d'opérations géométriques sur des couches vectorielles comme dans un système d'information géographique (SIG). Notre objectif n'est pas de toutes les décrire, mais d'aborder les principales. Au fil de vos projets avec `sf`, vous apprendrez d'autres fonctions. Pour ce faire, n'hésitez pas à consulter :
+
+-   Une belle [*Cheatsheet*](https://github.com/rstudio/cheatsheets/blob/main/sf.pdf) sur `sf`. Allez y jeter un œil, cela vaut la peine!
+
+-   Sur le [site CRAN](https://cran.r-project.org/web/packages/sf/index.html) de `sf`, vous trouverez plusieurs vignettes explicatives (exemples de code documentés).
+
+-   La [documentation complète en PDF](https://cran.r-project.org/web/packages/sf/sf.pdf).
+
+La syntaxe `methods(class = 'sfc')` renvoie la liste des méthodes implémentées dans le *package* `sf`. Pour accéder à l'aide en ligne de l'une d'entre elles, écrivez simplement `?Nom de la fonction` (ex. : `?st_buffer`).
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+methods(class = 'sfc')
+```
+:::
+:::
+
+### Fonctions relatives à la projection cartographique {#sec-0121}
+
+Les trois principales fonctions relatives à la projection cartographique des couches vectorielles sont :
+
+-   `st_crs(x)` pour connaître la projection géographique d'un objet `sf`.
+
+-   `st_transform(x, cr)` pour modifier la projection cartographique.
+
+-   `st_is_longlat(x)` pour vérifier si les coordonnées sont en degrés longitude/latitude.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+## Importation d'un shapefile pour la province de Québec
+ProvinceQc <- st_read("data/chap01/shp/Quebec.shp", quiet = TRUE)
+## La projection est EPSG:3347 - NAD83 / Statistics Canada Lambert,
+## soit la projection conique conforme de Lambert
+st_crs(ProvinceQc)
+## Reprojection de la couche en WGS84 long/lat (EPSG:4326)
+ProvinceQc.4326 <- st_transform(ProvinceQc, crs = 4326)
+## longitude/latitude?
+st_is_longlat(ProvinceQc)
+st_is_longlat(ProvinceQc.4326)
+```
+
+La @fig-Projections démontre bien que les deux couches sont projetées différemment.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+#| label: fig-Projections
+#| fig-cap: "Deux projections cartographiques"
+#| out-width: 75%
+#| fig-align: center
+
+Map1 <- ggplot()+geom_sf(data = ProvinceQc)+coord_sf(crs = st_crs(ProvinceQc))+
+        labs(subtitle = "Conique conforme de Lambert (EPSG : 3347)")
+
+Map2 <- ggplot()+geom_sf(data = ProvinceQc.4326)+coord_sf(crs = st_crs(ProvinceQc.4326))+
+        labs(subtitle = "WGS84 long/lat (EPSG : 4326)")
+
+comp_plot <- ggarrange(Map1, Map2, ncol = 2, nrow = 1)
+annotate_figure(comp_plot,
+                top = text_grob("Province de Québec",
+                                face = "bold", size = 12, just = "center")
+                )
+```
+
+### Fonctions d'opérations géométriques sur une couche {#sec-0122}
+
+Il existe une quinzaine de fonctions d'opérations géométriques sur une couche dans le *package* `sf` dont le résultat renvoie de nouvelles géométries ([voir la documentation suivante](https://r-spatial.github.io/sf/reference/geos_unary.html)). Nous décrivons ici uniquement celles qui nous semblent les plus utilisées :
+
+-   `st_bbox(x)` renvoie les coordonnées minimales et maximales des géométries d'un objet `sf`. Pour créer l'enveloppe d'un objet `sf`, il suffit donc d'écrire `st_as_sfc(st_bbox(x))`.
+
+-   `st_boundary(x)` renvoie les limites (contours) des géométries d'un objet `sf`.
+
+-   `st_convex_hull(x)` crée l'enveloppe convexe des géométries d'un objet `sf`.
+
+-   `st_combine(x)` regroupe les géométries d'un objet `sf` en une seule géométrie, sans les réunir ni résoudre les limites internes.
+
+-   `st_union(x)` fusionne les géométries d'un objet `sf` en une seule géométrie.
+
+-   `st_buffer(x, dist, endCapStyle = c("ROUND", "FLAT", "SQUARE"), joinStyle = c("ROUND", "MITRE", "BEVEL"))` crée des zones tampons d'une distance définie avec le paramètre `dist`. Cette fonction s'applique à des points, à des lignes et à des polygones.
+
+-   `st_centroid(x)` crée des points au centre de chaque géométrie d'un objet `sf`. Elle s'applique donc à des lignes et à des polygones.
+
+-   `st_point_on_surface(x)` crée un point au centre de chaque polygone d'un objet `sf` .
+
+-   `st_simplify(x, dTolerance)` simplifie les contours de géométries (lignes ou polygones) avec une tolérance exprimée en mètres (paramètre `dTolerance`) d'un objet `sf` .
+
+-   `st_voronoi(x, bOnlyEdges = TRUE)` crée des polygones de Thiessen, appelés aussi polygones de Voronoï pour des points. Attention, le paramètre `bOnlyEdges = TRUE` renvoie des lignes tandis que `bOnlyEdges = FALSE` renvoie des polygones.
+
+#### Enveloppe et union d'une couche {#sec-01221}
+
+Le code ci-dessous crée une enveloppe (en bleu) et un polygone fusionné (en rouge) pour les arrondissements de la ville de Sherbrooke (@fig-EnveloppeUnion). La couche résultante de l'opération `st_as_sfc(st_bbox(x))` est ainsi l'équivalent des outils `Emprise` de QGIS et `Minimum Bounding Geometry (Geometry Type = Envelope)` d'ArcGIS Pro.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Enveloppe sur les arrondissements de la ville de Sherbrooke
+Arrond.Enveloppe <- st_as_sfc(st_bbox(Arrondissements))
+## Fusionne les géométries en une seule en résolvant les limites internes
+Arrond.Union <- st_union(Arrondissements)
+```
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+#| label: fig-EnveloppeUnion
+#| fig-cap: "Enveloppe sur une couche"
+#| fig-align: center
+#| out-width: 65%
+
+tmap_mode("plot")
+tm_shape(Arrond.Enveloppe) + tm_borders(col = "blue", lwd=2)+
+  tm_shape(Arrond.Union) + tm_borders(col = "red", lwd=2)+
+  tm_layout(frame = FALSE)+
+  tm_scale_bar(c(0,5,10))
+```
+
+#### Enveloppe orientée {#sec-01222}
+
+La fonction `st_bbox` de `sf` produit des rectangles englobant des géométries qui sont orientées nord-sud. Il est possible de générer des rectangles orientés autour de géométries pour minimiser leur emprise et ainsi mieux représenter l'orientation de la géométrie initiale. Il n'existe pas de fonction dans `sf` pour le faire, mais le *package* `foot` offre une implémentation facile d'utilisation. Notez que `foot` n'est pas déposé sur CRAN et doit être téléchargé depuis *Github* avec la ligne de code ci-dessous.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| eval: false
+devtools::install_github("wpgp/foot", build_vignettes = FALSE)
+```
+
+La couche résultante de l'opération `fs_mbr(x, returnShape = TRUE)` (@fig-EnveloppeOrientee, b) est ainsi l'équivalent des outils `Emprise orientée minimale (OMBB)` de QGIS et `Minimum Bounding Geometry (Geometry Type = Rectangle by area)` d'ArcGIS Pro.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+library(foot)
+## Rectangles (enveloppes) orientés 
+rectangles_oriented <- fs_mbr(Arrondissements, returnShape = TRUE)
+rectangles_oriented <- st_as_sf(rectangles_oriented,
+                                crs = st_crs(Arrondissements))
+rectangles_oriented$NOM <- Arrondissements$NOM
+## Rectangles non orientés (nord-sud)
+st_bbox_by_feature = function(x) {
+  x = st_geometry(x)
+  f <- function(y) st_as_sfc(st_bbox(y))
+  do.call("c", lapply(x, f))
+}
+rectangles <- st_as_sf(st_bbox_by_feature(Arrondissements),
+                       crs = st_crs(Arrondissements))
+rectangles$NOM <- Arrondissements$NOM
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-EnveloppeOrientee
+#| fig-cap: "Enveloppes classiques et orientées"
+#| fig-align: center
+#| out-width: 65%
+
+## Cartographie
+Carte1 <- tm_shape(st_cast(rectangles,"LINESTRING")) +
+            tm_lines(col = "NOM", lwd = 4) + 
+            tm_shape(Arrondissements) + 
+            tm_borders('black') + 
+            tm_layout(legend.show = FALSE, frame = FALSE, 
+                      title = "a. Enveloppes nord-sud",
+                      title.size = 1.2)
+Carte2 <- tm_shape(st_cast(rectangles_oriented,"LINESTRING")) + 
+            tm_lines(col = "NOM", lwd = 4) + 
+            tm_shape(Arrondissements) + 
+            tm_borders('black') + 
+            tm_layout(legend.show = FALSE, frame = FALSE,
+                      title = "b. Enveloppes orientées",
+                      title.size = 1.2)
+tmap_arrange(Carte1, Carte2, nrow = 1, ncol = 2)
+```
+
+#### Centroïdes et centre de surface {#sec-01223}
+
+Le code ci-dessous extrait les centres géométriques, c'est-à-dire les centroïdes (en bleu) et les points à l'intérieur des polygones (en rouge) pour les arrondissements de la ville de Sherbrooke (@fig-CentroidesPointsInterieur). Ces deux opérations correspondent aux outils `centroïdes` et `Point dans la surface` de QGIS et `Feature to Point (avec l'option Inside)` d'ArcGIS Pro.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Centroïdes et points dans les polygones sur les arrondissements
+Arrond.centroide <- st_centroid(Arrondissements)
+Arrond.pointpoly <- st_point_on_surface(Arrondissements)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-CentroidesPointsInterieur
+#| fig-cap: "Centroïdes et points à l'intérieur des polygones"
+#| fig-align: center
+#| out-width: 65%
+tm_shape(Arrondissements) + tm_borders(col = "black", lwd=2)+
+tm_shape(Arrond.centroide) + tm_dots(size=0.3,col="blue")+
+tm_shape(Arrond.pointpoly) + tm_dots(size=0.3,col="red")+
+tm_layout(frame = FALSE)
+```
+
+#### Zone tampon (*buffer*) {#sec-01224}
+
+Une simple ligne de code permet de créer des zones tampons (équivalent des outils `Analyse vectorielle/Tampon` dans QGIS et `Buffer` dans ArcGIS Pro). Une fois les zones créées, utilisez la fonction `st_union` pour fusionner les tampons en un polygone (@fig-ZoneTampon).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Zones tampons de 1000 mètres autour des installations sportives et récréatives
+InstSports.buffer <- st_buffer(InstallationSport, dist = 1000)
+## Si vous souhaitez fusionner les zones tampons, utilisez la fonction st_union
+InstSports.bufferUnion <- st_union(InstSports.buffer)
+## Zones tampons de 500 mètres autour des lignes
+PistesCyclables.buffer <- st_buffer(PistesCyclables, dist = 500)
+PistesCyclables.bufferUnion <- st_union(PistesCyclables.buffer)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-ZoneTampon
+#| fig-cap: "Zones tampons"
+#| fig-align: center
+#| out-width: 65%
+
+tmap_mode("plot")
+M1 <- tm_shape(InstSports.buffer) + tm_borders(col = "black", lwd=1) + tm_fill(col="azure2")+
+      tm_shape(InstallationSport) + tm_dots(size=0.05,col="red")+
+  tm_layout(frame = FALSE)
+        
+M2 <- tm_shape(InstSports.bufferUnion) + tm_borders(col = "black", lwd=1)+tm_fill(col="azure2")+
+      tm_shape(InstallationSport) + tm_dots(size=0.05,col="red")+
+  tm_layout(frame = FALSE)
+
+M3 <- tm_shape(PistesCyclables.buffer) + tm_borders(col = "black", lwd=1) + tm_fill(col="azure2")+
+      tm_shape(PistesCyclables) + tm_lines(lwd=1,col="red")+
+  tm_layout(frame = FALSE)
+        
+M4 <- tm_shape(PistesCyclables.bufferUnion) + tm_borders(col = "black", lwd=1)+tm_fill(col="azure2")+
+      tm_shape(PistesCyclables) + tm_lines(lwd=1,col="red")+
+  tm_layout(frame = FALSE)
+
+tmap_arrange(M1, M2, M3, M4, ncol = 2, nrow =2)
+```
+
+Notez que pour des polygones, il est possible de créer des polygones intérieurs comme suit : `st_buffer(x, dist = - Valeur)`. Par exemple, le code ci-dessous crée des polygones de 200 mètres autour et à l'intérieur du parc du Mont-Bellevue de la ville de Sherbrooke (@fig-ZoneTampon2).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Importation de la couche des aires aménagées de la ville de Sherbrooke
+AiresAmenag <- st_read(dsn = "data/chap01/geodatabase/Sherbrooke.gdb",
+                       layer = "AiresAmenagees", quiet = TRUE)
+## Sélection du parc du Mont-Bellevue
+MontBellevue <- subset(AiresAmenag, NOM == "Parc du Mont-Bellevue")
+## Création d'une zone tampon autour du parc
+MontBellevue.ZTA500 <- st_buffer(MontBellevue, dist = 200)
+## Création d'une zone tampon à l'intérieur du parc
+MontBellevue.ZTI500 <- st_buffer(MontBellevue, dist = -200)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-ZoneTampon2
+#| fig-cap: "Zone tampon intérieure et zone tampon extérieure"
+#| fig-align: center
+#| out-width: 65%
+
+## Visualisation avec tmap
+tmap_mode("plot")
+tm_shape(MontBellevue.ZTA500) +tm_borders(col = "red", lwd=1)+
+tm_shape(MontBellevue) + tm_borders(col = "black", lwd=1) + tm_fill(col="azure2")+
+tm_shape(MontBellevue.ZTI500) +tm_borders(col = "blue", lwd=1)+
+tm_layout(frame = FALSE)
+```
+
+#### Simplification de géométries {#sec-01225}
+
+La simplification ou généralisation d'une couche de lignes ou de polygones permet de supprimer des sommets tout en gardant le même nombre de géométries dans la couche résultante. Cette opération peut être réalisée dans QGIS avec l'outil `simplifier` et dans ArcGIS Pro avec l'outil `Generalize`. Deux raisons principales peuvent motiver le recours à cette opération :
+
+-   La réduction de la taille du fichier, surtout si la couche est utilisée pour de la cartographie interactive sur Internet avec des formats vectoriels comme le SVG (*Scalable Vector Graphics*), le KML ou le GeoJSON.
+
+-   L'utilisation de la couche à une plus petite échelle cartographique nécessitant la suppression de détails.
+
+Le code suivant permet de simplifier les contours des arrondissements de la ville de Sherbrooke avec des tolérances de 250, 500, 1000 et 2000 mètres. Plus la valeur de la tolérance est élevée, plus les contours sont simplifiés (@fig-Simplification). Notez que l'algorithme de Douglas-Peucker [@douglas1973algorithms] a été implémenté dans la fonction `st_simplify`. Bien qu'intéressant, cet algorithme ne conserve pas les frontières entre les polygones.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Simplification des contours avec différentes distances de tolérance
+Arrond.simplify250m <- st_simplify(Arrondissements, 
+                                   preserveTopology = TRUE, 
+                                   dTolerance = 250)
+Arrond.simplify500m <- st_simplify(Arrondissements, 
+                                   preserveTopology = TRUE, 
+                                   dTolerance = 500)
+Arrond.simplify1000m <- st_simplify(Arrondissements, 
+                                    preserveTopology = TRUE, 
+                                    dTolerance = 1000)
+Arrond.simplify2000m <- st_simplify(Arrondissements, 
+                                    preserveTopology = TRUE, 
+                                    dTolerance = 2000)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-Simplification
+#| fig-cap: "Simplification des contours de géométries"
+#| fig-align: center
+#| out-width: 65%
+
+tmap_mode("plot")
+M1 <- tm_shape(Arrond.simplify250m)+tm_borders(col = "blue", lwd=2)+tm_layout(frame = FALSE)
+M2 <- tm_shape(Arrond.simplify500m)+tm_borders(col = "red",  lwd=2)+tm_layout(frame = FALSE)
+M3 <- tm_shape(Arrond.simplify1000m)+tm_borders(col = "green", lwd=2)+tm_layout(frame = FALSE)
+M4 <- tm_shape(Arrond.simplify2000m)+tm_borders(col = "purple1",  lwd=2)+tm_layout(frame = FALSE)
+tmap_arrange(M1, M2, M3, M4, ncol = 2, nrow =2)
+```
+
+Pour remédier au problème des frontières non conservées, utilisez l'algorithme de Visvalingam et Whyatt [-@visvalingam1993line] avec la fonction `ms_simplify` du *package* `rmapshaper` (@fig-SimplificationVisvalingam), tel qu'illustré dans le code ci-dessous. À titre de rappel, pour l'installer et le charger sur votre ordinateur, tapez dans la console : `install.packages("rmapshaper")` et `library("rmapshaper")`. Le paramètre `keep` permet de définir la proportion de points à retenir : plus sa valeur est faible, plus la simplification est importante.
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-SimplificationVisvalingam
+#| fig-cap: "Simplification des contours avec l'algorithme de Visvalingam–Whyatt"
+#| fig-align: center
+#| out-width: 65%
+
+## Algorithme de Visvalingam–Whyatt
+Arrond.simplifyV.005 <- rmapshaper::ms_simplify(Arrondissements,
+                          keep = .005, # proportion des points à retenir (entre 0 et 1)
+                          method = "vis",  # Algorithme Visvalingam 
+                          keep_shapes = TRUE)
+tm_shape(Arrond.simplifyV.005)+tm_borders(col="red")+
+  tm_layout(frame = FALSE)
+```
+
+#### Enveloppe convexe (*convex hull*) {#sec-01226}
+
+Le code ci-dessous permet de créer l'enveloppe convexe pour des points (@fig-ConvexHull). Notez que cette fonction peut également s'appliquer à des lignes et à des polygones. Elle correspond aux outils `Enveloppe convexe` de QGIS et `Feature to Point (avec l'option Convex hull)` d'ArcGIS Pro.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Enveloppe convexe autour des points GPS
+PointsGPS.Convexhull <- st_convex_hull(st_union(PointsGPS))
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-ConvexHull
+#| fig-cap: "Enveloppe convexe autour de points"
+#| fig-align: center
+#| out-width: 65%
+ggplot()+geom_sf(data = PointsGPS.Convexhull)+geom_sf(data = PointsGPS)
+```
+
+#### Enveloppe concave (*concave hull*) {#sec-01227}
+
+Une extension possible du polygone convexe est le polygone concave qui a une superficie plus réduite. Il n'existe pas de fonction dans `sf` qui l'implémente. Il faut donc installer un *package* supplémentaire, soit `concaveman`.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+library(concaveman)
+## Convex hull autour des points GPS
+PointsGPS.Concavhull <- concaveman(PointsGPS)
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| label: fig-ConcaveHull
+#| fig-cap: "Enveloppe concave autour de points"
+#| fig-align: center
+#| out-width: 65%
+ggplot()+geom_sf(data = PointsGPS.Concavhull)+geom_sf(data = PointsGPS)
+```
+
+Notez que comparativement au polygone convexe (@fig-ConcaveHull), le polygone concave peut auvoir plus d'une solution possible ([lire l'article suivant](https://portailsig.org/content/sur-la-creation-des-enveloppes-concaves-concave-hull-et-les-divers-moyens-d-y-parvenir-forme.html)). Plus spécifiquement, il faut choisir son degré de concavité. Dans la fonction `concaveman::concaveman`, le paramètre `concavity` prend une valeur numérique, qui, si elle tend vers l'infini, produit un polygone convexe (@fig-ConcaveHull2).
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+#| label: fig-ConcaveHull2
+#| fig-cap: "Enveloppe concave autour de points"
+#| fig-align: center
+#| out-width: 80%
+
+library(ggpubr)
+# test avec plusieurs valeur de concavité
+concav_values <- c(1,1.5,3,8)
+plots <- lapply(concav_values, function(i){
+  Concavhull <- concaveman(PointsGPS, concavity = i)
+  this_plot <- ggplot()+
+    geom_sf(data = Concavhull)+
+    geom_sf(data = PointsGPS)+
+    labs(subtitle = paste0("Concavité : ",i))+
+      theme(axis.text.x = element_blank(),
+            axis.text.y = element_blank(),
+            axis.ticks = element_blank())
+  return(this_plot)
+})
+ggarrange(plotlist = plots)
+```
+
+Dans QGIS, il existe plusieurs *plugins* permettant de générer des enveloppes concaves, ainsi qu'une fonction installée de base avec GRASS (`v.concave.hull`).
+
+### Fonctions d'opérations géométriques entre deux couches {#sec-01213}
+
+Les opérations entre deux couches sont bien connues et largement utilisées dans les SIG. Bien entendu, plusieurs fonctions de ce type sont disponibles dans `sf` et renvoient une nouvelle couche géographique `sf` :
+
+-   `st_intersection(x, y)` génère l'intersection entre les géométries de deux couches. À ne pas confondre avec la fonction `st_intersects(x, y)` qui permet de construire une requête spatiale.
+
+-   `st_union(x, y)` génère l'union entre les géométries de deux couches.
+
+-   `st_difference(x, y)` crée une géométrie à partir de `x` qui n'est pas en intersection avec `y.`
+
+-   `st_sym_difference(x, y)` crée une géométrie représentant les portions des géométries `x` et `y` qui ne s'intersectent pas.
+
+-   `st_crop(x, y, xmin, ymin, xmax, ymax)` extrait les géométries de `x` comprises dans un rectangle.
+
+En guise de comparaison, toutes ces fonctions sont disponibles dans la boîte à outils de traitement de QGIS (dans le groupe `recouvrement de vecteur`) et les outils de la catégorie `Overlay du Geoprocessing` d'ArcGIS Pro. Le code ci-dessous illustre comment réaliser des intersections et des unions entre deux couches polygonales.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Importation des deux couches
+polysX <- st_read("data/chap01/shp/PolyX.shp", quiet = TRUE)
+polysY <- st_read("data/chap01/shp/PolyY.shp", quiet = TRUE)
+## Intersection des deux couches
+## Les géométries récupèrent les attributs des deux couches
+Inter.XY <- st_intersection(polysX, polysY)
+head(Inter.XY)
+## Intersection entre deux couches préalablement fusionnées : 
+## Le résutat est une seule géométrie
+Inter.XYUnion <- st_intersection(st_union(polysX), st_union(polysY))
+## Union des deux couches
+Union.XY <- st_union(st_union(polysX), st_union(polysY))
+```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| eval: true
+Zone <- st_buffer(st_union(st_union(polysX), st_union(polysY)), 20)
+tmap_mode("plot")
+MapZone <- tm_shape(Zone)+tm_fill(col = NA, alpha = 0, border.col = NA, lwd = 0)+
+tm_shape(polysX)+tm_polygons(col = "red", alpha = .5, 
+                            border.col ="black", lwd = 1)+
+                tm_text(text = "X_id", size = 1)+
+tm_shape(polysY)+tm_polygons(col = "yellow", alpha = .5, 
+                            border.col ="black", lwd = 1)+
+                  tm_text(text = "Y_id", size = .8, col="black")+
+tm_layout(main.title = "Polygones X (rouge) et Y (jaune)", main.title.size = .8)
+
+Inter.XY$id <- 1:nrow(Inter.XY)     
+MapInter <- tm_shape(Zone)+tm_fill(col = NA, alpha = 0, border.col = NA, lwd = 0)+
+tm_shape(Inter.XY)+tm_polygons(col = "tomato3", alpha = .5, 
+                            border.col ="black", lwd = 1)+
+                           tm_text(text = "id", size = .8)+
+  tm_layout(main.title = "st_intersection(polysX, polysY)",
+            main.title.size = .8)
+Inter.XY$id <- NULL
+
+MapInterU <- tm_shape(Zone)+tm_fill(col = NA, alpha = 0, border.col = NA, lwd = 0)+
+tm_shape(Inter.XYUnion)+tm_polygons(col = "tomato4", alpha = .5, 
+                            border.col ="black", lwd = 1)+
+  tm_layout(main.title = "st_intersection(st_union(polysX), st_union(polysY))",
+            main.title.size = .8)
+
+MapUnion <- tm_shape(Zone)+tm_fill(col = NA, alpha = 0, border.col = NA, lwd = 0)+
+tm_shape(Union.XY)+tm_polygons(col = "tomato4", alpha = .5, 
+                            border.col ="black", lwd = 1)+
+  tm_layout(main.title = "st_union(st_union(polysX), st_union(polysY))",
+            main.title.size = .8)
+
+tmap_arrange(MapZone, MapInter, MapInterU, MapUnion, ncol=2, nrow=2)
+```
+
+La fonction `st_intersection` peut aussi être utilisée comme la méthode `clip` dans un SIG (ArcGIS Pro ou QGIS). En guise d'exemple, dans le code ci-dessous, nous extrayons les points GPS localisés sur le territoire de la ville de Sherbrooke (@fig-Clip).
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+#| label: fig-Clip
+#| fig-cap: "Fonction `st_intersection()` équivalente à la méthode clip dans un SIG"
+#| fig-align: center
+#| out-width: 85%
+
+# Nous nous assurons que les deux couches ont la même projection
+PointsGPS <- st_transform(PointsGPS, st_crs(Arrond.Union))
+# Extraction des points
+PointsGPS.Sherb <- st_intersection(PointsGPS, Arrond.Union)
+# Visualisation avant et après
+Carte1 <- ggplot()+geom_sf(data = Arrond.Union)+geom_sf(data = PointsGPS)+
+          labs(subtitle = "Avant l'intersection")+
+          theme(axis.text.x = element_blank(),
+                axis.text.y = element_blank(),
+                axis.ticks = element_blank())
+Carte2 <- ggplot()+geom_sf(data = Arrond.Union)+geom_sf(data = PointsGPS.Sherb)+
+          labs(subtitle = "Après l'intersection")+
+          theme(axis.text.x = element_blank(),
+                axis.text.y = element_blank(),
+                axis.ticks = element_blank())
+ggarrange(Carte1, Carte2, ncol = 2, nrow = 1)
+```
+
+Quelques lignes de code suffisent pour générer les différences de superposition entre les géométries de couches géographiques (@fig-Clip2).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Différences entre deux couches
+Diff.XY <- st_difference(st_union(polysX), st_union(polysY))
+Diff.YX <- st_difference(st_union(polysY), st_union(polysX))
+Diff.symXY <- st_sym_difference(st_union(polysY), st_union(polysX))
+```
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+#| label: fig-Clip2
+#| fig-cap: "Différences de superposition entre des géométries de différentes couches"
+#| fig-align: center
+#| out-width: 75%
+
+tmap_mode("plot")
+MapInterU <- tm_shape(Zone)+tm_fill(col = NA, alpha = 0, border.col = NA, lwd = 0)+
+tm_shape(Inter.XYUnion)+tm_polygons(col = "tomato4", alpha = .5, 
+                            border.col ="black", lwd = 1)
+
+MapDiffXY <- tm_shape(Zone)+tm_fill(col = NA, alpha = 0, border.col = NA, lwd = 0)+
+             tm_shape(Diff.XY)+
+             tm_polygons(col = "red", alpha = .5,border.col ="black", lwd = 1)+
+             tm_layout(main.title = "st_difference(st_union(polysX), st_union(polysY))", 
+                       main.title.size = .8)
+
+MapDiffYX <- tm_shape(Zone)+tm_fill(col = NA, alpha = 0, border.col = NA, lwd = 0)+
+             tm_shape(Diff.YX)+
+             tm_polygons(col = "yellow", alpha = .5,border.col ="black", lwd = 1)+
+             tm_layout(main.title = "st_difference(st_union(polysY), st_union(polysX))", 
+                       main.title.size = .8)
+
+MapSymDiffYX <- tm_shape(Zone)+tm_fill(col = NA, alpha = 0, border.col = NA, lwd = 0)+
+             tm_shape(Diff.symXY)+
+             tm_polygons(col = "green", alpha = .5,border.col ="black", lwd = 1)+
+             tm_layout(main.title = "st_sym_difference(st_union(polysY), st_union(polysX))",
+                       main.title.size = .8)
+
+tmap_arrange(MapZone, MapDiffXY, MapDiffYX, MapSymDiffYX, ncol=2, nrow=2)
+```
+
+### Fonctions de mesures géométriques et de récupération des coordonnées géographiques {#sec-0124}
+
+Les principales fonctions de mesures géométriques et de coordonnées géographiques sont :
+
+-   `st_area(x)` calcule la superficie des polygones ou des multipolygones d'une couche `sf` .
+
+-   `st_length(x)` calcule la longueur des lignes ou des polylignes d'une couche `sf` .
+
+-   `st_distance(x, y)` calcule la distance 2D entre deux objets `sf`, exprimée dans le système de coordonnées de référence.
+
+-   `st_coordinates(x)` renvoie les coordonnées géographiques de géométries.
+
+Ci-dessous, nous affichons les superficies des quatre arrondissements, puis nous enregistrons les superficies en m^2^ et en km^2^ dans deux nouveaux champs dénommés `SupM2` et `SupKm2.`
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Superficie des polygones des arrondissements
+st_area(Arrondissements)
+## Ajout de champs de superficie dans la table attributaire
+Arrondissements$SupM2 <- as.numeric(st_area(st_transform(Arrondissements, crs = 2949)))
+Arrondissements$SupKm2 <- as.numeric(st_area(st_transform(Arrondissements, crs = 2949)))/1000000
+head(Arrondissements, n=2)
+```
+
+De manière très semblable, calculons la longueur de géométries étant des lignes ou des multilignes.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Longueurs en mètres
+PistesCyclables$longMetre <- as.numeric(st_length(st_transform(PistesCyclables, crs = 2949)))
+PistesCyclables$longKm <- as.numeric(st_length(st_transform(PistesCyclables, crs = 2949)))/10000
+head(PistesCyclables, n=2)
+```
+
+Pour calculer la longueur d'un périmètre, il faut préalablement récupérer son contour avec la méthode `st_boundary`, puis calculer la longueur avec `st_length`.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Conversion des polygones en lignes
+Arrond.Contour <- st_boundary(Arrondissements)
+## Calcul de la longueur et enregistrement dans deux nouveaux champs
+Arrondissements$PerimetreMetre <- as.numeric(st_length(Arrond.Contour))
+Arrondissements$PerimetreKm <- as.numeric(st_length(Arrond.Contour)) / 1000
+head(Arrondissements)
+```
+
+Calculons désormais la distance 2D (euclidienne) entre les centres des arrondissements. Nous utilisons donc la fonction `st_distance(x)`, puisque nous avons une seule couche (`x = Arrond.pointpoly`).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Longueurs en mètres
+st_distance(Arrond.pointpoly)
+```
+
+Admettons que nous souhaitons calculer la distance entre les centres des quatre arrondissements et l'hôtel de ville de Sherbrooke dont les coordonnées en degrés (WGS84, EPSG : 4326) sont les suivantes : -71.89306, 45.40417. Nous utilisons alors la fonction `st_distance(x, y)` dans laquelle les paramètres `x` et `y` sont les arrondissements et l'hôtel de ville. Quelques lignes de code suffisent à créer une couche pour l'hôtel de ville, à calculer les distances et à les stocker dans un nouveau champ attributaire de la couche arrondissement.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Création d'un objet sf pour l'hôtel de ville
+HotelVille <- data.frame(ID = 1,
+                         Nom = "Hôtel de ville",
+                         lon = -71.89306,
+                         lat = 45.40417)
+HotelVille <- st_as_sf(HotelVille, coords = c("lon","lat"), crs = 4326)
+head(HotelVille)
+## Nous nous assurons que les deux couches ont la même projection
+HotelVille <- st_transform(HotelVille, st_crs(Arrond.pointpoly))
+## Calcul des distances
+Arrondissements$DistHVMetre <- as.numeric(st_distance(Arrond.pointpoly,HotelVille))
+Arrondissements$DistHVKm <- as.numeric(st_distance(Arrond.pointpoly,
+                                                   HotelVille)) / 1000
+head(Arrondissements)
+```
+
+Il est fréquent de vouloir enregistrer les coordonnées géographiques dans des champs attributaires. Dans le code ci-dessous, nous créons deux champs (`x` et `y`) dans lesquels nous enregistrons les coordonnées géographiques des points au centre de la surface de chaque arrondissement. Pour ce faire, nous utilisons la méthode `st_coordinates` .
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Coordonnées des centres de la surface des polygones
+xy <- st_coordinates(st_point_on_surface(Arrondissements))
+head(xy)
+## Enregistrement dans la couche Arrondissements. Notez que :
+## xy[,1] signale de récupérer toutes les valeurs de la première colonne, soit X
+## xy[,2] signale de récupérer toutes les valeurs de la deuxième colonne, soit Y
+Arrondissements$X <- xy[,1] 
+Arrondissements$Y <- xy[,2]
+```
+
+### Jointures spatiales {#sec-0125}
+
+En géomatique, il est fréquent de réaliser des jointures spatiales, soit une opération qui consiste à joindre les attributs d'une couche géographique à une autre à partir d'une relation spatiale. Prenons deux exemples construits avec les installations sportives et récréatives (couche `InstallationSport`) et les arrondissements de la ville de Sherbrooke (`Arrondissements`).
+
+Premièrement, pour les installations sportives et récréatives (couche `InstallationSport`), nous souhaitons ajouter dans la table attributaire les champs `NUMERO` et `NOM` issus de la couche des arrondissements de la ville de Sherbrooke (`Arrondissements`). Grâce à ces deux champs, nous pouvons connaître dans quel arrondissement chaque installation sportive est située.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Jointure spatiale avec le paramètre st_intersects
+InstallS.join <- st_join(InstallationSport, Arrondissements, join = st_intersects)
+## Visualisation des deux premiers enregistrements
+head(InstallS.join, n=2)
+## Suppression des champs utiles
+InstallS.join[c("SupM2", "SupKm2", "PerimetreMetre", 
+                       "PerimetreKm", "DistHVMetre",  "DistHVKm")] <- list(NULL)
+## Modification des noms de champs : NOM.x et NOM.y
+names(InstallS.join)[names(InstallS.join) == "NOM.x"] <- "NomInstallation"
+names(InstallS.join)[names(InstallS.join) == "NOM.y"] <- "NomArrondissement"
+head(InstallS.join, n=2)
+```
+
+Deuxièmement, une autre jointure classique consiste à dénombrer les points compris dans des polygones, soit une opération SIG communément appelée *POINT-IN-POLYGON*.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Sélection des points dans les polygones des arrondissements
+## Notez que la relation spatiale pour la jointure est st_contains
+## Nous aurions pu aussi utiliser st_intersects
+Arrondissements$NbInstall = lengths(st_contains(Arrondissements, InstallationSport))
+head(Arrondissements$NbInstall)
+```
+
+::: bloc_aller_loin
+::: bloc_aller_loin-header
+::: bloc_aller_loin-icon
+:::
+
+**Autres relations spatiales à appliquer lors de la jointure spatiale**
+:::
+
+::: bloc_aller_loin-body
+Avec le paramètre `join` de la méthode `st_join`, il est possible de spécifier la jointure spatiale avec différentes méthodes : `st_contains_properly`, `st_contains`, `st_covered_by`, `st_covers`, `st_crosses`, `st_disjoint`, `st_equals_exact`, `st_equals`, `st_is_within_distance`, `st_nearest_feature`,`st_overlaps`, `st_touches` et `st_within`.
+
+N'hésitez pas à consulter la documentation de la fonction en tapant`?st_join` dans la console R.
+:::
+:::
+
+### Requêtes spatiales {#sec-0126}
+
+Dans un logiciel SIG, la sélection d'entités spatiales par localisation est une opération courante, équivalente à *Select By Location* dans ArcGis Pro ou *Sélection par localisation* dans QGIS.
+
+Le *package* `sf` permet de réaliser des requêtes spatiales avec notamment les méthodes suivantes :
+
+-   `st_contains(x, y)` renvoie les géométries de `x` qui contiennent celles de `y`. Cette fonction est donc l'inverse de `st_within`.
+
+-   `st_disjoint(x, y)` renvoie les géométries de `x` qui ne partagent aucune portion de celles de `y`. Cette fonction est donc l'inverse de `st_intersects(x, y)`.
+
+-   `st_equals(x, y)` renvoie les géométries de `x` qui sont identiques à celles de `y`.
+
+-   `st_intersects(x, y)` renvoie les géométries de `x` qui partagent au moins une partie de celles de `y`. Elle est donc l'inverse de `st_disjoints(x, y)`.
+
+-   `st_nearest_feature(x, y)` renvoie, pour chaque géométrie `x`, la géométrie de `y` qui est la plus proche.
+
+-   `st_overlaps(x, y)` cette fonction est très semblable à `st_intersects(x, y)`. Toutefois, les types de géométries de `x` et de `y` doivent être identiques, c'est-à-dire deux couches de lignes ou de couches de polygones. Aussi, une géométrie ne peut pas contenir complètement l'autre comme avec `st_within(x, y)` et `st_contains(x, y)`.
+
+-   `st_touches(x, y)` renvoie les géométries de `x` qui sont tangentes à celles de `x` sans qu'elles se chevauchent. Par exemple, deux arrondissements peuvent se toucher, c'est-à-dire qu'ils partagent une frontière commune sans que l'un chevauche l'autre.
+
+-   `st_within(x, y)` renvoie les géométries de `x` qui sont comprises intégralement dans celles de `y`. Cette fonction est donc l'inverse de `st_contains(x, y)`.
+
+-   `st_within_distance(x, y, dist =)` renvoie les géométries de `x` qui sont situées à une certaine distance euclidienne de celles de `y`.
+
+::: bloc_astuce
+::: bloc_astuce-header
+::: bloc_astuce-icon
+:::
+
+**Modification de l'affichage du résultat de la requête spatiale : le paramètre** `sparse`
+:::
+
+::: bloc_astuce-body
+Par défaut, le résultat d'une requête spatiale renvoie une liste d'indices pour les géométries `x` et `y`. Il est aussi possible de renvoyer la matrice complète entre `x` et `y`, avec les valeurs `TRUE` quand la relation spatiale est vérifiée et `FALSE` pour une situation inverse.
+
+Prenons deux exemples pour illustrer le tout.
+
+La figure ci-dessous représente les quatre arrondissements de la ville de Sherbrooke. Notez que les numéros correspondent aux indices des géométries.
+
+```{r}
+#| echo: false 
+#| message: false 
+#| warning: false
+#| out-width: 50%
+head(st_drop_geometry(Arrondissements[c("NUMERO","NOM")]))
+tmap_mode("plot")
+tm_shape(Arrondissements) + tm_borders(col = "black", lwd=1) + tm_fill(col="lightgreen")+
+                    tm_text(text = "NUMERO", size = 1.5, col="black")
+```
+
+Appliquons une requête spatiale entre les arrondissements avec `st_intersects` et `sparse = TRUE`. Pour chaque arrondissement, nous obtenons une liste des arrondissements qui l'intersectent.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+st_intersects(Arrondissements, Arrondissements, sparse = TRUE)
+```
+
+Avec `sparse = FALSE`, nous obtenons une matrice complète de dimension 4 X 4 arrondissements. Nous constatons que l'arrondissement `1` intersecte lui-même (évidemment!) et les arrondissements `2` et `4`, mais il n'intersecte pas le `3`.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+st_intersects(Arrondissements, Arrondissements, sparse = FALSE)
+```
+:::
+:::
+
+Construisons des requêtes plus complexes comprenant deux couches.
+
+Premièrement, écrivons une requête spatiale pour sélectionner les segments des pistes cyclables qui intersectent le parc du Mont-Bellevue. Pour ce faire, nous utilisons la fonction `st_intersects` avec l'argument `sparse = FALSE` et enregistrons le résultat dans un nouveau champ dénommé `ParcMB.intersect` qui prendra les valeurs `TRUE` ou `FALSE`.
+
+```{r}
+#| echo: false 
+#| message: false 
+#| warning: false
+#| out-width: 75%
+tmap_mode("plot")
+tm_shape(MontBellevue) + tm_fill(col="lightgreen")+ tm_borders(col = "black", lwd=2)+
+  tm_text(text = "NOM", size = 1, col="black")+
+tm_shape(PistesCyclables)+tm_lines(col="red", lwd=1)
+```
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Intersection
+RequeteSpatiale <- st_intersects(PistesCyclables, MontBellevue, sparse = FALSE)
+head(RequeteSpatiale)
+## Création d'un nouveau champ
+PistesCyclables$ParcMB.intersect <- RequeteSpatiale[, 1]
+head(PistesCyclables)
+## Nous constatons qu'un seul segment intersecte le parc
+table(PistesCyclables$ParcMB.intersect)
+## Création d'une nouvelle couche pour la sélection
+PistesCyclables.Selection <- PistesCyclables[PistesCyclables$ParcMB.intersect== TRUE, ]
+## Visualisation
+tmap_mode("view")
+tm_shape(MontBellevue) + tm_fill(col="lightgreen")+ tm_borders(col = "black", lwd=2)+
+tm_shape(PistesCyclables.Selection)+tm_lines(col="red", lwd=1)
+```
+
+Créons une deuxième requête spatiale pour sélectionner les points GPS situés à moins de cinq kilomètres de l'hôtel de ville de Sherbrooke avec la méthode `st_is_within_distance`.
+
+```{r}
+#| echo: false 
+#| message: false 
+#| warning: false
+tmap_mode("view")
+tm_shape(PointsGPS) + tm_dots(col="green", size = .05)+
+tm_shape(HotelVille)+tm_dots(col="black", size = .25)
+```
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Requête spatiale
+RequeteSpatiale <- st_is_within_distance(PointsGPS, HotelVille, 
+                                         5000, sparse = FALSE)
+## Ajout d'un champ pour la requête
+PointsGPS$HotelVille2km <- RequeteSpatiale[, 1]
+## Nous constatons que 17 points GPS sont à moins de 5 km
+table(PointsGPS$HotelVille2km)
+## Création d'une nouvelle couche pour la sélection
+PointsGPS.selection <- PointsGPS[PointsGPS$HotelVille2km== TRUE, ]
+## Visualisation
+tm_shape(PointsGPS.selection) + tm_dots(col="red", size = .05)+
+tm_shape(HotelVille)+tm_dots(col="black", size = .25)
+```
+
+Finalement, avec la méthode `st_within`, nous constatons que seuls deux points GPS sont situés dans le parc du Mont-Bellevue.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Requête spatiale
+RequeteSpatiale <- st_within(st_transform(PointsGPS, st_crs(MontBellevue)),
+                             MontBellevue, sparse = FALSE)
+table(RequeteSpatiale[,1])
+```
+
+### Manipulation des données attributaires {#sec-0127}
+
+Dans cette section, nous verrons comment importer une table attributaire, puis la joindre à une couche géographique, ajouter et calculer de nouveaux champs et réaliser des requêtes attributaires.
+
+#### Importation d'une table attributaire {#sec-01271}
+
+::: bloc_objectif
+::: bloc_objectif-header
+::: bloc_objectif-icon
+:::
+
+**Joindre les attributs d'une table externe à une couche vectorielle `sf`**
+:::
+
+::: bloc_objectif-body
+Dans un SIG, joindre une table à une couche géographique vectorielle est une opération courante. Par exemple, il est fréquent de joindre des données socioéconomiques issues d'un recensement à une couche géographique (divisions de recensement, subdivisions de recensement, secteurs de recensement, aires de diffusion, etc.).
+
+Pour ce faire, vous devez importer les données dans un *DataFrame* de R. Ces données peuvent être stockées dans différents formats de fichiers (texte délimité par des virgules (extension *csv*), *dBase* (*dbf*), Excel (*xlsx*)) ou dans des fichiers provenant de logiciels statistiques commerciaux comme Stata, SAS et SPSS (*dta*, *sas7bdat*, *sav*).
+
+Dans cette section, nous voyons seulement l'importation de fichiers texte délimités par des virgules, de fichiers Excel et *dBase*. Concernant ce dernier type de fichier, notez que la table attributaire d'une couche Esri Shapefile est stockée dans un fichier *dBase*! Il peut être intéressant d'importer la table sans les géométries.
+
+Pour une description détaillée de l'importation d'autres fichiers (entre autres Stata, SAS et SPSS), consultez la section intitulée [*Manipulation d'un DataFrame*](https://laeq.github.io/LivreMethoQuantBolR/sect014.html#0141) [@RBoldAir].
+:::
+:::
+
+Dans le code ci-dessous, nous voyons comment importer trois types de fichiers :
+
+-   `read.csv(file)` pour importer un fichier délimité par des virgules. Cette fonction est de base avec R, ce qui signifie qu'elle ne nécessite pas l'installation d'un *package*.
+
+-   `read.dbf(file)` pour importer un fichier *dBase*. Cette fonction est rattachée au *package* `foreign` que vous devez installer si ce n'est pas déjà fait (commande `install.packages("foreign")`) et le charger (commande `library("foreign")`).
+
+-   `read.xlsx(file)` pour importer un fichier Excel. Cette fonction est rattachée au *package* `xlsx` que vous devez installer si ce n'est pas déjà fait (commande `install.packages("xlsx")`) et le charger (commande `library("xlsx")`).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+library("xlsx")      # package pour importer des fichiers Excel
+library("foreign")   # package pour importer des fichiers dBase
+## Importation du fichier csv
+t1 <- Sys.time()
+dfCSV <- read.csv(file = "data/chap01/tables/SRQC2021.csv",
+                    header = TRUE,
+                    dec = ".",    # séparateur de décimales qui peut être remplacé par ,
+                    sep = ","     # séparateur des champs qui peut être remplacé par ;
+                    )
+t2 <- Sys.time()
+cat("temps de traitement (CSV) : ", 
+    as.numeric(difftime(t2,t1,units="secs")),
+    " secondes")
+
+## Importation d'un fichier Excel avec le nom de fichier et de la feuille Excel
+## sheetIndex = 1 signale l'importation de la première feuille Excel
+t1 <- Sys.time()
+dfExcel <- read.xlsx(file = "data/chap01/tables/ADSRQC2021.xlsx",
+                      sheetIndex = 2)
+t2 <- Sys.time()
+cat("temps de traitement (Excel) : ", 
+    as.numeric(difftime(t2,t1,units="secs")),
+    " secondes")
+
+## Importation du fichier dBase
+t1 <- Sys.time()
+dfDbf <- read.dbf(file = "data/chap01/tables/ADQC2021.dbf")
+t2 <- Sys.time()
+cat("temps de traitement (dBase) : ", 
+    as.numeric(difftime(t2,t1,units="secs")),
+    " secondes")
+```
+
+::: bloc_astuce
+::: bloc_astuce-header
+::: bloc_astuce-icon
+:::
+
+**Exportation du fichier Excel dans un fichier texte**
+:::
+
+::: bloc_astuce-body
+Le temps nécessaire pour importer un fichier Excel est bien plus long que pour des fichiers texte et *dBase*! Par conséquent, si vous travaillez avec Excel, il est vivement conseillé de l'exporter vers un fichier texte (dans Excel, `Fichier/Enregistrer sous/type de fichier CSV`).
+:::
+:::
+
+Quelques lignes suffisent pour explorer la structure des données importées avec les fonctions `nrow`, `ncol`, `colnames` (respectivement le nombre de lignes, le nombre de colonnes et les noms des colonnes du `dataframe`).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Nombre de lignes et de colonnes
+nrow(dfCSV)
+ncol(dfCSV)
+cat("le DataFrame dfCSV a", nrow(dfCSV), "lignes (observations)",
+    'et', ncol(dfCSV), "colonnes\n")
+## Noms des champs
+colnames(dfCSV)
+## Affichage des deux premières observations
+head(dfCSV, n=2)
+```
+
+#### Jointure attributaire avec la couche géographique `sf` {#sec-01272}
+
+Les données importées dans la table attributive proviennent du recensement de Statistique Canada de 2021 et sont ancrées au niveau des secteurs de recensement (SR) des régions métropolitaines de recensement (RMR) et des agglomérations de recensement (AR) du Québec. Pour les SR de la RMR de Sherbrooke, les données de la couche géométrique sont importées à partir d'un fichier shapefile. Aussi, nous constatons que les deux sources de données ont un champ commun `SRIDU`, soit l'identifiant unique des SR, mais que l'information y est présentée différemment :
+
+-   Dans la couche géographique `SR.RMRSherb` (objet *sf*), nous avons une observation avec la valeur `4470001.01`, soit un champ avec dix caractères.
+
+-   Dans la table attributaire `dfCSV` (*DataFrame*), nous avons une observation avec la valeur `4470001.01 (SR), Drummondville (RMR) (4470001.01) (00000)`.
+
+Par conséquent, avant d'appliquer une jointure, nous modifions le champ `SRIDU` de ce *DataFrame* afin qu'il ait aussi dix caractères avec la ligne de code suivante : `dfCSV$SRIDU <- substr(dfCSV$SRIDU, 1, 10)`. De la sorte, nous récupérons uniquement les dix premiers caractères.
+
+Finalement, la jointure est réalisée avec la fonction `merge` avec laquelle nous spécifions le résultat de la jointure (`SR.RMRSherbDonnees`), la couche géographique (`SR.RMRSherb`), la table attributaire (`dfCSV`) et le champ commun aux deux avec l'option (`by ="SRIDU"`) :
+
+`SR.RMRSherbDonnees <- merge(SR.RMRSherb, dfCSV, by = "SRIDU").`
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Importation des SR de la RMR de Sherbrooke
+SR.RMRSherb <- st_read(dsn = "data/chap01/gpkg/Recen2021Sherbrooke.gpkg", 
+                       layer = "SherbSR", quiet=TRUE)
+## Visualisation des premiers enregistrements
+head(as.data.frame(SR.RMRSherb), n=2)
+head(dfCSV, n=2)
+## Modification du champ SRIDU du DataFrame dfCSV
+dfCSV$SRIDU <- substr(dfCSV$SRIDU, 1, 10)
+## Jointure attributaire avec la fonction merge
+SR.RMRSherbDonnees <- merge(SR.RMRSherb, 
+                           dfCSV, 
+                           by = "SRIDU")
+```
+
+::: bloc_astuce
+::: bloc_astuce-header
+::: bloc_astuce-icon
+:::
+
+**Jointure avec deux champs ayant des noms différents**
+:::
+
+::: bloc_astuce-body
+En résumé, une jointure attributaire s'écrit :
+
+`NouvelObjetSf <- merge(X, Y, by = "Nom du champ commun pour la jointure")`
+
+avec `X` et `Y` étant respectivement l'objet `sf` (couche géographique) et la table attributaire à joindre. Si les champs pour la jointure ont des noms différents, il est possible d'écrire :
+
+`NouvelObjetSf <- merge(X, Y, by.x = "Champ X pour la jointure", by.y = "Champ Y pour la jointure")`
+
+Ce type de jointure conserve uniquement les observations qui sont communes à la couche géographique et à la table attributaire. Concrètement, si une couche comprend 100 entités spatiales et la table attributaire uniquement 80 observations, la couche résultante (`NouvelObjetSf`) aura uniquement 80 entités spatiales (bien entendu, quand les valeurs concordent...).
+
+Lorsque vous souhaitez quand même conserver toutes les entités spatiales de la couche géographique de départ, écrivez :
+
+`NouvelObjetSf <- merge(X, Y, by = "Nom du champ commun pour la jointure", all.x = TRUE)`
+
+Dans la nouvelle couche `Sf`, les entités spatiales de `X` qui n'ont pas été appariées avec les observations de la table attributaire `Y` auront des valeurs nulles (`NA`) pour les champs de `X` ajoutés au `NouvelObjetSf`.
+
+Pour obtenir plus d'informations sur les différentes variantes d'une jointure, tapez `?merge` dans la console.
+:::
+:::
+
+#### Ajout et calcul de champs {#sec-01273}
+
+Dans la [section @sec-0124], nous avons vu comment ajouter des champs relatifs à la géométrie (aire, longueur, distance, coordonnées de centroïdes). Dans un SIG, il est courant de calculer de nouveaux champs à partir de champs existants dans la table attributaire (par exemple, avec les outils *Calculatrice de champ* dans QGIS ou *Calculate Field* dans ArcGIS Pro).
+
+Ce type de traitement est aussi très simple à réaliser dans R. Pour ce faire, nous utilisons des [opérateurs mathématiques, relationnels et logiques](https://laeq.github.io/LivreMethoQuantBolR/sect013.html#sect0135) comme dans n'importe quel logiciel de SIG. En guise d'exemple, nous calculons ci-dessous les pourcentages d'enfants de moins de 15 ans et de locataires. Ces pourcentages sont arrondis à deux décimales avec la fonction `round`.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Création et cacul de nouveau champs
+SR.RMRSherbDonnees$PctPop0_14 <- round(SR.RMRSherbDonnees$Pop0_14 / 
+                                     SR.RMRSherbDonnees$PopTotAge * 100, 2)
+
+SR.RMRSherbDonnees$PctLocataire <- round(SR.RMRSherbDonnees$Locataire / 
+                                     SR.RMRSherbDonnees$TotalMenag2 * 100, 2)
+```
+
+#### Requêtes attributaires {#sec-01274}
+
+Dans un SIG, il est fréquent de réaliser une requête attributaire pour explorer les données (par exemple, avec les outils *Select By Attributes* dans ArcGIS Pro et *Sélection avec expression* dans QGIS) et exporter le résultat de la requête dans une nouvelle couche (*Export Features* dans ArcGIS Pro et *Sauvegarder les entités sélectionnées sous...*).
+
+Dans le code ci-dessous, vous trouverez plusieurs exemples de requêtes attributaires. Remarquez que les résultats des requêtes sont enregistrés dans de nouveaux objets `sf` (couches géographiques) dénommés `Requete1` à `Requete5`.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+
+## Sélection de l'axe cyclable de la Magog
+#############################################
+# Affichage des valeurs uniques pour le champ NOM de la couche PistesCyclables
+unique(PistesCyclables$NOM)
+## Requête attributaire et enregistrement du résultat dans un nouvel objet sf
+Requete1 <- subset(PistesCyclables, NOM == "Axe de la Magog")
+cat(nrow(Requete1), "enregistrements sélectionnés sur", nrow(PistesCyclables))
+## Si vous souhaitez connaître uniquement le nombre d'enregistrements sélectionnés
+## sans créer un nouvel objet sf, il suffit d'écrire :
+nrow(subset(PistesCyclables, NOM == "Axe de la Magog"))
+
+## Sélection des SR dont la moitié ou plus des logements sont en location
+##########################################################################
+## Sommaire statistique sur le champ pourcentage de locataires
+summary(SR.RMRSherbDonnees$PctLocataire)
+## Requête attributaire et enregistrement du résultat dans un nouvel objet sf
+Requete2 <- subset(SR.RMRSherbDonnees, PctLocataire >= 50)
+cat(nrow(Requete2), "enregistrements sélectionnés sur", nrow(SR.RMRSherbDonnees))
+
+## Sélection des installations sportives avec un éclairage dans 
+## l'arrondissement des Nations (deux critères dans la requête)
+##########################################################################
+unique(InstallS.join$NomArrondissement)
+table(InstallS.join$ECLAIRAGE)
+## Requête attributaire avec un opérateur AND (&)
+Requete3 <- subset(InstallS.join,
+                   NomArrondissement == "Arrondissement des Nations" & 
+                   ECLAIRAGE == "Oui")
+cat(nrow(Requete3), "enregistrements sélectionnés sur", nrow(InstallS.join))
+
+## Sélection des SR avec deux critères et un opérateur OR (|)
+##########################################################################
+## Sommaires statistiques sur deux champs
+summary(SR.RMRSherbDonnees$LoyerMoyen)
+summary(SR.RMRSherbDonnees$ValeurMedLog)
+
+## Requête attributaire avec un opérateur OR 
+Requete4 <- subset(SR.RMRSherbDonnees,
+                   LoyerMoyen < 700 | ValeurMedLog < 250000)
+cat(nrow(Requete4), "enregistrements sélectionnés sur", nrow(SR.RMRSherbDonnees))
+
+## Sélection de différents types d'installations sportives
+##########################################################################
+unique(InstallS.join$TYPE)
+## Requête attributaire avec un opérateur %in%
+Requete5 <- subset(InstallS.join,
+                             TYPE %in% c("Aréna", "Piscine", "Jeu d'eau"))
+cat(nrow(Requete5), "enregistrements sélectionnés sur", nrow(InstallS.join))
+```
+
+## Manipulation de données matricielles (*raster*) {#sec-013}
+
+En géomatique, les données matricielles (*raster*) sont une représentation de l'information spatiale sous forme d'une grille rectangulaire composée de cellules élémentaires de taille identique appelées pixels, soit une image. Chaque pixel a une valeur pour une caractéristique spécifique, comme l'altitude, la température, l'utilisation du sol, etc. Les données matricielles sont couramment employées dans les systèmes d'information géographique (SIG) pour la cartographie, l'analyse et la prise de décision en géomatique.
+
+Dans cette section, nous abordons uniquement des fonctions simples de manipulation de données matricielles, notamment le mosaïquage et découpage d'images, et les requêtes attributaires sur des images.
+
+### Mosaïquage et découpage d'images {#sec-0131}
+
+Une fois plusieurs images importées, il est fréquent de vouloir les fusionner. Pour ce faire, nous utilisons deux méthodes du *package* `terra` :
+
+-   `terra::merge` fusionne plusieurs images (objets de type `SpatRasters`) pour former un nouvel objet `SpatRasters` dont l'étendue est recalculée en fonction des images fusionnées. Par contre, quand les images se chevauchent, les valeurs des pixels dans les zones de chevauchement seront prises dans le même ordre que les images.
+
+-   `terra::mosaic` fusionne aussi plusieurs images. Toutefois, dans les zones de chevauchement, les moyennes des pixels sont calculées. Selon la documentation de `terra`, cette méthode serait plus rapide que la précédente. Dans le code ci-dessous, nous fusionnons les quatre feuillets de modèles numériques d'altitude (MNA) importés dans la [section @sec-0112].
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Les GeoTIFF importés avec terra sont bien des SpatRaster
+class(f21e05_101)
+## Création d'une liste pour les cinq feuillets SpatRaster
+rlist <- list(f21e05_101, f21e05_201, f31h08_102,
+              f31h08_202, f21e12_101)
+rsrc <- sprc(rlist)
+## Création de la mosaïque
+MosaicSherb <- mosaic(rsrc)
+MosaicSherb
+```
+
+Vous constatez ci-dessus que la projection des images est lon/lat NAD83 (EPSG:4269).
+
+D'autres fonctions permettent de découper une image en fonction d'une autre image (objet `SpatRaster` de `terra`)) ou d'un objet `terra` vectoriel (`SpatVector`) :
+
+-   `crop(x, y)` découpe une image `x` en prenant l'étendue de `y`.
+
+-   `mask(x, y)` découpe une image `x` en prenant la zone (pixels avec des valeurs non nulles ou objets vectoriels) de `y`. Les pixels en dehors de cette zone auront nulle comme valeur (`NA` dans R).
+
+En guise d'exemple, découpons la mosaïque avec le polygone de la ville de Sherbrooke en utilisant la méthode `mask`. Attention, les deux sources de données doivent avoir la même projection et il faut préalablement convertir l'objet `sf` en objet `terra`.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+
+## Changement de projection pour le polygone de la ville de Sherbrooke
+## Application de la même projection que celle de la mosaïque
+VilleSherb.EPSG4269 <- st_transform(Arrond.Union, crs(MosaicSherb))
+# Convertir l'objet sf en un objet SpatVector de terra
+VilleSherb.SpatVector = vect(VilleSherb.EPSG4269)
+## Découpage de la mosaïque avec le polygone de la ville de Sherbrooke
+MosaicSherbCrop <- terra::mask(MosaicSherb, VilleSherb.SpatVector)
+MosaicSherbCrop
+## Constastez ci-dessus que le nom de l'image est f21e05_101.
+## Pour le changer, utilisez la fonction names()
+names(MosaicSherbCrop) = "Elevation"
+MosaicSherbCrop
+## Visualisation du résultat
+plot(MosaicSherbCrop)
+```
+
+### Requêtes attributaires sur des images {#sec-0132}
+
+Avant d'effectuer une requête, il est judicieux d'explorer les valeurs des pixels de l'image avec un histogramme et la fonction `summary(Nom de l'image)` (valeurs minimales, maximales, quartiles, moyenne et valeurs nulles -- `NA`).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+
+## Sommaire statistique des valeurs
+summary(MosaicSherbCrop)
+## Histogramme
+hist(MosaicSherbCrop,
+     main = "Mosaïque du MNA pour la ville de Sherbrooke",
+     xlab = "Élévation (mètres)", ylab = "Fréquence",
+     col = "lightgreen")
+## Histogramme en barre de 125 à 400 avec un saut de 25 mètres 
+hist(MosaicSherbCrop,
+     main = "Mosaïque du MNA pour la ville de Sherbrooke",
+     xlab = "Élévation (mètres)", ylab = "Fréquence",
+     breaks = seq(from = 125, to = 400, by = 25),
+     col = "lightgreen")
+```
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+
+## Sélection des pixels avec une élévation d'au moins 300 mètres
+MosaicSherbCrop300 = clamp(MosaicSherbCrop, lower = 300)
+plot(MosaicSherbCrop300, 
+     main = "Pixels avec une élévation d'au moins 300 mètres")
+## Sélection des pixels avec une élévation de 200 à 300 mètres
+MosaicSherbCrop200_300 = clamp(MosaicSherbCrop, lower = 200, upper = 300)
+plot(MosaicSherbCrop200_300,
+     main = "Pixels avec une élévation de 200 à 300 mètres")
+```
+
+## Exportation de données spatiales de R vers des formats géographiques {#sec-014}
+
+### Exportation de données vectorielles `sf` {#sec-0141}
+
+::: bloc_objectif
+::: bloc_objectif-header
+::: bloc_objectif-icon
+:::
+
+**Pourquoi exporter des objets `sf` vers différents formats géographiques?**
+:::
+
+::: bloc_objectif-body
+Plusieurs méthodes d'analyse de données spatiales ne sont pas implémentées dans les logiciels de SIG comme ArcGIS Pro ou QGIS d'où l'intérêt de recourir à R ou à Python. La démarche méthodologique classique comprend alors trois étapes :
+
+-   Importer des données géographiques.
+
+-   Réaliser des analyses avancées dans R ou Python.
+
+-   Exporter les résultats finaux vers différents formats géographiques (*shapefile*, *GeoPackage*, *geodatabase* d'ESRI, etc.).
+
+Trois raisons majeures motivent l'exportation des données :
+
+-   Cartographier les résultats finaux dans votre logiciel SIG préféré.
+
+-   Partager les données avec des personnes n'utilisant pas R.
+
+-   Réaliser éventuellement d'autres analyses dans votre logiciel de SIG préféré.
+:::
+:::
+
+Dans la [section @sec-011], nous avons vu que la fonction `st_read()` du *package* `sf` permet d'importer une multitude de formats géographiques. Pour exporter avec `sf`, utilisez simplement la fonction `st_write()`. Le code ci-dessous illustre comment exporter des objets `sf` aux formats *shapefile* (`shp`), *GeoPackage* (`GPKG`), *Keyhole Markup Language* (`kml`) et *GeoJSON*. Par défaut, `st_write()` n'écrase pas un fichier existant; pour l'écraser, ajoutez le paramètre `append = FALSE`.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+## Exportation au format shapefile
+st_write(PointsGPS, # couche sf
+         "data/chap01/export/PointsGPS.shp",  # chemin et nom du fichier
+         append = FALSE, # pour écraser le fichier s'il existe
+         driver = "ESRI Shapefile")
+## Exportation dans une couche dans GPKG
+st_write(PointsGPS, 
+         dsn = "data/chap01/export/Data.gpkg", 
+         layer = "PointsGPS",
+         append = FALSE, 
+         driver = "GPKG")
+## Exportation vers un fichier KML
+st_write(PointsGPS, 
+         dsn = "data/chap01/export/PointsGPS.kml", 
+         append = FALSE,
+         driver="KML")
+## Exportation vers un fichier GeoJSON
+st_write(PointsGPS, 
+         dsn = "data/chap01/export/PointsGPS.geojson", 
+         append = FALSE,
+         driver="GeoJSON")
+```
+
+Le paramètre `driver` de la fonction `st_write` permet de spécifier le format du fichier. Pour obtenir la liste des formats qu'il est possible d'importer et d'exporter, tapez dans la console `?st_drivers` ou consultez le @tbl-ListeDrivers.
+
+```{r}
+#| label: tbl-ListeDrivers
+#| tbl-cap: Liste des formats avec le *package* `sf` (`st_drivers`)
+#| echo: false
+
+temp <- data.frame(st_drivers())
+temp$copy <- NULL
+temp$vsi <- NULL
+knitr::kable(temp, 
+             format.args = list(decimal.mark = ',', big.mark = " "),
+			       col.names = c("Nom","Description", "Écriture","Si vecteur", "Si raster"),
+             align = c("l", "r", "r", "r"),
+			       format="markdown")
+```
+
+### Exportation de données *raster* {#sec-0142}
+
+L'exportation d'objets `SpatRasters` de `terra` est très simple avec la méthode `terra::writeRaster`. En guise d'exemple, le code ci-dessous exporte la mosaïque de MNA dans un fichier GeoTIFF. Notez que le paramètre `filetype` permet de spécifier d'autres formats d'images de la liste qui est disponible au lien suivant : [*https://gdal.org/drivers/raster/index.html*](https://gdal.org/drivers/raster/index.html). En guise d'exemple, les paramètres `EIR`, `ENVI`, `RST`, `ERS` et `GRASS` permettent d'exporter vers les logiciels de télédétection ERDAS, ENVI, Idrisi, ERMapper et GRASS, tandis que le paramètre `GPKG` permet d'exporter vers un *GeoPackage* raster.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+terra::writeRaster(MosaicSherbCrop, "data/chap01/export/MosaicSherb.tif", 
+                   filetype = "GTiff", 
+                   overwrite = TRUE)
+```
+
+## Cartographie avec R {#sec-015}
+
+::: bloc_objectif
+::: bloc_objectif-header
+::: bloc_objectif-icon
+:::
+
+**Pourquoi cartographier des données dans R?**
+:::
+
+::: bloc_objectif-body
+Vous avez certainement un logiciel de SIG préféré pour construire une carte thématique (QGIS ou ArcGIS Pro par exemple). Puisqu'en quelques clics de souris, il est facile de réaliser une carte dans un SIG, quel est donc l'intérêt d'écrire des lignes de code pour afficher une carte dans R? Autrement dit, pourquoi devriez-vous vous compliquer la vie à apprendre de la syntaxe R pour produire une simple carte? Savoir cartographier dans R a plusieurs avantages :
+
+-   Cartographier rapidement les résultats d'une analyse dans R permet d'éviter des allers-retours (exportation et importation de données) entre R et un logiciel de SIG. Or, la cartographie fait partie intégrante d'une démarche méthodologique d'analyse ou de modélisation spatiale. Vous restez ainsi dans le même environnement de travail (R) jusqu'à l'obtention de vos résultats finaux. Une fois ces derniers obtenus, vous pouvez les exporter et construire une carte très élaborée dans un logiciel de SIG.
+
+-   La syntaxe R n'est pas si compliquée. Quelques lignes de code écrites pour une première analyse peuvent être réutilisées, modifiées et bonifiées pour une autre analyse. Au fil de vos projets, vous construirez des cartes de plus en plus élaborées. Autrement dit, après quelques heures d'investissement, vous deviendrez une personne experte en cartographie dans R!
+:::
+:::
+
+::: bloc_package
+::: bloc_package-header
+::: bloc_package-icon
+:::
+
+**Quels *packages* utiliser pour la cartographie dans R?**
+:::
+
+::: bloc_package-body
+Il existe plusieurs *packages* R pour la cartographie, notamment :
+
+-   `ggplot2` est certainement le meilleur *package* R pour réaliser des graphiques [@ggplot2Package]. Il permet désormais de construire des cartes.
+
+-   `cartography` permet de construire efficacement des cartes thématiques [@cartographyPackage]. Pour avoir une idée de son potentiel, consultez cette [*Cheatsheet*](http://riatelab.github.io/cartography/vignettes/cheatsheet/cartography_cheatsheet.pdf).
+
+-   `tmap` [@tmapArticle] est actuellement l'un des *packages* les plus complets et les plus utilisés pour construire des cartes thématiques.
+
+-   Des *packages* spécifiques permettent de créer des cartes interactives sur Internet, notamment `mapview`, `mapdeck` et `leaflet`. Ce dernier est basé sur la librairie JavaScript, largement utilisée dans le domaine de la cartographie sur Internet.
+
+Dans cette section, nous utilisons uniquement `tmap` dont plusieurs ressources sont disponibles sur Internet :
+
+-   Sur le [site CRAN de `tmap`](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html), une excellente vignette intitulée *tmap: get started!*
+
+-   [Un article dans Journal of Statistical Software](https://doi.org/10.18637/jss.v084.i06) de Martijn Tennekes, créateur du *package* `tmap`.
+
+-   La [documentation complète en PDF](https://cran.r-project.org/web/packages/tmap/tmap.pdf).
+:::
+:::
+
+### Manipulation des couches géométriques {#sec-0151}
+
+#### Principales fonctions de représentation de couches vectorielles et matricielles {#sec-01511}
+
+Il existe trois catégories de fonctions pour paramétrer l'affichage de couches géographiques (@tbl-TmapMiseGeometrie).
+
+```{r}
+#| label: tbl-TmapMiseGeometrie
+#| tbl-cap: Principales fonctions pour manipuler des couches vectorielles et matricielles
+#| echo: false
+#| warning: false
+#| message: false
+
+df1 <- data.frame(
+  Fonction = c("`tm_shape`",
+               "`tm_polygons`", "`tm_symbols`", "`tm_lines`", "`tm_text`", "`tm_raster`",
+               "`tm_fill`", "`tm_border`", "`tm_bubbles`", "`tm_squares`", "`tm_dots`", "`tm_markers`"),
+  Description = c("Crée un élément `tmap` à partir d'une couche géographique vectorielle (`sf`) ou matricielle (`raster`)",
+                  "Dessine des polygones (couleur et contour)", 
+                  "Dessine des symboles", 
+                  "Dessine des lignes", 
+                  "Dessine des étiquettes à partir d'un champ", 
+                  "Affiche un raster",
+                  "Dessine l'intérieur de polygones", 
+                  "Dessine les contours", 
+                  "Dessine des cercles (notamment proportionnels)", 
+                  "Dessine des carrés (notamment proportionnels)", 
+                  "Dessine des points", 
+                  "Dessine des icones avec étiquettes"),
+  Points  = c("X",
+              " ", "X", " ", "X", " ",
+              " ", " ", "X", "X", "X", "X"),
+  Lignes = c("X",
+             " ", "X", "X", "X", " ",
+             " ", " ", "X", "X", "X", "X"),
+  Polyg = c("X",
+             "X", "X", " ", "X", " ",
+             "X", "X", "X", "X", "X", "X"),
+  Raster = c("X", 
+             " ", " ", " ", " ", "X",
+             " ", " ", " ", " ", " ", " "))
+
+my_table <- knitr::kable(df1,
+            format.args = list(decimal.mark = ',', big.mark = " "),
+			col.names = c("Fonction","Description", "Points", "Lignes", "Polyg.", "Raster"),
+              align=c("l", "r", "c", "c", "c", "c"))
+
+kableExtra::pack_rows(my_table,
+                      index = c("Fonction principale" = 1,
+                                 "Fonctions de base de manipulation" = 5,
+                                 "Autres fonctions de manipulation" = 6))
+```
+
+**Construction d'une carte simple avec une couche vectorielle et une couche matricielle**
+
+Le code ci-dessous permet d'afficher deux couches avec la fonction `tm_shape` : l'une vectorielle, l'autre matricielle (@fig-ArrondRaster1).
+
+```{r}
+#| echo: true 
+#| eval: false 
+tmap_mode("plot")
+# 1er objet tmap pour une couche raster
+tm_shape(MosaicSherbCrop)+
+  tm_raster(palette = terrain.colors(10))+
+# 1er objet tmap pour une couche vectorielle
+tm_shape(Arrondissements)+
+  tm_borders(col = "black", lwd = 3)+ # contour noir avec une épaisseur de trois points
+  tm_text("NUMERO") # Étiquettes identifiant l'arrondissement
+```
+
+![Exemple de carte construite avec le *package* `tmap` avec une couche polygonale et une image](images/Chap01/Carte1.png){#fig-ArrondRaster1 width="50%" fig-align="center"}
+
+::: bloc_attention
+::: bloc_attention-header
+::: bloc_attention-icon
+:::
+
+**Ordre et hiérarchie des couches avec `tmap`**.
+:::
+
+::: bloc_attention-body
+Vous avez compris qu'une couche est affichée avec la fonction `tm_shape` et que le `+` permet d'ajouter une ou plusieurs fonctions d'habillage à cette couche (`tm_polygons`, `tm_lines`, `tm_text`, `tm_raster`, etc.).
+
+Il est possible d'en superposer en utilisant plusieurs `tm_shape` comme suit :
+
+`tm_shape(Nom de la première couche)+` `... paramètres de la couche +` `tm_shape(Nom de la seconde couche)+` `... paramètres de la couche`
+
+Notez que la première couche est celle avec laquelle la projection et l'étendue de la carte sont définies. Il est toutefois possible de changer le tout en utilisant l'argument `is.master = TRUE` dans le `tm_shape` d'une couche donnée.
+:::
+:::
+
+**Construction d'une carte avec plusieurs couches vectorielles**
+
+Les lignes de code suivantes permettent de construire la @fig-fig2PolyPointsLignes avec trois couches `sf`.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-fig2PolyPointsLignes
+#| fig-align: center
+#| fig-cap: "Exemple de carte construite avec le *package* `tmap` avec plusieurs couches vectorielles (polygones, lignes, points)"
+#| out-width: 85%
+tmap_mode("plot")
+## Polygones
+tm_shape(Arrondissements)+
+  tm_text("NUMERO")+ # Étiquettes identifiant l'arrondissement
+  tm_polygons(col="wheat", border.col = "black", lwd = 3)+
+## Lignes
+tm_shape(Rues)+
+  tm_lines(col= "gray", lwd = 1)+
+## Points
+tm_shape(PointsGPS.Sherb)+
+  tm_dots(shape=21, col="blue", size=.3)
+```
+
+La @fig-fig3PointsEtMarkers illustre la différence entre les fonctions `tm_dots` et `tm_markers`.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-fig3PointsEtMarkers
+#| fig-align: center
+#| fig-cap: "Exemple de carte `tmap` avec `tm_dots` et `tm_markers`"
+#| out-width: 85%
+
+## Points avec tm_dots()
+CartePoints = 
+  tm_shape(Arrondissements) + tm_polygons(col="wheat", border.col = "black") +
+  tm_shape(PointsGPS.Sherb) + tm_dots(shape=21, col="blue", size=.3)
+## Icones avec tm_markers()
+CarteMarkers = 
+  tm_shape(Arrondissements) + tm_polygons(col="wheat", border.col = "black") +
+  tm_shape(PointsGPS.Sherb) + tm_markers(size = 0.2)
+## Combinaison des deux cartes
+tmap_arrange(CartePoints, CarteMarkers, ncol=2, nrow=1)
+```
+
+#### Couleurs uniques et palette de couleurs dans `tmap` {#sec-01512}
+
+Vous avez remarqué plus haut que plusieurs fonctions comprennent l'argument `col` pour spécifier une couleur. Pour connaître les trois manières de spécifier une couleur dans R -- nom de la couleur R (`lightblue` par exemple), code hexadécimal (`#f03b20` par exemple) ou notation RVBA (`rgb(0.2, 0.4, 0.4, 0)` par exemple) --, consultez [la section suivante](https://laeq.github.io/LivreMethoQuantBolR/sect031.html#sect0315) [@RBoldAir].
+
+Pour spécifier une palette de couleurs sur un champ dans différentes fonctions (entre autres, `tm_polygons`, `tm_lines`, `tm_fill`, `tm_dots`), il suffit d'utiliser deux arguments dans la fonction, soit `col="Nom du champ"` et `palette="nom de la palette de couleurs"`.
+
+Le *package* `tmap` intègre les palettes de deux autres *packages* : `viridisLite` [@viridisPackage] et `RColorBrewer` [@RColorBrewerPackage]. Le premier propose cinq palettes de couleurs : `viridis`, `magma`, `plasma`, `inferno`, `cividis`. Le second intègre une série de palettes de couleurs proposées par la géographe et cartographe Cynthia Brewer et ses collègues [@harrower2003colorbrewer; @brewer2003colorbrewer]. Vous avez probablement déjà exploré [leur site Internet](https://colorbrewer2.org/) où il est possible de sélectionner une palette en fonction du nombre de classes, de la nature des données et de la codification des couleurs (HEX, RGB, CMYK). Succinctement, `RColorBrewer` propose plusieurs palettes regroupées selon trois catégories :
+
+-   Palettes qualitatives à appliquer à une variable qualitative nominale comme son nom l'indique (@fig-ColorBrewerQual). Pour afficher les palettes et connaître leurs noms, tapez `display.brewer.all(type="qual")` dans la console.
+
+-   Palettes séquentielles pour une variable continue avec des valeurs faibles à fortes (@fig-ColorBrewerSeq). Tapez `display.brewer.all(type="seq")` dans la console.
+
+-   Palettes divergentes à appliquer à une variable continue dont les valeurs aux deux extrémités s'opposent (@fig-ColorBrewerDiv). Tapez `display.brewer.all(type="div")` dans la console.
+
+![Palettes de couleurs qualitatives du *package* `RColorBrewer`](images/Chap01/RcolorBrewerQual.png){#fig-ColorBrewerQual width="40%" fig-align="center"}
+
+![Palettes de couleurs séquentielles du *package* `RColorBrewer`](images/Chap01/RcolorBrewerSeq.png){#fig-ColorBrewerSeq width="40%" fig-align="center"}
+
+![Palettes de couleurs divergentes du *package* `RColorBrewer`](images/Chap01/RcolorBrewerDiv.png){#fig-ColorBrewerDiv width="40%" fig-align="center"}
+
+::: bloc_astuce
+::: bloc_astuce-header
+::: bloc_astuce-icon
+:::
+
+**Comparaison de palettes avec un nombre de classes défini**
+:::
+
+::: bloc_astuce-body
+Si vous connaissez le nombre de classes, mais que vous hésitez à choisir telle ou telle palette de couleurs, tapez dans la console :
+
+-   `display.brewer.all(n=5, type="seq", exact.n=TRUE)`
+-   `display.brewer.all(n=5, type="div", exact.n=TRUE)`
+-   `display.brewer.all(n=5, type="qual", exact.n=TRUE)`
+
+D'autres arguments peuvent être ajoutés comme `colorblindFriendly=TRUE` qui renvoie uniquement des palettes de couleurs adaptées aux personnes daltoniennes. En guise d'exemple, avec cinq classes, il est possible de comparer neuf palettes divergentes et six autres adaptées aux personnes daltoniennes (@fig-RcolorBrewerAstuce).
+
+![Palettes de couleurs divergentes du *package* `RColorBrewer` avec cinq classes](images/Chap01/RcolorBrewerAstuce.png){#fig-RcolorBrewerAstuce width="60%" fig-align="center"}
+
+Vous hésitez encore à choisir une palette de couleurs? Tapez la syntaxe ci-dessous dans la console pour afficher l'ensemble des palettes des *packages* `RColorBrewer` et `viridisLite`.
+
+`tmaptools::palette_explorer()`
+
+Pour inverser les couleurs d'une palette, vous devez précéder le nom de la palette par un signe moins (exemple : `-Greens`).
+:::
+:::
+
+#### Cartographie d'une variable qualitative : valeurs uniques {#sec-01513}
+
+**Application à une couche de points**
+
+Le code ci-dessous illustre comment construire une carte thématique avec des couleurs appliquées à une variable qualitative nominale (champ `TYPE` de la couche `InstallationSport`) d'une couche de points (@fig-CarteVarQualPoints).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CarteVarQualPoints
+#| fig-align: center
+#| fig-cap: "Exemple de cartographie d'une variable qualitative sur des points"
+#| out-width: 85%
+## Carte
+tm_shape(Arrondissements)+
+  tm_borders()+
+tm_shape(InstallationSport)+
+  tm_dots(shape = 21,
+          size=.3,
+          col= "TYPE", 
+          palette = "Set1", 
+          title ="Type d'installation")+
+tm_layout(main.title = "Installations sportives",
+          frame=FALSE,
+          legend.position = c("left", "top"),
+          legend.outside=TRUE)
+```
+
+**Application à une couche de lignes**
+
+Le code ci-dessous illustre comment construire une carte thématique avec des couleurs appliquées à une variable qualitative nominale (champ `TYPESEGMEN`) d'une couche de lignes (@fig-CarteVarQualLignes).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CarteVarQualLignes
+#| fig-align: center
+#| fig-cap: "Exemple de cartographie d'une variable qualitative sur des lignes"
+#| out-width: 85%
+## Listes des valeurs uniques
+table(Rues$TYPESEGMEN)
+## Lignes
+tmap_mode("plot")
+tm_shape(Rues)+
+  tm_lines(col= "TYPESEGMEN",
+           palette = c("red", "brown4", "cornsilk1", "lightpink", "gainsboro"),
+           lwd = 2 
+           )
+```
+
+**Application à une couche de polygones**
+
+Le code ci-dessous illustre comment construire une carte thématique avec des couleurs appliquées à une variable qualitative nominale (champ `SDRNOM` de la couche `AD2021`) d'une couche de polygones (@fig-CarteVarQualPoly).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CarteVarQualPoly
+#| fig-align: center
+#| fig-cap: "Exemple de cartographie d'une variable qualitative sur des polygones"
+#| out-width: 85%
+
+## Importation de la couche des aires de diffusion de 2021 pour la RMR de Sherbrooke
+AD2021 <- st_read(dsn = "data/chap01/gpkg/Recen2021Sherbrooke.gpkg", 
+                  layer = "SherbAD", 
+                  quiet = TRUE)
+## Carte
+tmap_mode("plot")
+tm_shape(AD2021)+
+  tm_fill(col= "SDRNOM", 
+          palette = "Set2", 
+          lwd = 1, 
+          title ="Municipalité")+
+  tm_borders(col="black")+
+tm_layout(main.title = "Aires de diffusion de 2021",
+          frame =FALSE,
+          legend.position = c("left", "top"),
+          legend.outside=TRUE)
+```
+
+#### Cartographie d'une variable discrète : cercles proportionnels {#sec-01514}
+
+La syntaxe ci-dessous permet de créer une carte avec des cercles proportionnels pour les municipalités de la région administrative de l'Estrie (@fig-CarteCerclesProport).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CarteCerclesProport
+#| fig-align: center
+#| fig-cap: "Exemple de carte avec des cercles proportionnels"
+#| out-width: 85%
+
+## Importation des municipalités (subdivisions de recensements - SDR) de l'Estrie
+SDR.Estrie <- st_read(dsn = "data/chap01/gpkg/Recen2021Sherbrooke.gpkg", 
+                  layer = "sdr_Estrie", quiet = TRUE)
+## Importation des MRC (divisions de recensements - DR) de l'Estrie
+DR.Estrie <- st_read(dsn = "data/chap01/gpkg/Recen2021Sherbrooke.gpkg", 
+                  layer = "DREstrie2021",  quiet = TRUE)
+## Importation des données sur la population
+PopSDR <- read.csv("data/chap01/tables/SDR_Estrie.csv")
+PopSDR$SDRidu <- as.character(PopSDR$SDRidu)
+## Fusion des données
+SDR.Estrie <- merge(SDR.Estrie, PopSDR, by.x = "SDRIDU", by.y = "SDRidu")
+## Construction de la carte
+tmap_mode("plot")
+tm_shape(SDR.Estrie)+
+  tm_polygons(col="whitesmoke", border.col = "grey30", lwd = 1)+
+  tm_bubbles(size = "SDRpop_2021",
+             border.col = "black",
+             col = "tomato1",
+             title.size = "Population",
+             scale = 3)+ # facteur multiplicateur pour la taille du cercle
+tm_shape(DR.Estrie)+
+  tm_borders(col="black", lwd = 2)
+```
+
+#### Cartographie d'une variable continue : cartes choroplèthes et méthodes de discrétisation {#sec-01515}
+
+L'argument `style`, qui est commun à plusieurs fonctions (`tm_polygons`, `tm_fill`, `tm_lines`, `tm_dots`, etc.), permet de choisir une méthode de discrétisation dont les principales sont :
+
+-   `fixed`: intervalles fixés par l'analyste.
+
+-   `equal`: intervalles égaux.
+
+-   `pretty`: intervalles arrondis aux nombres entiers.
+
+-   `quantile`: selon les quantiles (même nombre d'observations dans chaque classe).
+
+-   `jenks`: selon la méthode de Jenks.
+
+-   `sd`: selon l'écart-type.
+
+D'autres méthodes peuvent être utilisées comme `kmeans`, `hclust`, `bclust`, `fisher`, `dpih`, `headtails` et `log10_pretty.` En guise d'exemple, la @fig-CarteChropolete2 présente une discrétisation en cinq classes selon la méthode des quantiles. Notez aussi qu'il est possible de réaliser une carte avec un dégradé continu avec `style = "cont"` tel qu'illustré ci-dessous (@fig-CarteChropolete1).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CarteChropolete1
+#| fig-align: center
+#| fig-cap: "Exemple de carte choroplèthe avec une palette continue"
+#| out-width: 85%
+
+## Sélection des aires de diffusion de Sherbrooke
+AD2021.sherb <- subset(AD2021, SDRNOM == "Sherbrooke")
+## Carte
+tmap_mode("plot")
+tm_shape(AD2021.sherb)+
+  tm_fill(col= "HabKm2", 
+          palette = "Reds",  
+          style = "cont",
+          title ="Hab./km2")+
+  tm_borders(col="black")
+```
+
+La @fig-CarteChropolete2 utilise une discrétisation selon la méthode de quantiles avec cinq classes. Autrement dit, chaque classe comprend 20 % des aires de diffusion de la ville de Sherbrooke.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CarteChropolete2
+#| fig-align: center
+#| fig-cap: "Exemple de carte choroplèthe avec une discrétisation selon les quantiles"
+#| out-width: 85%
+
+tmap_mode("plot")
+tm_shape(AD2021.sherb)+
+  tm_fill(col= "HabKm2",
+          palette = "Reds",  
+          n = 5, # nombre de classes
+          style = "quantile",
+		  legend.format = list(text.separator = "à"),
+          title ="Hab./km2")+
+  tm_borders(col="black", lwd = .5)
+```
+
+La @fig-MethoDiscretisation présente quatre méthodes de discrétisation différentes appliquées au revenu médian des ménages par secteur de recensement dans la région métropolitaine de recensement de Sherbrooke en 2021.
+
+![Différentes méthodes de discrétisation](images/Chap01/MethodesDiscretisation.png){#fig-MethoDiscretisation width="75%" fig-align="center"}
+
+### Cartes interactives {#sec-0152}
+
+Avec la fonction `tmap_mode`, il est possible de choisir l'un des deux modes de visualisation suivants :
+
+-   statique avec `tmap_mode("plot")`.
+-   interactif avec `tmap_mode("view")`.
+
+Vous constaterez ci-dessous que par défaut, trois fonds de carte sont disponibles dans la carte interactive, soit dans l'ordre `Esri.WorldGrayCanvas`, `OpenStreetMap` et `Esri.WorldTopoMap`.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+#| out-width: 75%
+
+## Mode active tmap
+tmap_mode("view")
+## Importation des couches
+Arrond.sf = read_sf("data/chap01/shp/Arrondissements.shp")
+InstallSR.sf = read_sf("data/chap01/shp/Installations_sportives_et_recreatives.shp")
+## Carte
+tm_shape(InstallSR.sf)+ tm_dots(size = 0.05, shape = 21, col = "red")+
+tm_shape(Arrond.sf)+ tm_borders(col="black", lwd= .5)
+```
+
+Il est aussi possible de changer les fonds de carte avec la fonction `tm_basemap` tandis que la fonction `tm_tiles` permet de superposer une tuile (pour la toponymie par exemple) (@tbl-TmapCarteInteractive).
+
+```{r}
+#| label: tbl-TmapCarteInteractive
+#| tbl-cap: Fonctions pour des cartes interactives
+#| echo: false
+#| message: false
+#| warning: false
+
+df2 <- data.frame(
+  Fonction = c("`tmap_mode`", 
+               "`tm_basemap`", 
+               "`tm_tiles`"),
+  Description = c("Choisir le mode statique ou interactive", 
+                  "Spécifier un fond de carte", 
+                  "Spécifier une tuile de fond")
+  )
+knitr::kable(df2, 
+             col.names = c("Fonction","Description"),
+             align=c("l", "l"),
+			       format="markdown")
+```
+
+Dans le code ci-dessous, nous utilisons uniquement deux fonds de carte. Remarquez les lignes avec l'argument `popup.vars` qui permet de définir les champs visibles dans la fenêtre surgissante (*pop-up*). Cliquez sur une installation sportive pour activer la fenêtre surgissante.
+
+```{r}
+#| echo: true 
+#| message: false
+#| warning: false
+#| out-width: 75%
+## Carte
+tm_basemap(c("OpenStreetMap", "Esri.WorldTopoMap"))+
+tm_shape(InstallSR.sf)+ 
+  tm_dots(size = 0.05, shape = 21, col = "red",
+          # définition pour le pop-up (clic sur une installation)
+          popup.vars=c("Nom : "="NOM",
+                       "Type : " = "TYPE",
+                       "Éclairage : " = "ECLAIRAGE",
+                       "Éclairage : " = "SURFACE"),
+          id = "OBJECTID")+
+tm_shape(Arrond.sf)+ tm_borders(col="black", lwd= .5)
+
+```
+
+::: bloc_astuce
+::: bloc_astuce-header
+::: bloc_astuce-icon
+:::
+
+**Où trouver des fonds de carte?**
+:::
+
+::: bloc_astuce-body
+Une liste des fonds de carte **Leaflet** est disponible au [lien suivant](https://leaflet-extras.github.io/leaflet-providers/preview/).
+:::
+:::
+
+### Mise en page d'une carte {#sec-0153}
+
+Les principales fonctions de mise en page d'une carte sont présentées au @tbl-TmapMiseEnMap.
+
+```{r}
+#| label: tbl-TmapMiseEnMap
+#| tbl-cap: Fonctions d'habillage d'une carte
+#| echo: false
+#| warning: false
+#| message: false
+
+
+df3 <- data.frame(
+  Fonction = c("`tm_facets`", "`tmap_arrange`", "`tm_grid`", "`tm_credits`"),
+
+  Description = c("Créer un élément `tmap` avec plusieurs vignettes",
+                  "Fusionner plusieurs cartes dans une mise en page",
+                  "Ajouter une grille de lignes de coordonnées (ex. long/lat)",
+                  "Créer un texte pour spécifier l'auteur.e ou la source de la carte"
+                  ),
+  
+  Arguments = c("`by`: groupé par colonne. `nrow` et `ncol`: nombres de lignes et de colonnes",
+                "`nrow` et `ncol`: nombre de lignes et de colonnes",
+                "`x` et `y`: vecteurs pour les coordonnées",
+                "`text`: texte. `size`: taille du texte. `fontfamily`: police du texte")
+  )
+
+
+df3 <- data.frame(
+  Fonction = c("`tm_facets`", "`tmap_arrange`", "`tm_grid`", "`tm_credits`", "`tm_scale_bar`","`tm_compass`", "`tm_logo`", "`tm_xlab`", "`tm_ylab`","`tm_layout`", "`tm_legend`", "`tmap_options`"),
+
+  Description = c("Créer un élément `tmap` avec plusieurs  vignettes",
+                  "Fusionner plusieurs cartes dans une mise en page",
+
+                  "Ajouter une grille de lignes de coordonnées (ex. long/lat)",
+                  "Créer un texte pour spéficier l'auteur.e ou la source de la carte",
+                  "Créer une échelle",
+                  "Créer une flèche du nord",
+                  "Ajouter un logo à une carte",
+                  "Ajouter un titre sur l'axe des X de la carte",
+                  "Ajouter un titre sur l'axe des Y de la carte",
+                  "Spécifier des éléments de mise en page de la carte",
+                  "Paramétrer la légende de la carte",
+                  "Paramétrer et conserver plusieurs options sur la carte"),
+
+  Arguments = c("`by`: groupé par colonne. `nrow` et `ncol`: nombres de lignes et de colonnes",
+                "`nrow` et `ncol`: nombre de lignes et de colonnes",
+
+                "`x` et `y`: vecteurs pour les coordonnées",
+                "`text`: texte. `size`: taille du texte. `fontfamily`: police du texte",
+                "`break`: vecteur numérique pour l'échelle. `position`: position de l'échelle avec les valeurs `left`, `center`, `right`, `bottom`, `top`. Par exemple c('left', 'bottom')",
+                "`type`: type de flèche du Nord ('arrow', '4star', '8star', 'radar', 'rose')",
+                "`file`: chemin et nom du fichier ou URL",
+                "`text`: nom de l'axe",
+                "`text`: nom de l'axe",
+                "`title`: titre de la carte",
+                "`position`: position de la légende avec les valeurs `left`, `center`, `right`, `bottom`, `top`",
+                "`unit`: unités de mesures ('imperial', 'km', 'm', 'mi', and 'ft')")
+)
+
+knitr::kable(df3,
+             col.names = c("Fonction","Description", "Principaux arguments"),
+             align=c("l", "l", "l"),
+			       format="markdown")
+```
+
+#### Combinaison de plusieurs cartes {#sec-01531}
+
+Tel que décrit dans le @tbl-TmapMiseEnMap, il existe deux fonctions pour combiner deux cartes : `tmap_arrange` et `tm_facets`.
+
+Pour ceux et celles réalisant régulièrement des graphiques dans R avec `ggplot2`, `tmap_arrange` est très similaire à la fonction `ggarrange` du *package* `ggpubr` qui permet de fusionner plusieurs graphiques. Globalement, le principe est le suivant : vous réalisez deux cartes ou plus que vous combinez dans une même sortie avec `tmap_arrange`. Vous trouverez ci-dessous un exemple avec deux cartes (@fig-CombinaisonAvecTmapArrange).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CombinaisonAvecTmapArrange
+#| fig-align: center
+#| fig-cap: "Exemple de combinaisons de carte avec `tmap_arrange`"
+#| out-width: 85%
+
+tmap_mode("plot")
+## Carte 1
+Carte1 =  tm_shape(SDR.Estrie)+
+            tm_polygons(col="whitesmoke", border.col = "grey30", lwd = 1)+
+            tm_bubbles(size = "SDRpop_2021",
+                       border.col = "black",
+                       col = "tomato1",
+                       title.size = "Population",
+                       scale = 3)+ # facteur multiplicateur pour la taille du cercle
+          tm_shape(DR.Estrie)+ tm_borders(col="black", lwd = 2)
+## Calcul de la densité de population
+SDR.Estrie$HabKm2 <- as.numeric(SDR.Estrie$SDRpop_2021 / (st_area(SDR.Estrie) / 1000000))
+## Carte 2
+Carte2 =  tm_shape(SDR.Estrie)+
+              tm_fill(col= "HabKm2", 
+                    palette = "Reds",  
+                    style = "quantile", n = 4,
+                    title ="Hab./km2",
+                    legend.format = list(text.separator = "à"))+
+              tm_borders(col="black")+
+          tm_shape(DR.Estrie)+ tm_borders(col="black", lwd = 2)
+## Combinaison des deux cartes
+tmap_arrange(Carte1, Carte2, ncol = 2, nrow = 1)
+```
+
+Quant à la fonction `tm_facets`, elle permet de créer plusieurs cartes avec l'argument `by`. Prenons un exemple concret : vous disposez d'une couche géographique des municipalités du Québec et vous souhaitez réaliser une carte pour chaque région administrative. L'argument `by = "Region"` vous permet alors d'avoir une vignette par région. Dans l'exemple ci-dessous, nous avons cartographié la même variable (densité de population) pour différentes zones de la région métropolitaine de Sherbrooke (@fig-CombinaisonAvecFacets1).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CombinaisonAvecFacets1
+#| fig-align: center
+#| fig-cap: "Premier exemple de combinaison de cartes avec `tm_facets`"
+#| out-width: 85%
+tmap_mode("plot")
+## Création d'une variable zone basée sur les noms des municipalités
+AD2021$Zone <- ifelse(AD2021$SDRNOM == "Sherbrooke", "A. Sherbrooke", "") 
+AD2021$Zone <- ifelse(AD2021$SDRNOM %in% c("Compton", "Waterville", "Hatley", "North Hatley"), 
+                      "B. Sud", AD2021$Zone) 
+AD2021$Zone <- ifelse(AD2021$SDRNOM %in% c("Orford", "Magog", "Saint-Denis-de-Brompton"), 
+                      "C. Est", AD2021$Zone) 
+AD2021$Zone <- ifelse(AD2021$SDRNOM %in% c("Ascot Corner", "Val-Joli", "Stoke"), 
+                      "C. Nord", AD2021$Zone) 
+## Création des cartes avec tm_facets
+tmap_mode("plot")
+tm_shape(AD2021)+
+  tm_fill(col= "HabKm2",
+          palette = "Reds",  
+          n = 5, # nombre de classes
+          style = "quantile",
+          title ="Hab./km2",
+          legend.format = list(text.separator = "à"))+
+  tm_borders(col="black", lwd = .5)+
+  tm_facets(by = "Zone")
+```
+
+L'utilisation de `tm_facets` peut être également très utile pour comparer les distributions spatiales de points à différentes années (@fig-CombinaisonAvecFacets2).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CombinaisonAvecFacets2
+#| fig-align: center
+#| fig-cap: "Deuxième exemple de combinaisons de carte avec `tm_facets`"
+#| out-width: 85%
+tmap_mode("plot")
+## Importation des incidents
+Incidents <- st_read("data/chap01/shp/IncidentsSecuritePublique.shp", quiet = TRUE)
+## Création des cartes avec tm_facets
+tmap_mode("plot")
+tm_shape(Arrondissements) + 
+  tm_polygons(col="wheat", border.col = "black") +
+tm_shape(Incidents) +
+  tm_dots(shape=21, col="blue", size=.2) +
+tm_facets(by = "ANNEE")
+```
+
+#### Mise en page d'une carte {#sec-01532}
+
+Nous reprenons la @fig-HabillageDuneCarte et l'habillons en ajoutant une échelle (`tm_scale_bar`), une flèche du Nord (`tm_compass`), la source et l'auteur (`tm_credits`) et un titre (`tm_layout`) (@fig-HabillageDuneCarte).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-HabillageDuneCarte
+#| fig-align: center
+#| fig-cap: "Habillage d'une carte"
+#| out-width: 85%
+## Carte 1
+tmap_mode("plot")
+tm_shape(SDR.Estrie)+
+            tm_fill(col= "HabKm2", palette = "Greens",  
+                    style = "quantile", n = 4,
+                    title ="Hab./km2",
+                    legend.format = list(text.separator = "à"))+
+            tm_bubbles(size = "SDRpop_2021", border.col = "black", col = "tomato1", scale = 3,
+                       title.size = "Population")+ 
+            tm_borders(col="black")+
+## Ajout de de la flèche du Nord
+tm_compass(position = c("right", "bottom"), 
+           size = 2)+
+## Ajout de l'échelle
+tm_scale_bar(breaks  = c(0, 25, 50),
+             position = c("right", "bottom"))+
+## Ajout de la source
+tm_credits("Source : recensement de 2021, Statistique Canada\nAuteur : Jéremy Lacartemplace.", 
+           position = c("right", "bottom"),
+           size = 0.7,
+           align = "right") +
+## Légende  
+tm_legend(position = c("left", "top"), 
+          frame = FALSE, bg.color = "white")+
+## Modification de la mise en page
+tm_layout(main.title = "Municipalités de l'Estrie",
+          legend.outside = TRUE,
+          frame = FALSE)
+```
+
+::: bloc_aller_loin
+::: bloc_aller_loin-header
+::: bloc_aller_loin-icon
+:::
+
+**Aller plus loin avec `tmap`?**
+:::
+
+::: bloc_aller_loin-body
+Nous avons abordé uniquement les principales fonctions et arguments pour l'habillage d'une carte. Plusieurs exemples de très belles cartes créées avec `tmap` sont disponibles aux ressources suivantes :
+
+-   L'excellente vignette intitulée [*`tmap`: get started!*](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html)
+
+-   [*Visualizing Spatial Data in R with tmap*](http://www.wvview.org/os_sa/10_Maps_with_tmap.html#visualizing-spatial-data-in-r-with-tmap).
+
+-   [*Making Maps with R*](https://bookdown.org/nicohahn/making_maps_with_r5/docs/introduction.html).
+
+-   Le chapitre [*Making maps with R*](https://geocompr.robinlovelace.net/adv-map.html) du livre [*Geocomputation with R*](https://geocompr.robinlovelace.net/index.html).
+:::
+:::
+
+### Exportation d'une carte {#sec-0154}
+
+Une fois la carte finalisée, il est possible de l'exporter dans différents formats avec la fonction `tmap_save` :
+
+-   En mode image (png, jpg, bmp, tiff) pour l'insérer dans un logiciel de traitement de texte (Word ou OpenOffice Writer) ou dans un éditeur LaTeX ([Overleaf](https://fr.overleaf.com/) par exemple).
+
+-   En mode vectoriel (PDF ou SVG) pour finaliser l'édition de la carte dans un logiciel de création graphique vectorielle (Illustrator par exemple).
+
+-   En HTML dans lequel la carte sera intégrée selon le mode de visualisation interactive, sous la forme d'un *widget* Leaflet.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+
+## Transformation en long/lat
+## Carte 1
+tmap_mode("plot")
+Carte1 <- tm_shape(SDR.Estrie)+
+  tm_fill(col= "HabKm2", palette = "Greens", style = "quantile", n = 4, title ="Hab./km2")+
+  tm_bubbles(size = "SDRpop_2021", border.col = "black", col = "tomato1", scale = 3,
+                       title.size = "Population")+ 
+  tm_borders(col="black")+
+  tm_compass(position = c("right", "bottom"), size = 2)+
+  tm_scale_bar(breaks  = c(0, 25, 50), position = c("right", "bottom"))+
+  tm_credits("Source : recensement de 2021, Statistique Canada\nAuteur : Jéremy Lacartemplace.", 
+           position = c("right", "bottom"), size = 0.7, align = "right") +
+  tm_legend(position = c("left", "top"), frame = FALSE, bg.color = "white")+
+  tm_layout(main.title = "Municipalités de l'Estrie", legend.outside = TRUE, frame = FALSE)
+
+## Exportation de la Carte1 au format png
+tmap_save(Carte1, filename = "data/chap01/export/Carte1.png", dpi = 600)
+## Exportation de la Carte1 au format PDF
+tmap_save(Carte1, filename = "data/chap01/export/Carte1.pdf")
+## Exportation de la Carte1 au format HTML
+tmap_save(Carte1, filename = "data/chap01/export/Carte1.html")
+```
+
+## Quiz de révision du chapitre {#sec-016}
+
+```{r}
+#| label: quizChapitre01
+#| echo: false 
+#| eval: true 
+#| message: false 
+#| warning: false 
+#| results: asis
+
+source("code_complementaire/QuizzFunctions.R")
+Chap01Quiz <- quizz("quiz/Chap01.yml", "Chap01")
+render_quizz(Chap01Quiz)
+```
+
+## Exercices de révision {#sec-017}
+
+::: bloc_exercice
+::: bloc_exercice-header
+::: bloc_exercice-icon
+:::
+
+**Exercice 1.** Découpage des rues de l'arrondissement des Nations de la ville de Sherbrooke
+:::
+
+::: bloc_exercice-body
+Complétez le code ci-dessous avec les étapes suivantes :
+
+-   Requête attributaire pour créer un objet `sf` avec uniquement l'arrondissement des Nations à partir de la couche `Arrondissements` et le champ `NOM` (voir la [section @sec-01274]).
+
+-   Découpez les rues (`Rues`) sur le nouvel objet `sf` (voir la [section @sec-01213]).
+
+```{r}
+#| echo: true
+#| eval: false
+#| message: false
+#| warning: false
+library(sf)
+## Importation des deux couches
+Arrond <- st_read("data/chap01/shp/Arrondissements.shp", quiet = TRUE)
+Rues <- st_read("data/chap01/shp/Segments_de_rue.shp", quiet = TRUE)
+## Requête attributaire : création d'un objet sf pour l'arrondissement des Nations
+table(Arrond$NOM)
+Arrond.DesNations <- subset(À compléter)
+## Découper les rues avec le polygone de l'arrondissement des Nations
+Rues.DesNations <- À compléter
+```
+
+Correction à la [section @sec-10011].
+:::
+:::
+
+::: bloc_exercice
+::: bloc_exercice-header
+::: bloc_exercice-icon
+:::
+
+**Exercice 2.** Calcul d'un nouveau champ
+:::
+
+::: bloc_exercice-body
+Calculez un nouveau champ (`DistHVKM`) dans la couche des aires de diffusion (AD) (`AD.RMRSherb`) qui représente la distance en kilomètres entre l'hôtel de ville de Sherbrooke et les points des AD. Puis, cartographiez le champ `DistHVKM` en quatre classes selon la méthode de discrétisation par quantiles. Complétez le code ci-dessous avec les étapes suivantes :
+
+-   Ajoutez un champ pour la distance (`DistHVKM`) dans la couche `AD.RMRSherb` (voir la [section @sec-0124]).
+
+-   Cartographiez le champ `DistHVKM` en quatre classes selon la méthode des quantiles (voir la [section @sec-01515]).
+
+```{r}
+#| echo: true
+#| eval: false
+#| message: false
+#| warning: false
+library(sf)
+library(tmap)
+## Importation des deux couches
+AD.RMRSherb <- st_read(dsn = "data/chap01/gpkg/Recen2021Sherbrooke.gpkg", 
+                       layer = "SherbAD", quiet = TRUE)
+HotelVille <- data.frame(ID = 1, Nom = "Hôtel de ville",
+                         lon = -71.89306, lat = 45.40417)
+HotelVille <- st_as_sf(HotelVille, coords = c("lon","lat"), crs = 4326)
+## Changement de projection avant de s'assurer que les deux couches ont la même
+HotelVille <- st_transform(HotelVille, st_crs(AD.RMRSherb))
+## Ajout d'un champ pour la distance en km à l'hôtel de ville pour les secteurs de recensement
+AD.RMRSherb$DistHVKM <- À compléter
+## Cartographie en quatre classes selon les quantiles
+tmap_mode("plot")
+tm_shape(À compléter)+
+  tm_fill(À compléter)+
+  tm_borders(col="black")
+```
+
+Correction à la [section @sec-10012].
+:::
+:::
+
+::: bloc_exercice
+::: bloc_exercice-header
+::: bloc_exercice-icon
+:::
+
+**Exercice 3.** Importation d'une couche *shapefile*
+:::
+
+::: bloc_exercice-body
+Importez une couche *shapefile* pour les divisions de recensement et calculez la densité de population (nombre d'habitants au km^2^). Complétez le code ci-dessous avec les étapes suivantes :
+
+-   Faites une jointure attributaire entre la couche `DR.Qc` et la table `DR.Data` (voir la [section @sec-01272]).
+
+-   Calculez le champ `HabKm2`, soit la division entre les champs `DRpop_2021` et `SUPTERRE` (voir la [section @sec-01515]).
+
+```{r}
+#| echo: true
+#| eval: false
+#| message: false
+#| warning: false
+library(sf)
+## Importation de la couche des divisions de recensement du Québec
+DR.Qc <- st_read(dsn = "data/chap01/gpkg/Recen2021Sherbrooke.gpkg", 
+                 layer = "DivisionsRecens2021", quiet = TRUE)
+## Importation du fichier csv des divisions de recensement
+DR.Data <- read.csv("data/chap01/tables/DRQC2021.csv")
+## Jointure attributaire avec le champ IDUGD
+DR.Qc <- A compléter
+## Il y a déjà deux champs dans la table pour calculer la densité de population :
+## SUPTERRE : superficie en km2
+## DRpop_2021 : population en 2021
+DR.Qc$HabKm2 <- A compléter
+head(DR.Qc, n=2)
+summary(DR.Qc$HabKm2)
+```
+
+Correction à la [section @sec-10013].
+:::
+:::
+
+::: bloc_exercice
+::: bloc_exercice-header
+::: bloc_exercice-icon
+:::
+
+**Exercice 4.** Coordonnées géographiques
+:::
+
+::: bloc_exercice-body
+Vous recevez les coordonnées en degrés (WGS84, EPSG : 4326) : -71.91688, 45.37579. Créez un point pour cette localisation et calculez la distance la séparant du tronçon autoroutier le plus proche. Complétez le code ci-dessous avec les étapes suivantes :
+
+-   Faites une requête attributaire pour créer un objet `sf` avec uniquement les tronçons autoroutiers à partir de la couche `Rues` et le champ `TYPESEGMEN` (voir la [section @sec-01274]).
+
+-   Trouvez l'identifiant du tronçon le plus proche avec la fonction `st_nearest_feature` (voir la [section @sec-0126]).
+
+```{r}
+#| echo: true
+#| eval: false
+#| message: false
+#| warning: false
+
+library(sf)
+## Importation du réseau de rues
+Rues <- st_read("data/chap01/shp/Segments_de_rue.shp", quiet=TRUE)
+unique(Rues$TYPESEGMEN)
+## Sélection des tronçons autoroutiers
+Autoroutes <- À compléter
+## Création d'une couche sf pour le point avec les coordonnées
+## en degrés (WGS84, EPSG : 4326) : -71.91688, 45.37579
+Point1_sf <- À compléter
+## Changement de projection avant de s'assurer que les deux couches ont la même
+Point1_sf <- st_transform(Point1_sf, st_crs(Autoroutes))
+## Trouver le tronçon autoroutier le plus proche avec la fonction st_nearest_feature
+PlusProche <- À compléter
+print(PlusProche)
+Point1_sf$AutoroutePlusProche <- as.numeric(st_distance(Point1_sf,
+                                                        Autoroutes[PlusProche,]))
+cat("Distance à l'autoroute la plus proche :", Point1_sf$AutoroutePlusProche, "m.")
+## Zone tampon
+ZoneTampon <- st_buffer(Point1_sf, Point1_sf$AutoroutePlusProche)
+## Cartographie
+tmap_mode("view")
+tm_shape(ZoneTampon)+
+  tm_borders(col= "black")+
+tm_shape(Autoroutes)+
+  tm_lines(col="red")+
+tm_shape(Point1_sf)+
+  tm_dots(col= "blue", shape=21, size = .2)
+```
+
+Correction à la [section @sec-10014].
+:::
+:::

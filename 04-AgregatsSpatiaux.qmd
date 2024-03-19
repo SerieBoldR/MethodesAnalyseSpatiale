@@ -1,0 +1,785 @@
+# Méthodes de détection d'agrégats spatiaux et spatio-temporels {#sec-chap04}
+
+Dans ce chapitre, nous abordons deux familles de méthodes de détection d'agrégats spatiaux et spatio-temporels qui s'appliquent à des géométries différentes : les méthodes de classification basées sur la densité des points (couche de points), principalement les algorithmes DBSCAN [@DBSCAN1996] et ST-DBSCAN [@birant2007st], et les méthodes de balayage de Kulldorff [-@kulldorff1997spatial] (couche polygonale).
+
+::: bloc_package
+::: bloc_package-header
+::: bloc_package-icon
+:::
+
+**Liste des *packages* utilisés dans ce chapitre**
+:::
+
+::: bloc_package-body
+-   Pour importer et manipuler des fichiers géographiques :
+    -   `sf` pour importer et manipuler des données vectorielles.
+    -   `dplyr` pour manipuler les données.
+-   Pour construire des cartes et des graphiques :
+    -   `tmap` pour les cartes.
+    -   `ggplot2` pour construire des graphiques.
+-   `dbscan` pour l'algorithme DBSCAN.
+-   `SpatialEpi` pour les méthodes de balayage de Kurlldoff.
+:::
+:::
+
+## Agrégats d'entités spatiales ponctuelles {#sec-041}
+
+### DBSCAN : agrégats spatiaux {#sec-0411}
+
+::: bloc_objectif
+::: bloc_objectif-header
+::: bloc_objectif-icon
+:::
+
+**Pourquoi utiliser DBSCAN ?**
+:::
+
+::: bloc_objectif-body
+Dans le chapitre précédent, portant sur les *méthodes de répartition ponctuelles*, nous avons abordé la méthode KDE permettant de cartographier la densité de points dans une maille régulière ([section @sec-0342]). La carte de chaleur obtenue avec la KDE représente les valeurs de densité (variable continue) pour les pixels couvrant le territoire à l'étude.
+
+Avec l'algorithme DBSCAN [@DBSCAN1996], l'objectif est différent : il s'agit d'**identifier des agrégats spatiaux d'évènements ponctuels dans un territoire donné** (par exemple, des cas de maladies, d'accidents, d'espèces fauniques ou végétales, de crimes, etc.). Autrement dit, il s'agit d'identifier plusieurs régions du territoire à l'étude dans lesquelles la densité de points est forte.
+
+Concrètement, si la méthode KDE renvoie une variable continue pour l'ensemble du territoire, l'algorithme DBSCAN renvoie une variable qualitative uniquement pour les points du jeu de données.
+:::
+:::
+
+#### Fonctionnement de DBSCAN {#sec-04111}
+
+DBSCAN (***D**ensity-**B**ased **S**patial **C**lustering of **A**pplications with **N**oise*) est un algorithme de classification non supervisée qui regroupe des observations en fonction de **leur densité** dans un espace à deux, trois ou *n* dimensions [@DBSCAN1996]. Comme pour toute autre méthode de classification non supervisée, ces dimensions sont des variables. Par conséquent, en appliquant DBSCAN sur les coordonnées géographiques d'entités ponctuelles 2D (*x*, *y*) ou 3D (*x*, *y*, *z*), nous classifions les points du jeu de données.
+
+Prenons un jeu de données fictives (@fig-DonnesFictivesDBSCAN, a). À l'œil nu, nous identifions clairement cinq régions distinctes avec une forte densité de points et des zones de faible densité; ces dernières étant représentées par les points noirs avec DBSCAN (@fig-DonnesFictivesDBSCAN, b).
+
+```{r}
+#| echo: false 
+#| message: false 
+#| warning: false
+#| label: fig-DonnesFictivesDBSCAN
+#| fig-align: center
+#| fig-cap: Jeu de données fictives et classification DBSCAN avec cinq classes
+#| out-width: 75%
+
+library("dbscan")
+library("factoextra")
+library("ggplot2")
+library("cluster")
+library("Gmedian")
+library("ggpubr")
+
+set.seed(123456789)
+points <- multishapes[, 1:2]
+
+# Graphique 1
+G1 <- ggplot(data = points)+
+        geom_point(aes(x = x, y = y))+
+        labs(x = "X", y = 'Y', title = 'Jeu de données initial')
+
+# dbscan
+points$dbscan5 <- as.character(dbscan(points[, 1:2], eps = 0.15, minPts = 5)$cluster)
+
+couleurs <- c("#000000", "#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")
+
+G1 <- ggplot(data = points)+
+  geom_point(aes(x = x, y = y))+
+  labs(x = "X", y = 'Y', title = 'a. Jeu de données fictives')
+
+G2 <- ggplot(data = points,
+             aes(x = x, y = y, color = dbscan5))+
+  geom_point()+ scale_color_manual(values=couleurs)+
+  labs(x = "X", y = 'Y', title = 'b. DBSCAN')+
+  theme(legend.position="none")
+
+# K-moyennes, K-médianes, K-médoïdes
+points$Kmoyennes5 <- as.character(kmeans(points[, 1:2], centers = 5, iter.max = 100)$cluster)
+points$Kmedianes5 <- as.character(kGmedian(points[, 1:2], ncenters = 5, iter.max = 100)$cluster)
+points$Kmedoides5 <- as.character(pam(points[, 1:2], k = 5)$cluster)
+points$CAHWard5   <- as.character(cutree(hclust(dist(points[, 1:2], method = "euclidean"), method = "ward.D"), k= 5))
+
+G3 <- ggplot(data = points,
+             aes(x = x, y = y, color = Kmoyennes5))+
+  geom_point()+ scale_color_manual(values=couleurs)+
+  labs(x = "X", y = 'Y', title = 'a. K-moyennes')+
+  theme(legend.position="none")
+
+G4 <- ggplot(data = points,
+             aes(x = x, y = y, color = Kmedianes5))+
+  geom_point()+ scale_color_manual(values=couleurs)+
+  labs(x = "X", y = 'Y', title = 'b. K-médianes')+
+  theme(legend.position="none")
+
+G5 <- ggplot(data = points,
+             aes(x = x, y = y, color = Kmedoides5))+
+  geom_point()+ scale_color_manual(values=couleurs)+
+  labs(x = "X", y = 'Y', title = 'c. K-médoïdes')+
+  theme(legend.position="none")
+
+G6 <- ggplot(data = points,
+             aes(x = x, y = y, color = CAHWard5))+
+  geom_point()+ scale_color_manual(values=couleurs)+
+  labs(x = "X", y = 'Y', 
+       title = "d. Classif. ascendante hiérarchique")+
+  theme(legend.position="none")
+
+ggarrange(G1, G2)
+```
+
+L'intérêt majeur de l'algorithme DBSCAN est qu'il est basé sur la **densité des points** et non sur la **distance entre les points** comme les algorithmes classiques de classification non supervisée que sont les k-moyennes, k-médianes, k-médoïdes ou la classification ascendante hiérarchique. Tel qu'illustré à la @fig-AutresMethodesClassifNonSuperv, l'utilisation de la distance pour identifier cinq groupes de points renvoie des résultats peu convaincants. D'une part, tous les points appartiennent à une classe, sans séparer les régions de fortes et de faibles densités. D'autre part, les algorithmes classiques basés sur la distance ne parviennent pas à bien identifier les deux agrégats circulaires (bleu et rouge à la @fig-DonnesFictivesDBSCAN, b) et parfois linéaires (vert et mauve à la @fig-DonnesFictivesDBSCAN, b).
+
+```{r}
+#| echo: false 
+#| message: false 
+#| warning: false
+#| label: fig-AutresMethodesClassifNonSuperv
+#| fig-align: center
+#| fig-cap: Classification avec d'autres algorithmes basés sur la distance
+#| out-width: 75%
+ggarrange(G3, G4, G5, G6)
+```
+
+L'algorithme DBSCAN comprend deux paramètres qui doivent être définis par la personne utilisatrice :
+
+-   **Le rayon de recherche**, dénommé $\epsilon$ (epsilon), habituellement basé sur la distance euclidienne. Les distances de Manhattan ou réticulaires peuvent aussi être utilisées.
+
+-   **Le nombre minimum de points**, dénommé $MinPts$, requis pour qu'un point, incluant lui-même, soit considéré comme un point central et appartienne à un agrégat, un regroupement (*cluster* en anglais).
+
+::: bloc_notes
+::: bloc_notes-header
+::: bloc_notes-icon
+:::
+
+**Avantage de DBSCAN : nul besoin de spécifier le nombre d'agrégats (*clusters*)!**
+:::
+
+::: bloc_notes-body
+Comparativement à d'autres méthodes de classification non supervisées comme les k-moyennes, k-médianes et k-médoïdes, DBSCAN ne requiert pas de spécifier le nombre de classes à identifier dans le jeu de données. Autrement dit, appliqué à des géométries ponctuelles, l'algorithme DBSCAN détecte autant d'agrégats spatiaux que nécessaire en fonction des valeurs des deux paramètres ($\epsilon$ et $MinPts$).
+:::
+:::
+
+À la @fig-TypesPointsDBSCAN, nous appliquons l'algorithme DBSCAN à un semis de points avec un rayon de recherche de 500 mètres ($\epsilon=500$) et un nombre minimum de cinq points ($MinPts = 5$). Dans un premier temps, l'algorithme distingue trois types de points :
+
+1.  Des **points centraux** (*core points* en anglais) qui ont au moins cinq points (incluant eux-mêmes) dans un rayon de 500 mètres (points rouges).
+2.  Des **points frontières** (*border points*) qui ont moins de cinq points (incluant eux-mêmes) dans un rayon de 500 mètres, mais qui sont inclus dans la zone tampon de 500 mètres d'un point central (points bleus).
+3.  Des **points aberrants** (*noise points*) qui ont moins de cinq points (incluant eux-mêmes) dans un rayon de 500 mètres et qui ne sont pas inclus dans la zone tampon d'un point central (points noirs).
+
+```{r}
+#| echo: false 
+#| message: false 
+#| warning: false
+#| eval: false
+library("dbscan")
+library("sf")
+library("tmap")
+
+set.seed(123456789)
+points.sf <- st_read("data/chap04/PointsDBSCAN.shp", quiet = TRUE)
+xy <- st_coordinates(points.sf)
+points.sf$x <- xy[,1]
+points.sf$y <- xy[,2]
+## Zone tampon
+buffer.sf <- st_buffer(points.sf, 500)
+buffer.sf$Npoints500 <- lengths(st_contains(buffer.sf, points.sf))-1
+buffer.sf$Densite <- ifelse(buffer.sf$Npoints500 < 5, 0, 1)
+## DBSCAN
+points <- st_drop_geometry(points.sf)
+points.sf$dbscan <- as.character(dbscan(points[, 2:3], eps = 500, minPts = 5)$cluster)
+points.sf$Npoints500 <- buffer.sf$Npoints500
+points.sf$Densite    <- as.character(buffer.sf$Densite)
+## Classification
+points.sf$typePoints <- ifelse(points.sf$Npoints500 > 4, "1. Points centraux", "")
+points.sf$typePoints <- ifelse(points.sf$Npoints500 < 5 & points.sf$dbscan > 0, "2. Points frontières", points.sf$typePoints)
+points.sf$typePoints <- ifelse(points.sf$dbscan == 0, "3. Points aberrants", points.sf$typePoints)
+buffer.sf$typePoints <- points.sf$typePoints
+## Cartographie
+couleurs <- c("#e41a1c", "#377eb8", "#000000")
+Carte1 <- tm_shape(points.sf, unit = "m")+
+             tm_dots(shape = 21, size=.2, col= "typePoints", palette = couleurs, title ="")+
+          tm_shape(subset(buffer.sf, buffer.sf$OBJECTID %in% c(13,133,165)))+
+             tm_polygons(col= "typePoints", palette = couleurs, alpha = .15, legend.show = FALSE)+
+          tm_scale_bar(breaks  = c(0, 500), position = c("right", "bottom"), text.size = .75, )+
+          tm_layout(frame = FALSE, legend.position = c("center", "bottom"), 
+                    legend.text.size = .85, legend.outside = TRUE)
+Carte1
+
+couleurs <- c("#000000", "#984ea3", "#ff7f00")
+Carte2 <- tm_shape(points.sf, unit = "m")+
+             tm_dots(shape = 21, size=.2, col= "dbscan", palette = couleurs, title ="")+
+          tm_scale_bar(breaks  = c(0, 500), position = c("right", "bottom"), text.size = .75, )+
+          tm_layout(frame = FALSE, legend.position = c("center", "bottom"), 
+                    legend.text.size = .85, legend.outside = TRUE)
+```
+
+![Trois types de points identifiés par l'algorithme DBSCAN](images/Chap04/DbscanTypesPoints.png){#fig-TypesPointsDBSCAN width="75%" fig-align="center"}
+
+Par la suite, les étapes de l'algorithme sont les suivantes :
+
+-   **Étape 1.** Formation du premier agrégat
+
+    -   Nous tirons au hasard un point central et l'assignons au premier agrégat (groupe ou *cluster*).
+
+    -   Puis, les points compris dans la zone tampon du premier point central sont ajoutés à ce premier agrégat.
+
+    -   De façon itérative, nous étendons l'agrégat avec les points centraux ou frontières qui sont compris dans les zones tampons des points ajoutés précédemment.
+
+-   **Étape 2.** Formation d'autres agrégats
+
+    -   Lorsque le premier agrégat est complété, nous tirons au hasard un autre point central n'appartenant pas au premier agrégat.
+
+    -   Nous appliquons la même démarche qu'à l'étape 1 pour étendre et compléter cet autre agrégat.
+
+    -   Les deux sous-étapes ci-dessus sont répétées jusqu'à ce que tous les points centraux et frontières soient assignés à un agrégat.
+
+Nous obtenons ainsi *k* agrégats (valeurs de 1 à *k*) tandis que les points aberrants sont affectés à la même classe (valeur de 0 habituellement). Appliqué au semis de points, DBSCAN a détecté deux agrégats et quatre points aberrants (@fig-ResultatsDBSCAN).
+
+![Résultats de l'algorithme DBSCAN](images/Chap04/DbscanResultats.png){#fig-ResultatsDBSCAN width="75%" fig-align="center"}
+
+#### Sensibilité et optimisation des paramètres de DBSCAN {#sec-04112}
+
+Les résultats de l'algorithme de DBSCAN varient en fonction de ses deux paramètres, soit le rayon de recherche ($\epsilon$) et le nombre minimum de points ($MinPts$).
+
+Concernant le paramètre $\epsilon$, plus sa valeur est réduite, plus le nombre de points identifiés comme aberrants est important. Inversement, plus elle est grande, plus le nombre d'agrégats diminue. En guise d'illustration, faisons varier la valeur du rayon en maintenant à cinq le nombre minimum de points :
+
+-   Avec un rayon de 250 mètres, cinq agrégats sont identifiés tandis que 29 points sont considérés comme du bruit (@fig-VariationResultatsDBSCAN, a).
+
+-   Avec un rayon de 500 mètres, la solution est plus optimale avec deux agrégats et cinq points aberrants (@fig-VariationResultatsDBSCAN, b).
+
+-   Avec un rayon de 1000 mètres, deux agrégats sont aussi identifiés. Par contre, il ne reste plus qu'un point aberrant. Par conséquent, quatre points qui, à l'œil nu, sont très éloignés d'un agrégat y sont pourtant affectés (@fig-VariationResultatsDBSCAN, c).
+
+-   Avec un rayon de 1500 mètres, tous les points sont affectés à un et un seul agrégat (@fig-VariationResultatsDBSCAN, d).
+
+![Variations de résultats de l'algorithme DBSCAN selon la taille du rayon](images/Chap04/DbscanResultatsVariation.png){#fig-VariationResultatsDBSCAN width="75%" fig-align="center"}
+
+Concernant le paramètre $MinPts$, plusieurs stratégies ont été proposées pour fixer sa valeur :
+
+-   $MinPts \geq dim(D) + 1$, c'est-à-dire que sa valeur doit être minimalement égale au nombre de dimensions (variables) plus un du jeu de données.
+-   $MinPts = dim(D) \times 2$, c'est-à-dire que le nombre de points devrait être égal à deux fois le nombre de dimensions du tableau [@sander1998density].
+-   $MinPts = 4$ quand le jeu de données ne comprend que deux dimensions [@DBSCAN1996], soit un critère qui s'applique à des géométries ponctuelles 2D.
+
+Après avoir fixé le nombre minimal de points, nous pouvons optimiser la valeur du rayon de recherche de la façon suivante :
+
+-   Pour chacun des points, calculer la distance au *k*^ième^ point le plus proche.
+
+-   Trier les valeurs obtenues pour construire un graphique en courbe.
+
+-   Dans ce graphique, utiliser le *critère du coude* pour repérer la ou les valeurs signalant un décrochement dans la courbe. À la lecture de la @fig-KPlusProcheDbScan, les valeurs d'epsilon ($\epsilon$) à retenir pourraient être 300, 350, 425 et 450 mètres.
+
+```{r}
+#| echo: false 
+#| message: false 
+#| warning: false
+#| label: fig-KPlusProcheDbScan
+#| fig-align: center
+#| fig-cap: Optimisation de la valeur d'epsilon
+#| out-width: 65%
+set.seed(123456789)
+library(sf)
+library(ggplot2)
+points.sf <- st_read("data/chap04/PointsDBSCAN.shp", quiet = TRUE)
+xy <- st_coordinates(points.sf)
+points.sf$x <- xy[,1]
+points.sf$y <- xy[,2]
+points <- st_drop_geometry(points.sf)
+
+DistKplusproche <- kNNdist(points[, 2:3], k = 4)
+DistKplusproche <- as.data.frame(sort(DistKplusproche, decreasing = FALSE))
+names(DistKplusproche) <- "distance"
+
+ggplot(data = DistKplusproche)+
+  geom_path(aes(x = 1:nrow(DistKplusproche), y = distance), size=1)+
+  labs(x = "Points triés par ordre croissant selon la distance",
+       y = "Distance au quatrième point le plus proche",
+       )+
+  geom_hline(yintercept=300, color = "#08306b", linetype="dashed", size=1)+
+  geom_hline(yintercept=350, color = "#00441b", linetype="dashed", size=1)+
+  geom_hline(yintercept=425, color = "#67000d", linetype="dashed", size=1)+
+  geom_hline(yintercept=450, color = "#3f007d", linetype="dashed", size=1)
+```
+
+Si vous repérez plusieurs seuils de distance dans le graphique des distances au *k*^ième^ plus proche voisin, réalisez et comparez les résultats des DBSCAN avec ces valeurs d'epsilon. À la @fig-DbscanResultatsOptimatisationEpsilon, nous constatons que les résultats avec des seuils de 425 et 450 mètres sont identiques et semblent optimaux. Par contre, la solution avec un rayon de 350 mètres identifie deux points aberrants qui pourraient être intégrés au deuxième agrégat tandis que celle avec un rayon de 300 mètres identifie un agrégat supplémentaire, mais classifie de nombreux points comme aberrants.
+
+::: bloc_attention
+::: bloc_attention-header
+::: bloc_attention-icon
+:::
+
+**Quel résultat choisir parmi les quatre solutions?**
+:::
+
+::: bloc_attention-body
+Comme pour toute analyse de classification, votre choix peut être objectif et reposer uniquement sur des indicateurs statistiques (ici, le graphique des distances au *k* plus proche voisin). Il devrait aussi s'appuyer sur vos connaissances du terrain. Par exemple, l'identification d'un troisième agrégat avec une valeur d'epsilon fixée à 300 mètres pourrait refléter selon vous une réalité terrain particulièrement intéressante qui motiverait fortement le choix de cette solution.
+:::
+:::
+
+![Comparaison de solutions DBSCAN avec différentes valeurs d'epsilon](images/Chap04/DbscanResultatsOptimatisationEpsilon.png){#fig-DbscanResultatsOptimatisationEpsilon width="75%" fig-align="center"}
+
+::: bloc_aller_loin
+::: bloc_aller_loin-header
+::: bloc_aller_loin-icon
+:::
+
+**Autres algorithmes de classification non supervisée basée sur la densité**
+:::
+
+::: bloc_aller_loin-body
+Bien que DBSCAN soit l'algorithme le plus utilisé, d'autres algorithmes basés sur la densité peuvent être utilisés pour détecter des agrégats spatiaux de points, notamment :
+
+-   HDBSCAN (***H**ierarchical **D**ensity-**B**ased **S**patial **C**lustering of **A**pplications with **N**oise*) [@HDBSCAN2013]. Brièvement, cette version modifiée de DBSCAN permet d'obtenir une hiérarchie de partitions, comme dans une classification ascendante hiérarchique.
+
+-   OPTICS (***O**rdering **P**oints **T**o **I**dentify the **C**lustering **S**tructure*) [@HDBSCAN2013]. Avec OPTICS, la distance de voisinage ($\epsilon$) n'a pas besoin d'être spécifiée. Succinctement, pour chaque point du jeu de données, il utilise la distance au $k$ ($MinPts$) plus proche voisin.
+
+**Application à des évènements localisés sur un réseau de rues**
+
+Lorsque les évènements sont localisés sur un réseau de rues (des accidents par exemple), il convient d'utiliser une autre métrique que la distance euclidienne pour le rayon de recherche ($\epsilon$), soit la distance du chemin le plus court à travers le réseau de rues, ce que nous verrons au chapitre suivant ([section @sec-064]). Geoff Boeing a aussi proposé un [un code Python](https://geoffboeing.com/2018/04/network-based-spatial-clustering/) basé sur la librairie [OSMnx](https://geoffboeing.com/2016/11/osmnx-python-street-networks/).
+
+:::
+:::
+
+### ST-DBSCAN : agrégats spatio-temporels {#sec-0412}
+
+Derya Birant et Alp Kut [-@birant2007st] ont proposé une modification de l'algorithme de DBSCAN afin qu'il puisse s'appliquer à des données spatio-temporelles ($x$, $y$, $d$) avec $d$ étant la date de l'évènement. Dénommé ST-DBSCAN, l'algorithme comprend toujours les deux paramètres de DBSCAN ($MinPts$ et $\epsilon$), auxquels s'ajoute un autre paramètre $\epsilon$ pour le temps (défini en heure, jour, semaine, mois ou année). Autrement dit, deux paramètres de distance sont utilisés : $\epsilon_1$ pour la proximité spatiale (comme avec DBSCAN) et $\epsilon_2$ pour la proximité temporelle [@birant2007st]. De la sorte, deux points sont considérés comme voisins si la distance spatiale et la distance temporelle sont toutes deux inférieures aux seuils fixés.
+
+::: bloc_attention
+::: bloc_attention-header
+::: bloc_attention-icon
+:::
+
+**Fenêtre temporelle des points formant un agrégat**
+:::
+
+::: bloc_attention-body
+Attention, les points formant un agrégat peuvent avoir une fenêtre temporelle bien plus grande que le seuil $\epsilon_2$ fixé. Par exemple, fixons les valeurs de $\epsilon_1$ à 500 mètres et de $\epsilon_2$ à 7 jours. Si le point A ($d$ = 2023-01-15) est distant de 400 mètres du point B ($d$ = 2023-01-20), les deux points sont considérés comme voisins. Par contre, si le point B est distant du point C ($d$ = 2023-01-25) de moins de 500 mètres, il peut être aussi agrégé à l'agrégat puisque l'écart temporel entre B et C est de 5 jours.
+
+Habituellement, plus la valeur de $\epsilon_2$ est faible, plus le nombre de points considérés comme aberrants est important.
+:::
+:::
+
+### Mise en œuvre dans R {#sec-0414}
+
+#### DBSCAN {#sec-04141}
+
+Nous utilisons le *package* `dbscan` [@dbscanPackage1; @dbscanPackage2] dans lequel sont implémentés plusieurs algorithmes, dont DBSCAN, mais aussi OPTICS et HDBSCAN. La fonction `dbscan(x, eps, minPts, weights = NULL)` comprend plusieurs paramètres :
+
+-   `x`: une matrice, un *DataFrame*, un objet `dist` ou un objet `frNN`.
+-   `eps`: le rayon de recherche epsilon ($\epsilon$).
+-   `minPts`: le nombre de points minimum requis pour que chaque point soit considéré comme un point central.
+-   `weights`: un vecteur numérique optionnel pour pondérer les points.
+
+Pour illustrer le fonctionnement de la méthode DBSCAN, nous avons extrait les accidents d'un [jeu de données sur les incidents de sécurité publique survenus sur le territoire de la Ville de Sherbrooke de juillet 2019 à juin 2022](https://donneesouvertes-sherbrooke.opendata.arcgis.com/datasets/64d19d62f0804f5896e4b24c32aea49d_0/explore?location=45.403675%2C-71.960143%2C12.65) (@fig-CartoAccidents).
+
+```{r}
+#| echo: false 
+#| message: false 
+#| warning: false
+#| label: fig-CartoAccidents
+#| fig-align: center
+#| fig-cap: Accidents survenus entre juillet 2019 et juin 2022, Ville de Sherbrooke
+#| out-width: 65%
+
+library(sf)
+library(tmap)
+library(dbscan)
+## Importation des accidents
+Accidents <- st_read(dsn = "data/chap04/DataAccidentsSherb.shp", quiet=TRUE)
+Arrondiss <- st_read(dsn = "data/chap04/Arrondissements.shp", quiet=TRUE)
+tmap_mode("plot")
+tm_shape(Arrondiss)+tm_borders(col="black")+tm_fill(col="#f7f7f7")+
+tm_shape(Accidents)+tm_dots(col="red", size = .1)+
+  tm_layout(frame = FALSE)+
+  tm_scale_bar(breaks  = c(0, 5, 10))
+```
+
+Dans le code ci-dessous, nous réalisons trois étapes préalables au calcul de DBSCAN :
+
+-   Importation des accidents.
+-   Récupération des coordonnées ($x$, $y$) des accidents et stockage dans une matrice.
+-   Construction du graphique à partir de la distance au quatrième point le plus proche.
+
+Nous n'observons pas de décrochement particulier dans la courbe de la @fig-GraphiqueAccidentsDist4. Par conséquent, nous pourrions tout aussi bien retenir une distance euclidienne de 250, 500, 1000 ou 1500 mètres pour epsilon.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-GraphiqueAccidentsDist4
+#| fig-align: center
+#| fig-cap: Optimisation de la valeur d’epsilon pour les accidents
+#| out-width: 65%
+library(sf)
+library(tmap)
+library(dbscan)
+library(ggplot2)
+## Importation des accidents
+Accidents.sf <- st_read(dsn = "data/chap04/DataAccidentsSherb.shp", quiet=TRUE)
+## Coordonnées géographiques
+xy <- st_coordinates(Accidents.sf)
+## Graphique pour la distance au quatrième voisin le plus proche
+DistKplusproche <- kNNdist(xy, k = 4)
+DistKplusproche <- as.data.frame(sort(DistKplusproche, decreasing = FALSE))
+names(DistKplusproche) <- "distance"
+ggplot(data = DistKplusproche)+
+  geom_path(aes(x = 1:nrow(DistKplusproche), y = distance), size=1)+
+  labs(x = "Points triés par ordre croissant selon la distance",
+       y = "Distance au quatrième point le plus proche")+
+  geom_hline(yintercept=250, color = "#08306b", linetype="dashed", size=1)+
+  geom_hline(yintercept=500, color = "#00441b", linetype="dashed", size=1)+
+  geom_hline(yintercept=1000, color = "#67000d", linetype="dashed", size=1)+
+  geom_hline(yintercept=1500, color = "#3f007d", linetype="dashed", size=1)
+```
+
+Appliquons la méthode DBSCAN avec un minimum de quatre points et les quatre valeurs de distance euclidienne.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+set.seed(123456789)
+## DBSCAN avec les quatre distances
+dbscan250  <- dbscan(xy, eps = 250, minPts = 4)
+dbscan500  <- dbscan(xy, eps = 500, minPts = 4)
+dbscan1000 <- dbscan(xy, eps = 1000, minPts = 4)
+dbscan1500 <- dbscan(xy, eps = 1500, minPts = 4)
+## Affichage des résultats
+dbscan250
+dbscan500
+dbscan1000
+dbscan1500
+```
+
+Pour les 1106 accidents du jeu de données, les résultats des quatre DBSCAN ci-dessus sont les suivants :
+
+-   Avec $\epsilon = 250$, 45 agrégats et 353 points aberrants (bruit).
+-   Avec $\epsilon = 500$, 33 agrégats et 143 points aberrants.
+-   Avec $\epsilon = 1000$, 10 agrégats et 42 points aberrants.
+-   Avec $\epsilon = 1500$, 3 agrégats et 7 points aberrants.
+
+Pour les *n* points du jeu de données, l'appartenance à un agrégat est enregistrée dans un vecteur numérique avec des valeurs de 0 à *k* agrégats (`ResultatDbscan$cluster`). Notez que la valeur de 0 est attribuée aux points aberrants. Avec ce vecteur, nous enregistrons les résultats dans un nouveau champ de la couche de points `sf`.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+## Enregistrement des résultats de DBSCAN dans la couche de points sf
+Accidents.sf$Dbscan250  <- as.character(dbscan250$cluster)
+Accidents.sf$Dbscan500  <- as.character(dbscan500$cluster)
+Accidents.sf$Dbscan1000 <- as.character(dbscan1000$cluster)
+Accidents.sf$Dbscan1500 <- as.character(dbscan1500$cluster)
+
+Accidents.sf$Dbscan250 <- ifelse(nchar(Accidents.sf$Dbscan250) == 1,
+                                        paste0("0", Accidents.sf$Dbscan250),
+                                        Accidents.sf$Dbscan250)
+Accidents.sf$Dbscan500 <- ifelse(nchar(Accidents.sf$Dbscan500) == 1,
+                                        paste0("0", Accidents.sf$Dbscan500),
+                                        Accidents.sf$Dbscan500)
+Accidents.sf$Dbscan1000 <- ifelse(nchar(Accidents.sf$Dbscan1000) == 1,
+                                        paste0("0", Accidents.sf$Dbscan1000),
+                                        Accidents.sf$Dbscan1000)
+Accidents.sf$Dbscan1500 <- ifelse(nchar(Accidents.sf$Dbscan1500) == 1,
+                                        paste0("0", Accidents.sf$Dbscan1500),
+                                        Accidents.sf$Dbscan1500)
+```
+
+Nous cartographions finalement les résultats pour les quatre solutions.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+tmap_mode("plot")
+tm_shape(Accidents.sf)+tm_dots(col="Dbscan250", title = "DBSCAN 250", size = .5)
+tm_shape(Accidents.sf)+tm_dots(col="Dbscan500", title = "DBSCAN 500", size = .5)
+tm_shape(Accidents.sf)+tm_dots(col="Dbscan1000", title = "DBSCAN 1000", size = .5)
+tm_shape(Accidents.sf)+tm_dots(col="Dbscan1500", title = "DBSCAN 1500", size = .5)
+```
+
+#### ST-DBSCAN {#sec-04142}
+
+Pour l'algorithme ST-DBSCAN, nous utilisons une [fonction R](https://github.com/CKerouanton/ST-DBSCAN/blob/master/stdbscan.R) proposée par Colin Kerouanton.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+source("code_complementaire/stdbscan.R")
+```
+
+Calculons ST-DBSCAN avec une distance spatiale de 1000 mètres et une distance temporelle de 21 jours. Nous obtenons 26 agrégats et 584 points identifiés comme aberrants.
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+## Importation des accidents
+Accidents.sf <- st_read(dsn = "data/chap04/DataAccidentsSherb.shp", quiet=TRUE)
+## Coordonnées géographiques
+xy <- st_coordinates(Accidents.sf)
+Accidents.sf$x <- xy[,1]
+Accidents.sf$y <- xy[,2]
+## Vérifions que le champ DATEINCIDE est bien au format date
+str(Accidents.sf$DATEINCIDE)
+## Calcul de st-dbscan avec une distance de 1000 mètres et 21 jours
+Resultats.stdbscan <- stdbscan(x = Accidents.sf$x,
+                              y = Accidents.sf$y,
+                              time = Accidents.sf$DATEINCIDE,
+                              eps1 = 1000,
+                              eps2 = 21,
+                              minpts = 4)
+## Enregistrement des résultats de ST-DBSCAN dans la couche de points sf
+Accidents.sf$stdbscan.1000_21 <- as.character(Resultats.stdbscan$cluster)
+Accidents.sf$stdbscan.1000_21 <- ifelse(nchar(Accidents.sf$stdbscan.1000_21) == 1,
+                                        paste0("0", Accidents.sf$stdbscan.1000_21),
+                                        Accidents.sf$stdbscan.1000_21)
+## Nombre de points par agrégat
+table(Accidents.sf$stdbscan.1000_21)
+```
+
+Pour faciliter l'analyse des résultats de ST-DBSCAN, nous conseillons de :
+
+1.  Construire un tableau récapitulatif pour les agrégats avec le nombre de points, les dates de début et de fin et l'intervalle temporel.
+2.  Construire un graphique avec les agrégats (axe des *y*) et la dimension temporelle (axe des *x*).
+3.  Cartographier les résultats.
+
+Le code ci-dessous génère le tableau récapitulatif. Nous constatons ainsi que les agrégats 9 et 10 incluent respectivement 178 et 156 points avec des intervalles temporels importants (respectivement 251 et 319 jours).
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+library(dplyr)
+## Sélection des points appartenant à un agrégat
+Agregats <- subset(Accidents.sf, 
+                   Accidents.sf$stdbscan.1000_21 != "00")
+## Conversion de la date au format POSIXct
+Agregats$dtPOSIXct <- as.POSIXct(Agregats$DATEINCIDE, format = "%Y/%m/%d")
+## Tableau récapitulatif
+library("dplyr")  
+Tableau.stdbscan <-
+    st_drop_geometry(Agregats) %>%
+      group_by(stdbscan.1000_21) %>% 
+      summarize(points = n(),
+                date.min = min(DATEINCIDE),
+                date.max = max(DATEINCIDE),
+                intervalle.jours = as.numeric(max(DATEINCIDE)-min(DATEINCIDE)))
+## Affichage du tableau
+print(Tableau.stdbscan, n = nrow(Tableau.stdbscan))
+```
+
+La @fig-GraphStScanEps1000Eps21 présente les points et l'étendue temporelle de chaque agrégat.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-GraphStScanEps1000Eps21
+#| fig-align: center
+#| fig-cap: Intervalles temporels des agrégats ST-DBSCAN
+#| out-width: 65%
+
+## Construction du graphique
+ggplot(Agregats) + 
+  geom_point(aes(x = dtPOSIXct, 
+                 y = stdbscan.1000_21, 
+                 color = stdbscan.1000_21),
+             show.legend = FALSE) +
+  scale_x_datetime(date_labels = "%Y/%m")+
+  labs(x= "Temps",
+       y= "Identifiant de l'agrégat",
+       title = "ST-DBSCAN avec Esp1 = 1000, Esp2 = 21 et MinPts = 4")
+```
+
+La cartographie des agrégats est présentée à la @fig-CarteStScanEps1000Eps21 avec en noir les points aberrants.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CarteStScanEps1000Eps21
+#| fig-align: center
+#| fig-cap: Agrégats identifiés avec ST-DBSCAN
+#| out-width: 65%
+
+## Création de deux couches : l'une pour les agrégats, l'autre pour les points aberrants
+stdbcan.Agregats <- subset(Accidents.sf, Accidents.sf$stdbscan.1000_21 != "00")
+stdbcan.Bruit    <- subset(Accidents.sf, Accidents.sf$stdbscan.1000_21 == "00")
+## Cartographie
+tmap_mode("plot")
+tm_shape(Arrondiss)+tm_fill(col="#f7f7f7")+tm_borders(col="black")+
+tm_shape(stdbcan.Bruit)+
+  tm_dots(shape = 21, col="black", size=.2)+
+  tm_shape(stdbcan.Agregats)+
+  tm_dots(shape = 21, col="stdbscan.1000_21", size=.2, title = "Agrégat")+
+tm_layout(frame = FALSE, legend.position = c("center", "bottom"),
+          legend.text.size = .85, legend.outside = TRUE)
+```
+
+## Méthodes de balayage de Kulldorff {#sec-042}
+
+### Objectifs de la méthode, types d'analyses, de modèles et d'agrégats {#sec-0421}
+
+### Principes de base de la méthode {#sec-0422}
+
+#### Type de balayage (cercle ou ellipse) {#sec-04221}
+
+#### Variable de contrôle {#sec-04222}
+
+### Mise en œuvre dans R {#sec-043}
+
+#### Agrégats temporels, spatiaux et spatio-temporels {#sec-0431}
+
+#### Introduction de variables de contrôle {#sec-0432}
+
+#### Exploration d'autres types de modèles {#sec-0434}
+
+## Quiz de révision du chapitre {#sec-044}
+
+```{r}
+#| label: quizChapitre04
+#| echo: false 
+#| eval: true 
+#| message: false 
+#| warning: false 
+#| results: asis
+
+source("code_complementaire/QuizzFunctions.R")
+Chap04Quiz <- quizz("quiz/Chap04.yml", "Chap04")
+render_quizz(Chap04Quiz)
+```
+
+## Exercices de révision {#sec-045}
+
+::: bloc_exercice
+::: bloc_exercice-header
+::: bloc_exercice-icon
+:::
+
+**Exercice 1.** Application de l'algorithme DBSCAN
+:::
+
+::: bloc_exercice-body
+L'objectif est d'appliquer cet algorithme sur des accidents impliquant des personnes à vélo sur l'île de Montréal (voir la [section @sec-04141]). Ces données ouvertes sur les collisions routières et leur documentation sont disponibles au [lien suivant](https://donnees.montreal.ca/dataset/collisions-routieres).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: false
+library(sf)
+library(tmap)
+library(dbscan)
+library(ggplot2)
+## Importation des données
+Collissions <- st_read(dsn = "data/chap04/collisions.gpkg", 
+                       layer = "CollisionsRoutieres", 
+                       quiet = TRUE)
+## Collisions impliquant au moins une personne à vélo en 2020 et 2021
+Coll.Velo <- subset(Collissions,
+                    Collissions$NB_VICTIMES_VELO > 0 &
+                      Collissions$AN %in% c(2020, 2021))
+## Coordonnées géographiques
+xy <- st_coordinates(Coll.Velo)
+## Graphique pour la distance au quatrième voisin le plus proche
+DistKplusproche <- kNNdist(xy, k = 4)
+DistKplusproche <- as.data.frame(sort(DistKplusproche, decreasing = FALSE))
+names(DistKplusproche) <- "distance"
+ggplot(à compléter)+
+  geom_path(à compléter)+
+  labs(à compléter)+
+  geom_hline(yintercept=250, color = "#08306b", linetype="dashed", size=1)+
+  geom_hline(yintercept=500, color = "#00441b", linetype="dashed", size=1)+
+  geom_hline(yintercept=1000, color = "#67000d", linetype="dashed", size=1)
+## DBSCAN avec les quatre distances
+set.seed(123456789)
+dbscan250  <- à compléter
+dbscan500  <- à compléter
+dbscan1000 <- à compléter
+## Affichage des résultats
+dbscan250
+dbscan500
+dbscan1000
+## Enregistrement dans la couche de points sf Coll.Velo
+Coll.Velo$dbscan250 <- à compléter
+Coll.Velo$dbscan500 <- à compléter
+Coll.Velo$dbscan1000 <- à compléter
+
+Coll.Velo$dbscan250 <- ifelse(nchar(Coll.Velo$dbscan250) == 1,
+                              paste0("0", Coll.Velo$dbscan250),
+                              Coll.Velo$dbscan250)
+Coll.Velo$dbscan500 <- ifelse(nchar(Coll.Velo$dbscan500) == 1,
+                               paste0("0", Coll.Velo$dbscan500),
+                               Coll.Velo$dbscan500)
+Coll.Velo$dbscan1000 <- ifelse(nchar(Coll.Velo$dbscan1000) == 1,
+                               paste0("0", Coll.Velo$dbscan1000),
+                               Coll.Velo$dbscan1000)
+# Extraction des agrégats
+Agregats.dbscan250  <- subset(Coll.Velo, dbscan250 != "00")
+Agregats.dbscan500  <- subset(Coll.Velo, dbscan500 != "00")
+Agregats.dbscan1000 <- subset(Coll.Velo, dbscan1000 != "00")
+## Cartographie
+tmap_mode("plot")
+à compléter
+```
+
+Correction à la [section @sec-10041].
+:::
+:::
+
+::: bloc_exercice
+::: bloc_exercice-header
+::: bloc_exercice-icon
+:::
+
+**Exercice 2.** Application de l'algorithme ST-DBSCAN
+:::
+
+::: bloc_exercice-body
+Avec le même jeu de données, réaliser un ST-DBSCAN avec les paramètres suivants : distance spatiale de 500 mètres, distance temporelle de 30 jours et quatre points minimum (voir la [section @sec-04142]).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: false
+library(sf)
+library(tmap)
+library(dbscan)
+library(ggplot2)
+## Importation des données
+Collissions <- st_read(dsn = "data/chap04/collisions.gpkg", 
+                       layer = "CollisionsRoutieres",
+                       quiet = TRUE)
+## Collisions impliquant au moins une personne à vélo en 2020 et 2021
+Coll.Velo <- subset(Collissions,
+                    Collissions$NB_VICTIMES_VELO > 0 &
+                      Collissions$AN %in% c(2020, 2021))
+## Coordonnées géographiques
+xy <- st_coordinates(Coll.Velo)
+Coll.Velo$x <- xy[,1]
+Coll.Velo$y <- xy[,2]
+## Conversion du champ DT_ACCDN au format Date
+Coll.Velo$DT_ACCDN <- as.Date(Coll.Velo$DT_ACCDN)
+## ST-DBSCAN avec eps1 = 500, esp2 = 30 et minpts = 4
+Resultats.stdbscan <- stdbscan(À compléter)
+## Enregistrement des résultats ST-DBSCAN dans la couche de points sf
+Coll.Velo$stdbscan <- as.character(Resultats.stdbscan$cluster)
+Coll.Velo$stdbscan <- ifelse(nchar(Coll.Velo$stdbscan) == 1,
+                             paste0("0", Coll.Velo$stdbscan),
+                             Coll.Velo$stdbscan)
+## Nombre de points par agrégat avec la fonction table
+table(Coll.Velo$stdbscan)
+## Sélection des points appartenant à un agrégat avec la fonction subset
+Agregats <- subset(Coll.Velo, stdbscan != "00")
+## Conversion de la date au format POSIXct
+Agregats$dtPOSIXct <- as.POSIXct(Agregats$DT_ACCDN, format = "%Y/%m/%d")
+## Tableau récapitulatif
+library("dplyr")  
+Tableau.stdbscan <- À compléter
+## Affichage du tableau
+print(Tableau.stdbscan, n = nrow(Tableau.stdbscan))
+## Construction du graphique
+À compléter
+## Création d'une couche pour les agrégats
+stdbcan.Agregats <- subset(Coll.Velo, stdbscan != "00")
+## Cartographie
+À compléter
+```
+
+Correction à la [section @sec-10042].
+:::
+:::

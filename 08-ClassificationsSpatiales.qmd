@@ -1,0 +1,1325 @@
+# Méthodes de classification non supervisée spatiale {#sec-chap08}
+
+Les méthodes de classification visent à regrouper des observations d'un jeu de données en plusieurs classes en fonction de leurs caractéristiques évaluées à partir de plusieurs variables. Appliquées à une couche spatiale (polygones, points, lignes), il s'agit alors de classifier les unités spatiales sur la base de plusieurs de leurs attributs mesurés à partir de variables. Dans le cadre de ce chapitre, nous abordons deux principales familles de méthodes de classification non supervisée : **celle avec une contrainte spatiale** (algorithmes AZP, SKATER, REDCAP) et **celle avec une dimension spatiale** (*ClustGeo* et classification floue c-moyennes spatiale).
+
+Sommairement, les deux dernières méthodes sont des extensions spatiales de la classification ascendante hiérarchique (CAH) et de l'algorithme flou c-moyennes. Par conséquent, la lecture de ce chapitre nécessite de bien maîtriser le fonctionnement de la CAH et des k-moyennes (*k-means*). Si ce n'est pas le cas, nous vous invitons vivement à lire le [chapitre suivant](https://laeq.github.io/LivreMethoQuantBolR/chap13.html) [@RBoldAir].
+
+::: bloc_attention
+::: bloc_attention-header
+::: bloc_attention-icon
+:::
+
+**Bref retour sur les méthodes de classification**
+:::
+
+::: bloc_attention-body
+Il existe de nombreuses méthodes de classification. Nous distinguons habituellement plusieurs familles de méthodes de classification, celles non supervisées versus supervisées et celles strictes versus floues :
+
+-   **Les méthodes de classification non supervisée** « \[...\] relèvent de la statistique exploratoire multidimensionnelle et permettent de regrouper automatiquement les observations sans avoir de connaissance préalable sur la nature des classes présentes dans l'ensemble de données [@lebart1995statistique]. Les méthodes les plus connues dans ce domaine sont l'algorithme de Classification ascendante hiérarchique (CAH) et la méthode des k-moyennes (*k-means*) » [@ClassificationFloue, p. 1]. À cela s'ajoutent d'autres méthodes comme les k-médianes [@jain1988algorithms] ou encore les k-médoïdes [@kaufman1990partitioning] et la classification mixte combinant k-moyennes et CAH [@lebart1995statistique]. Pour regrouper les observations, ces méthodes (CAH, k-moyennes, k-médianes, k-médoïdes, classification mixte) sont basées sur la distance (proximité) entre les observations tandis que d'autres méthodes sont basées sur la densité des observations (algorithmes DBSCAN, HDBSCAN, STDBSCAN, OPTICS abordés à la [section @sec-041]).
+
+-   **Les méthodes de classification supervisée** « \[...\] permettent d'affecter des observations à partir d'un échantillon déjà classifié, souvent appelé classe d'entraînement. Parmi les méthodes supervisées les plus connues, on retrouve les forêts d'arbres décisionnels, les réseaux de neurones artificiels et l'analyse factorielle discriminante » [@ClassificationFloue, p. 1]. Plus exactement, ces méthodes visent à apprendre des règles basées sur les attributs des observations pour déterminer à quel groupe chaque observation doit être attribuée. Ces règles peuvent ensuite être utilisées pour déterminer la catégorie de nouvelles observations.
+
+-   Que la classification soit ou non supervisée, « on distingue généralement les **méthodes strictes** (ou de partition) des **méthodes floues**. \[...\] Dans une classification stricte, chaque observation appartient à une seule classe : mathématiquement, l'appartenance à une classe donnée est binaire (0 ou 1), tandis que dans une classification floue, chaque observation a une probabilité d'appartenance variant de 0 à 1 pour chacune des classes » [@ClassificationFloue, p. 1-2].
+:::
+:::
+
+**Pourquoi recourir à des méthodes de classification non supervisée spatiale?**
+
+Dans un article récent, Gelb et Apparicio [-@ClassificationFloue] identifient deux principales limites à l'application d'une méthode de classification non supervisée a-spatiale (comme le CAH et le *k-means*) sur des données spatiales :
+
+1.  **La non-prise en compte de la dimension spatiale constitue une perte d'information :** « \[...\]  une partie de l'information propre aux données, à savoir leur localisation, n'est pas prise en compte dans le processus de classification. Or, la dimension géographique est souvent très structurante; par conséquent, l'occulter revient à perdre une quantité non négligeable d'information. Il convient toutefois de nuancer quelque peu ce propos. Généralement, la cartographie des méthodes de classification non supervisée a-spatiale (CAH et *k-means*) révèlent des effets de voisinage, d'autant plus que les variables introduites dans la classification sont fortement autocorrélées positivement » [@ClassificationFloue, p. 6].
+2.  **Limiter l'effet de mitage** : « \[...\] dans un contexte d'autocorrélation spatiale positive, des observations proches spatialement devraient plus vraisemblablement appartenir au même groupe. Avec les méthodes de classification a-spatiale, il est fréquent d'observer des phénomènes de mitage, c'est-à-dire des observations appartenant à un groupe *b* et isolées au milieu d'un ensemble d'observations appartenant au groupe *a*. Ce phénomène peut s'expliquer par la présence ici et là d'autocorrélation spatiale locale négative, c'est-à-dire des observations dont les caractéristiques sémantiques diffèrent de leurs voisines. Souvent, la dissimilarité sémantique entre ces observations est négligeable et ne justifie pas cette rupture spatiale » [@ClassificationFloue, p. 6].
+
+::: bloc_package
+::: bloc_package-header
+::: bloc_package-icon
+:::
+
+**Liste des *packages* utilisés dans ce chapitre**
+:::
+
+::: bloc_package-body
+-   Pour importer et manipuler des fichiers géographiques :
+    -   `sf` pour importer et manipuler des données vectorielles.
+    -   `spdep` pour construire des matrices de pondération spatiale.
+-   Pour construire des cartes et des graphiques :
+    -   `tmap` est certainement le meilleur *package* pour la cartographie.
+    -   `ggplot2` pour construire des graphiques.
+    -   `ggpubr` pour combiner des graphiques.
+-   Pour les méthodes de classification avec une contrainte spatiale :
+    -   `rgeoda` pour les algorithmes AZP, SKATER et REDCAP.
+    -   `spdep` pour l'algorithme SKATER.
+-   Pour les méthodes de classification avec une dimension spatiale :
+    -   `ClustGeo` pour la méthode ClustGeo.
+    -   `geocmeans` pour la classification k-moyennes floue et spatiale.
+:::
+:::
+
+## Méthodes de classification non supervisée avec contrainte spatiale {#sec-081}
+
+Nous avons vu que l'objectif d'une méthode non supervisée appliquée à des données spatiales est de regrouper en *n* classes les unités spatiales d'une couche géographique. Prenons l'exemple de quatre variables environnementales cartographiées à la @fig-figVarEnv pour les IRIS de la ville de Lyon, dont trois considérées comme des nuisances (bruit, dioxyde d'azote et particules fines) et une considérée comme avantageuse (végétation).
+
+```{r}
+#| echo: false 
+#| message: false 
+#| warning: false
+#| label: fig-figVarEnv
+#| fig-align: center
+#| fig-cap: "Cartographie des variables environnementales"
+#| out-width: 100%
+
+load("data/chap08/DonneesLyon.Rdata")
+library(sf)
+library(tmap)
+library(spdep)
+library(rgeoda)
+tmap_mode("plot")
+Carte.Lden <- tm_shape(LyonIris)+
+  tm_fill(col="Lden", n = 5, style = "quantile", palette = "YlOrRd", title="Lden", legend.format = list(text.separator = "à")) +
+  tm_layout(frame=FALSE, 
+            main.title = "Bruit", 
+            main.title.position = "center", 
+            main.title.size = 1)
+Carte.NO2 <- tm_shape(LyonIris)+
+  tm_fill(col="NO2", n = 5, style = "quantile", palette = "YlOrRd", title="µg/m3", legend.format = list(text.separator = "à")) +
+  tm_layout(frame=FALSE, 
+            main.title = "Dixoyde d'azote", 
+            main.title.position = "center", 
+            main.title.size = 1)
+Carte.PM25 <- tm_shape(LyonIris)+
+  tm_fill(col="PM25", n = 5, style = "quantile", palette = "YlOrRd", title="µg/m3", legend.format = list(text.separator = "à")) +
+  tm_layout(frame=FALSE, 
+            main.title = "Particule fines (PM2,5)", 
+            main.title.position = "center", 
+            main.title.size = 1)
+Carte.Vege <- tm_shape(LyonIris)+
+  tm_fill(col="VegHautPrt", n = 5, style = "quantile", palette = "YlOrRd", title="En %", legend.format = list(text.separator = "à")) +
+  tm_layout(frame=FALSE, 
+            main.title = "Canopée", 
+            main.title.position = "center", 
+            main.title.size = 1) + tm_scale_bar(breaks = c(0,5,10))
+tmap_arrange(Carte.Lden, Carte.NO2, Carte.PM25, Carte.Vege, ncol = 2)
+```
+
+Il est possible de regrouper les unités spatiales avec ou sans contrainte spatiale :
+
+-   **Sans contrainte spatiale**, nous cherchons à regrouper les IRIS (unités spatiales) avec des valeurs similaires pour les quatre variables retenues (L~den~, NO~2~, PM~2,5~ et pourcentage de canopée). Cette approche est illustrée à la @fig-figKmeansSkater (a) avec l'algorithme k-moyennes (*k-means* en anglais) avec cinq classes.
+
+-   **Avec contrainte spatiale**, nous cherchons à regrouper les IRIS (unités spatiales) avec des valeurs similaires pour les quatre variables retenues, tout en nous assurant que les regroupements forment des régions avec une absence de mitage. Cette approche est illustrée à la @fig-figKmeansSkater (b) avec l'algorithme SKATER (*Spatial 'K'luster Analysis by Tree Edge Removal*) avec cinq classes. Autrement dit, l'objectif des méthodes de classification non supervisée avec contrainte spatiale est d'agréger *n* unités spatiales en *m* régions non discontinues (avec *n* \< *m*) et cohérentes du point de vue de leurs attributs [@openshaw1995algorithms, p. 428].
+
+```{r}
+#| echo: false 
+#| message: false 
+#| warning: false
+#| label: fig-figKmeansSkater
+#| fig-align: center
+#| fig-cap: "Classification non supervisée avec et sans contrainte spatiale"
+#| out-width: 85%
+
+set.seed(123)
+VarsEnv <- c("Lden", "NO2", "PM25", "VegHautPrt")
+Data <- data.frame(scale(st_drop_geometry(LyonIris)[VarsEnv]))
+# Kmeans
+LyonIris$Kmeans5 <- as.character(kmeans(Data[, VarsEnv], centers = 5, iter.max = 100)$cluster)
+# Skater
+Lyon.nb <- poly2nb(LyonIris)
+lcosts <- nbcosts(Lyon.nb, Data)
+Lyon.w <- nb2listw(Lyon.nb, lcosts, style="B")
+Lyon.mst <- mstree(Lyon.w)
+Skater5 <- spdep::skater(edges = Lyon.mst[,1:2], data = Data, method = "euclidean", ncuts = 4)
+LyonIris$Skater5 <- as.character(Skater5$groups)
+  # Cartographie
+Carte.kmeans <-
+  tm_shape(LyonIris)+
+  tm_borders(col="gray", lwd=.5)+
+  tm_fill(col="Kmeans5", palette = "Set1", title ="")+
+  tm_layout(frame=FALSE, 
+            main.title = "a. Sans contrainte spatiale", 
+            main.title.position = "center", 
+            main.title.size = 1)
+Carte.skater <-
+  tm_shape(LyonIris)+
+  tm_borders(col="gray", lwd=.5)+
+  tm_fill(col="Skater5", palette = "Set1", title ="")+
+  tm_layout(frame=FALSE, 
+            main.title = "b. Avec contrainte spatiale", 
+            main.title.position = "center", 
+            main.title.size = 1)+
+  tm_scale_bar(breaks = c(0,5,10))
+LyonIris$Skater5 <- NULL
+tmap_mode("plot")
+tmap_arrange(Carte.kmeans, Carte.skater, ncol = 2, nrow = 1)
+```
+
+::: bloc_objectif
+::: bloc_objectif-header
+::: bloc_objectif-icon
+:::
+
+**Intérêt et limites des méthodes de classification avec une contrainte spatiale**
+:::
+
+::: bloc_objectif-body
+Selon Gelb et Apparicio [-@ClassificationFloue, p. 7], le résultat d'une méthode de classification avec une contrainte spatiale est « la création de régions très cohérentes spatialement, c'est-à-dire avec une absence de mitage. Autrement dit, avec ces méthodes, il n'est pas possible d'identifier de groupes qui seraient spatialement discontinus, c'est-à-dire composés de plusieurs ensembles régionaux séparés. L'impossibilité d'obtenir du mitage au sein des différentes régions peut masquer la présence de valeurs fortement dissemblables localement, malgré la prise en compte de l'espace. Or, ces observations systématiquement différentes de leurs voisines doivent faire l'objet d'une attention particulière dans les exercices de classification intégrant l'espace, ce que ne permettent pas ces méthodes d'agrégation spatiale.
+
+Les limites de ces méthodes, particulièrement celles relatives au mitage, ont conduit plus récemment à la mise au point de nouvelles méthodes incluant l'espace dans le processus de classification, sans imposer une contrainte de contiguïté. Plus spécifiquement, ces nouvelles méthodes sont des modifications des algorithmes classiques, tels que la CAH ou le FCM, pour intégrer la dimension spatiale en parallèle à la dimension sémantique des données. En d'autres termes, l'espace n'est plus intégré comme une contrainte dans les algorithmes de classification, mais plutôt comme une donnée supplémentaire ».
+:::
+:::
+
+Les principaux algorithmes de classification non supervisée avec contrainte spatiale (*Spatially Constrained Clustering Methods* en anglais) sont :
+
+-   La méthode de zonage automatique (*Automatic Zoning Procedure* en anglais) (AZP) proposée par Openshaw [-@openshaw1977geographical], puis améliorée par Openshaw et Rao [-@openshaw1995algorithms].
+
+-   L'algorithme SKATER (*Spatial 'K'luster Analysis by Tree Edge Removal*) [@assunccao2006efficient].
+
+-   L'algorithme REDCAP (*Regionalization with dynamically constrained agglomerative clustering and partitioning*) [@guo2008regionalization].
+
+-   L'algorithme du *max-p-regions problem* [@duque2012max].
+
+Pour mettre en œuvre ces différents algorithmes, nous utilisons le *package* `rgeoda` [@packagergeoda]. Notez que l'algorithme SKATER est aussi implémenté dans le *package* `spded` (fonction `skater`).
+
+### Algorithmes AZP {#sec-0811}
+
+L'algorithme AZP (*Automatic Zoning Problem*) est une approche itérative et heuristique visant à regrouper des polygones adjacents en *m* régions, tout en maximisant la variance interrégionale (variance interclasse) et en minimisant la variance intrarégionale (variance intraclasse) calculées sur les *p* variables. Autrement dit, il vise à créer des régions non discontinues les plus homogènes possibles et les plus dissemblables entre elles sur la base des *p* variables. Pour utiliser l'AZP, il faut spécifier le nombre de régions (*m*) désiré. Notez qu'il existe trois algorithmes pour l'AZP :
+
+1.  AZP (*Automatic Zoning Procedure*), soit la première version par Stan Openshaw [-@openshaw1977geographical].
+2.  AZP-SA (*A simulated annealing AZP method*) [@openshaw1995algorithms].
+3.  AZP-TABU (*A tabu search heuristic version of AZP*) [@openshaw1995algorithms].
+
+Pour une description détaillée de ces trois algorithmes, vous pouvez consulter Openshaw et Rao [-@openshaw1995algorithms] ou encore le [lien suivant](https://geodacenter.github.io/workbook/9d_spatial4/lab9d.html#principle).
+
+Appliquons ces algorithmes aux 506 IRIS de la ville de Lyon avec les quatre variables environnementales préalablement centrées réduites (bruit, dioxyde d'azote, particules fines et pourcentage de végétation) et une matrice de contiguïté selon le partage d'un nœud. Le *package* `rgeoda` comprend trois fonctions pour l'AZP : `azp_greedy` (AZP), `azp_sa` (AZP-SA), `azp_tabu` (AZP-TABU). Pour l'exercice, nous fixons le nombre de régions à 5. Notez que par défaut, les variables seront centrées réduites (moyenne = 0 et écart-type = 1) avec le paramètre `scale_method="standardize"`.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| eval: true
+library(rgeoda)
+library(sf)
+library(tmap)
+## Variables
+VarsEnv <- c("Lden", "NO2", "PM25", "VegHautPrt")
+## Dataframe sans la géométrie et les quatre variables
+load("data/chap08/DonneesLyon.Rdata")
+Data <- st_drop_geometry(LyonIris[VarsEnv])
+## Création d'une matrice de contiguïté avec rgeoda
+queen_w <- queen_weights(LyonIris)
+## Calcul des trois algorithmes
+azp <- rgeoda::azp_greedy(p=5,       # Nombre de régions
+                          w=queen_w, # Matrice contiguïté
+                          df=Data,   # Tableau de données
+                          scale_method = "standardize") # cote z
+azp.sa <- rgeoda::azp_sa(p=5, w=queen_w, df=Data, cooling_rate = 0.85)
+azp.tab <- rgeoda::azp_tabu(p=5, w=queen_w, df=Data, tabu_length = 10, conv_tabu = 10)
+## Création des trois champs dans la couche de Lyon
+LyonIris$Azp <- as.character(azp$Clusters)
+LyonIris$Azp_sa <- as.character(azp.sa$Clusters)
+LyonIris$Azp_tab <- as.character(azp.tab$Clusters)
+```
+
+Cartographions les résultats des trois algorithmes AZP (@fig-CartoAZP).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CartoAZP
+#| fig-align: center
+#| fig-cap: "Regroupements des 505 IRIS en cinq régions selon les trois algorithmes AZP"
+#| out-width: 100%
+
+## Cartographie des résultats
+Carte.AZP1 <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+              tm_fill(col="Azp", palette = "Set1", title ="")+
+              tm_layout(frame=FALSE, 
+                main.title = "a. AZP", 
+                main.title.position = "center", 
+                main.title.size = 1)
+Carte.AZP2 <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+              tm_fill(col="Azp_sa", palette = "Set1", title ="")+
+              tm_layout(frame=FALSE, 
+                main.title = "b. AZP Simulated Annealing", 
+                main.title.position = "center", 
+                main.title.size = 1)
+Carte.AZP3 <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+              tm_fill(col="Azp_tab", palette = "Set1", title ="")+
+              tm_layout(frame=FALSE, 
+                main.title = "c. AZP Tabu Search", 
+                main.title.position = "center", 
+                main.title.size = 1)
+tmap_arrange(Carte.AZP1, Carte.AZP2, Carte.AZP3, ncol = 2, nrow = 2)
+```
+
+Par la suite, nous comparons les résultats obtenus des trois algorithmes en reportant :
+
+1.  Les variances totale, intrarégionale et interrégionale, et surtout le ratio entre les variances intergroupe et totale. Ce ratio varie de 0 à 1 et exprime la proportion de la variance des variables qui est expliquée par les différentes régions obtenues; plus il est élevé, meilleur est le résultat. Par conséquent, il peut être utilisé pour identifier la solution optimale entre les trois algorithmes.
+
+2.  Le nombre d'observations par région.
+
+3.  Les valeurs moyennes des variables centrées réduites par région.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| eval: true
+## Calcul du ratio entre les variances intergroupe et totale
+cat("Ratio des variances interrégionale et totale",
+    "\nAZP : ", round(azp$`The ratio of between to total sum of squares`, 3),
+    "\nAZP-SA : ", round(azp.sa$`The ratio of between to total sum of squares`, 3),
+    "\nAZP-TABU : ", round(azp.tab$`The ratio of between to total sum of squares`, 3)
+)
+```
+
+À la lecture des valeurs du ratio entre la variance interrégionale et la variance totale ci-dessus, la plus élevée est obtenue pour l'AZP-SA (0,518), suivie de celles de l'AZP (0,436) et de l'AZP-TABU (0,428). Nous retenons alors l'AZP-SA.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| eval: true
+## Nombre d'observations par région
+table(LyonIris$Azp)
+table(LyonIris$Azp_sa)
+table(LyonIris$Azp_tab)
+## Valeurs moyennes des variables centrées réduites par région
+Data$Azp <- azp$Clusters
+Data$Azp_sa <- azp.sa$Clusters
+Data$Azp_tab <- azp.tab$Clusters
+aggregate(cbind(Lden,NO2,PM25,VegHautPrt) ~ Azp, data = Data, FUN = mean)
+aggregate(cbind(Lden,NO2,PM25,VegHautPrt) ~ Azp_sa, data = Data, FUN = mean)
+aggregate(cbind(Lden,NO2,PM25,VegHautPrt) ~ Azp_tab, data = Data, FUN = mean)
+```
+
+Les résultats finaux de l'AZP-SA sont présentés au @tbl-dataAZPsa et à la @fig-CartoAZPsa. L'analyse conjointe du tableau et de la carte permet ainsi d'interpréter chacune des classes. En guise d'exemple, nous pouvons conclure que :
+
+-   **La région 1** comprend 221 IRIS localisés au centre de la ville de Lyon et caractérisés par des niveaux moyens élevés de bruit (57,4), de dioxyde d'azote (35) et de particules fines (18,8) élevés et un faible pourcentage de canopée (14,4 %).
+
+-   Par contre, **la région 2** comprend 107 IRIS localisés à l'extrême ouest de la ville et caractérisés par les plus faibles niveaux de polluants (51,1, 20,5 et 14,2) et une forte moyenne pour la canopée (28,7 %).
+
+```{r}
+#| label: tbl-dataAZPsa
+#| tbl-cap: Valeurs moyennes des variables pour les cinq régions obtenues par l'AZP-SA
+#| echo: false
+Temp1 <- aggregate(cbind(Lden,NO2,PM25,VegHautPrt) ~ Azp_sa, data = st_drop_geometry(LyonIris), FUN = mean)
+Temp2 <- data.frame(table(LyonIris$Azp_sa))
+Temp1$Var1 <- Temp2$Freq
+knitr::kable(Temp1,
+           format.args = list(decimal.mark = ',', big.mark = " "),
+		       digits = 1,
+           col.names=c("Région","Lden","NO2", "PM25", "Végétation", "Nombre d'IRIS"),
+           align= c("c","c", "c", "c","c", "c"),
+		   format = "markdown"
+           )
+```
+
+```{r}
+#| echo: false 
+#| message: false 
+#| warning: false
+#| label: fig-CartoAZPsa
+#| fig-align: center
+#| fig-cap: "Regroupement des IRIS en cinq régions selon l'AZP-TABU"
+#| out-width: 100%
+tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+              tm_fill(col="Azp_sa", palette = "Set1", title ="Région")+
+              tm_layout(frame=FALSE)+tm_scale_bar(breaks=c(0,5,10))
+```
+
+Nous avons vu que pour les algorithmes AZP, il faut spécifier le nombre de régions. Nous l'avons fixé arbitrairement à 5. Comme pour n'importe quelle méthode de classification non supervisée, déterminer le nombre de classes optimal est une étape cruciale qui peut s'appuyer sur différentes techniques, dont la méthode du coude basée sur l'inertie expliquée (ici le ratio entre les variances interrégionale et totale), l'indicateur de silhouette et la méthode GAP. Pour une description détaillée de ces méthodes, consultez la [section suivante](https://laeq.github.io/LivreMethoQuantBolR/sect133.html#sect1332) [@RBoldAir]. Le code ci-dessous permet de réaliser un graphique avec les valeurs du ratio (inertie expliquée) obtenues avec l'algorithme AZP-TABU calculé pour 2 à 10 régions. À la lecture de la @fig-AZPCoude, nous observons deux ruptures (coudes) très nettes à 5 et 8.
+
+```{r}
+#| echo: true 
+#| eval : true
+#| message: false 
+#| warning: false
+#| label: fig-AZPCoude
+#| fig-align: center
+#| fig-cap: "Méthode du coude reposant sur l'inertie expliquée pour l'AZP-TABU"
+#| out-width: 75%
+library(ggplot2)
+nregions <- 2:10
+Data <- data.frame(scale(st_drop_geometry(LyonIris)[VarsEnv]))
+queen_w <- queen_weights(LyonIris)
+inertie <- sapply(nregions, function(k){
+  # calcul de l'AZP-TABU avec k
+  resultat <- azp_tabu(p=k, w=queen_w, df=Data, tabu_length = 10, conv_tabu = 10)
+  # récupération du ratio
+  ratios <- resultat$`The ratio of between to total sum of squares`
+  return(ratios)
+})
+
+df <- data.frame(k = nregions, ratio = inertie)
+ggplot(df) + 
+  geom_line(aes(x = k, y = ratio)) + 
+  geom_point(aes(x = k, y = ratio), color = "red") + 
+  labs(x = "Nombre de régions", y = "Inertie expliquée (%)")
+```
+
+### Algorithme SKATER {#sec-0812}
+
+L'algorithme SKATER (*Spatial 'K'luster Analysis by Tree Edge Removal*) [@assunccao2006efficient] permet aussi de créer des régions sans discontinuité, en recourant à une technique de la théorie des graphes, soit celle de l'arbre couvrant de poids minimal (*minimum spanning tree*). Succinctement, la classification est obtenue avec les étapes suivantes :
+
+1.  Création d'un graphe de connectivité pour les polygones de la couche géographique. Dans ce graphe, les nœuds sont les centroïdes des polygones et les arêtes représentent les liaisons entre deux entités spatiales voisines.
+
+2.  Pour chaque arête, nous calculons la dissimilarité (appelée coût) des deux polygones voisins en fonction des *p* variables.
+
+3.  Pour chaque polygone, nous retenons l'arête avec le coût minimal. Autrement dit, pour chaque polygone, nous retenons son polygone voisin qui lui est le plus semblable selon les *p* variables. Nous obtenons ainsi l'arbre couvrant de poids minimal.
+
+4.  Cet arbre est ensuite élagué en supprimant les arêtes avec les plus forts coûts et en créant ainsi des sous-graphes en *m* régions sans discontinuité.
+
+Pour une description plus détaillée de l'algorithme, consultez l'article d'Assunção *et al.* [-@assunccao2006efficient].
+
+Le code ci-dessous permet de centrer et de réduire les quatre variables (fonction `scale`) et de construire la matrice de voisinage entre les polygones de la couche `LyonIris` (fonction `poly2nb` de `spdep`).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: true
+
+library(rgdal)
+library(spdep)
+library(tmap)
+## Variables
+VarsEnv <- c("Lden", "NO2", "PM25", "VegHautPrt")
+## Dataframe sans la géométrie et les quatre variables
+load("data/chap08/DonneesLyon.Rdata")
+Data <- st_drop_geometry(LyonIris[VarsEnv])
+## Données centrées et réduites
+LyonIrisZscore <- data.frame(scale(Data))
+## Matrice voisinage
+Lyon.nb <- poly2nb(LyonIris)
+```
+
+Calculons les coûts pour les arêtes reliant les nœuds avec la fonction `nbcosts`. Nous constatons que le polygone 1 est voisin des polygones 27, 26, 44 et 74 avec des coûts de 1,34, 1,74, 1,15 et 16,3. Par conséquent, parmi ses quatre voisins, le polygone 1 est le plus semblable au polygone 44 (coût minimal).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: true
+
+## Calcul des coûts pour les arêtes
+lcosts <- nbcosts(Lyon.nb, LyonIrisZscore)
+head(Lyon.nb, n=1)
+head(lcosts, n=1)
+```
+
+À partir de ces coûts, nous pouvons trouver l'arbre couvrant de poids minimal (*minimum spanning tree*), objet dénommé ici `Lyon.mst` qui comprend trois colonnes :
+
+-   La première pour l'identifiant du polygone.
+-   La seconde pour l'identifiant du polygone voisin.
+-   La troisième pour la valeur du coût minimal (similarité selon les variables retenues).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: true
+
+## Matrice de pondération spatiale avec les coûts
+Lyon.w <- nb2listw(Lyon.nb, lcosts, style="B")
+### Trouver l'arbre couvrant de poids minimal
+Lyon.mst <- mstree(Lyon.w)
+head(Lyon.mst, n=3)
+```
+
+Le code ci-dessous permet de visualiser le graphe de connectivité et l'arbre couvrant de poids minimal (@fig-ArbreMinimum).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: false
+## Visualisation du graphe de connectivité 
+coords <- st_coordinates(st_centroid(LyonIris))
+plot(st_geometry(LyonIris), border="gray", lwd=.5, col="wheat")
+plot(Lyon.nb, coords, add=TRUE, col="red", lwd=1)
+## Visualisation de l'arbre couvrant de poids minimal
+plot(st_geometry(LyonIris), border="gray", lwd=.5, col="wheat")
+plot(Lyon.mst, coords, col="blue", cex.lab=0.7, add=TRUE)
+```
+
+![Graphe de connectivité et arbre couvrant de poids minimal](images/Chap08/ArbreMinimum.png){#fig-ArbreMinimum width="100%" fig-align="center"}
+
+Le code ci-dessous permet de réaliser une classification SKATER avec cinq régions avec le *package* `spdep`.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: true
+
+## SKATER avec le package spdep
+set.seed(123456789)
+skater5.spdep <- spdep::skater(edges = Lyon.mst[,1:2], # premières colonnes de l'arbre 
+                               data = data.frame(LyonIrisZscore),
+                               method = "euclidean",
+                               ncuts = 4)  # k-1 régions
+table(skater5.spdep$groups)
+```
+
+Toutefois, il est plus simple d'utiliser la fonction `skater` de `rgeoda` qui ne nécessite pas de créer au préalable l'arbre couvrant de poids minimal.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: true
+
+## SKATER avec le package rgeoda
+library(rgeoda)
+Data <- st_drop_geometry(LyonIris[VarsEnv])
+queen_w <- queen_weights(LyonIris)
+skater5.rgeoda <- rgeoda::skater(k = 5,        # k-1 régions
+                                 w = queen_w,  # matrice de contiguïté
+                                 scale_method = "standardize",
+                                 df = Data)    # dataframe
+table(skater5.rgeoda$Clusters)
+```
+
+La @fig-SkaterAB démontre que les résultats obtenus sont légèrement différents avec les deux *packages*.
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-SkaterAB
+#| fig-align: center
+#| fig-cap: "Résultats de l'algorithme SKATER avec cinq classes obtenus avec les *packages* `spdep` et `rgeoda`"
+#| out-width: 85%
+
+LyonIris$skater5spdep <- as.character(skater5.spdep$groups)
+LyonIris$skater5rgeoda <- as.character(skater5.rgeoda$Clusters)
+
+Carte.SkaterA <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+              tm_fill(col="skater5spdep", palette = "Set1", title ="")+
+              tm_layout(frame=FALSE, 
+                main.title = "a. SKATER spdep", 
+                main.title.position = "center", 
+                main.title.size = 1)
+Carte.SkaterB <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+              tm_fill(col="skater5rgeoda", palette = "Set1", title ="")+
+              tm_layout(frame=FALSE, 
+                main.title = "b. SKATER rgeoda", 
+                main.title.position = "center", 
+                main.title.size = 1)
+tmap_arrange(Carte.SkaterA, Carte.SkaterB)
+```
+
+::: bloc_aller_loin
+::: bloc_aller_loin-header
+::: bloc_aller_loin-icon
+:::
+
+**Algorithme SKATER avec un seuil minimal pour les classes**
+:::
+
+::: bloc_aller_loin-body
+Dans une classification non supervisée avec une contrainte spatiale, il est possible de fixer un seuil minimal pour chaque région à partir d'une variable. L'exemple le plus classique est l'obtention de *p* régions qui doivent au moins avoir un nombre d'habitants fixé par la personne utilisatrice. Pour ce faire, nous utilisons deux paramètres de la fonction `spdep::skater`, soit `crit = 50000` pour fixer le seuil et `vec.crit = df$Population` pour indiquer le vecteur sur lequel est calculé le critère.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: false
+clus10_min <- spdep::skater(edges = ct_mst[,1:2], 
+                     # dataframe avec les variables centrées réduites
+					 data = dfs,               
+                     # seuil fixé
+					 crit = 50000,             
+                     # variable population du dataframe
+					 vec.crit = df$Population, 
+                     ncuts = 4)
+```
+
+**Fonction `skater` : différences entre les *packages*`rgeoda` et `spdep`**
+
+La fonction `skater` de `rgeoda` a deux principaux avantages :
+
+1.  Comme décrit précédemment, l'avantage de la fonction `skater` de `rgeoda` est qu'elle ne nécessite pas de calculer au préalable l'arbre couvrant de poids minimal.
+
+2.  scale_method = c("raw", "standardize", "demean", "mad", "range_standardize", "range_adjust") permet de transformer directement les variables. La méthode par défaut est la cote z (moyenne = 0 et écart-type = 1).
+
+Avec la fonction `skater` de `spdep`, vous devez préalablement transformer vos variables et construire l'arbre couvrant de poids minimal. Par contre, elle intègre de nombreux types de distance pour évaluer la dissimilarité entre les unités spatiales avec le paramètre `method = c("euclidean",  "maximum", "manhattan", "canberra", "binary", "minkowski",  "mahalanobis")` tandis que le paramètre `distance_method = c("euclidean", "manhattan")` de `rgeoda` ne comprend que deux types de distance.
+:::
+:::
+
+### Algorithmes REDCAP {#sec-0813}
+
+Les différentes versions de l'algorithme REDCAP (*Regionalization with dynamically constrained agglomerative clustering and partitioning*) proposé par Diansheng Guo [-@guo2008regionalization] sont aussi basées sur la construction d'un arbre (*spanning tree*) dont l'élagage est obtenu de cinq différentes façons :
+
+-   Premier ordre et saut minimal (*First-order and Single-linkage*) qui fournit un résultat identique à l'algorithme SKATER.
+
+-   Ordre complet et saut maximal (*Full-order and Complete-linkage*).
+
+-   Ordre complet et saut moyen (*Full-order and Average-linkage*).
+
+-   Ordre complet et saut minimal (*Full-order and Single-linkage*).
+
+-   Ordre complet et critère de Ward (*Full-order and Ward-linkage*).
+
+Le code ci-dessous permet de calculer les cinq versions de l'algorithmes REDCAP avec cinq régions et de comparer leurs résultats à partir du ratio (entre les variances interrégionale et totale) et du nombre d'observations par région.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| eval: true
+library(rgeoda)
+library(sf)
+## Préparation des données 
+Data <- st_drop_geometry(LyonIris[VarsEnv])
+queen_w <- queen_weights(LyonIris)
+## Algorithmes REDCAP
+redcap5.A <- redcap(k = 5, w = queen_w, scale_method = "standardize", df = Data,
+                    method = "firstorder-singlelinkage")
+redcap5.B <- redcap(k = 5, w = queen_w, scale_method = "standardize", df = Data,
+                    method = "fullorder-completelinkage")
+redcap5.C <- redcap(k = 5, w = queen_w, scale_method = "standardize", df = Data,
+                    method = "fullorder-averagelinkage")
+redcap5.D <- redcap(k = 5, w = queen_w, scale_method = "standardize", df = Data,
+                    method = "fullorder-singlelinkage")
+redcap5.E <- redcap(k = 5, w = queen_w, scale_method = "standardize", df = Data,
+                    method = "fullorder-wardlinkage")
+## Comparaison des résultats
+Ratios <- data.frame(Methode = c("firstorder-singlelinkage", 
+                                  "fullorder-completelinkage", 
+                                  "fullorder-averagelinkage",
+                                  "fullorder-singlelinkage", 
+                                  "fullorder-wardlinkage"),
+                      ratio = c(redcap5.A$`The ratio of between to total sum of squares`,
+                                redcap5.B$`The ratio of between to total sum of squares`,
+                                redcap5.C$`The ratio of between to total sum of squares`,
+                                redcap5.D$`The ratio of between to total sum of squares`,
+                                redcap5.E$`The ratio of between to total sum of squares`)
+                      )
+Nobs <- data.frame(rbind(table(redcap5.A$Clusters), 
+              table(redcap5.B$Clusters), 
+              table(redcap5.C$Clusters), 
+              table(redcap5.D$Clusters), 
+              table(redcap5.E$Clusters))
+              )
+names(Nobs) <- c("C1", "C2", "C3", "C4", "C5")
+Ratios <- cbind(Ratios, Nobs)
+Ratios
+```
+
+À la lecture des valeurs du ratio ci-dessous, la meilleure classification serait celle obtenue avec un ordre complet et le critère de Ward. Cartographions les résultats des quatre versions de l'algorithme RECAP avec un ordre complet (@fig-CartoREDCAP).
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-CartoREDCAP
+#| fig-align: center
+#| fig-cap: Regroupements des 505 IRIS en cinq régions selon les quatre versions de l'algorithme REDCAP avec un lien complet
+#| out-width: 100%
+
+## Ajout des champs dans la couche
+LyonIris$RC5.FOcompletelinkage  <- as.character(redcap5.B$Clusters)
+LyonIris$RC5.FOaveragelinkage   <- as.character(redcap5.C$Clusters)
+LyonIris$RC5.FOsinglelinkage    <- as.character(redcap5.D$Clusters)
+LyonIris$RC5.FOwardlinkage      <- as.character(redcap5.E$Clusters)
+## Cartographie des résultats
+Carte.RCb <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+              tm_fill(col="RC5.FOcompletelinkage", palette = "Set1", title ="")+
+              tm_layout(frame=FALSE, 
+                main.title = "a. Saut maximal", 
+                main.title.position = "center", 
+                main.title.size = 1)
+Carte.RCc <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+              tm_fill(col="RC5.FOaveragelinkage", palette = "Set1", title ="")+
+              tm_layout(frame=FALSE, 
+                main.title = "b. Saut moyen", 
+                main.title.position = "center", 
+                main.title.size = 1)
+Carte.RCd <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+              tm_fill(col="RC5.FOsinglelinkage", palette = "Set1", title ="")+
+              tm_layout(frame=FALSE, 
+                main.title = "c. Saut minimal", 
+                main.title.position = "center", 
+                main.title.size = 1)
+Carte.RCe <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+              tm_fill(col="RC5.FOwardlinkage", palette = "Set1", title ="")+
+              tm_layout(frame=FALSE, 
+                main.title = "d. Critère de Ward", 
+                main.title.position = "center", 
+                main.title.size = 1)
+tmap_arrange(Carte.RCb, Carte.RCc, Carte.RCd, Carte.RCe, ncol = 2, nrow = 2)
+```
+
+### Algorithme du *max-p-regions problem* {#sec-0814}
+
+Cet algorithme, proposé par Duque *et al.* [-@duque2012max], n'est pas décrit ici. Notez qu'il peut être calculé avec trois fonctions du *package* `rgeoda`, soit `maxp_greedy`, `maxp_sa` et `maxp_tabu`.
+
+## Méthodes de classification non supervisée avec une dimension spatiale {#sec-082}
+
+Nous avons vu que les méthodes de classification avec une contrainte spatiale visent à obtenir des régions non discontinues, c'est-à-dire sans mitage spatial. L'objectif des méthodes de classification non supervisée avec une dimension spatiale est quelque peu différent : classifier les observations en tenant compte de l'espace (proximité, voisinage entre les unités spatiales) afin de limiter les effets de mitage, sans toutefois l'interdire.
+
+Dans le cadre de cette section, nous décrivons deux de ces méthodes qui intègrent la dimension spatiale de manière différente :
+
+1.  **La méthode *ClustGeo***, qui est une extension de la classification ascendante hiérarchique, est une méthode de classification non supervisée, spatiale et stricte. Cette méthode repose sur deux matrices de dissimilarité : une **matrice des distances sémantiques (attributaires)** calculée sur les valeurs de plusieurs variables caractérisant les observations et une **matrice de distances** (euclidienne le plus souvent) entre les entités géographiques. Nous cherchons ainsi à regrouper les observations qui se ressemblent à la fois selon leurs attributs et selon leur proximité spatiale.
+
+2.  **La méthode k-moyennes spatiale et floue (*Spatial fuzzy c-means*)**, qui est une extension de la méthode k-moyennes, est une méthode de classification non supervisée, spatiale et floue. Cette méthode repose sur deux matrices de dissimilarité : une **matrice sémantique** calculée sur les valeurs de plusieurs variables caractérisant les entités géographiques et une **matrice sémantique spatialement décalée**. Nous cherchons ainsi à regrouper les observations qui se ressemblent à la fois selon leurs caractéristiques et celles de leurs unités spatiales adjacentes ou proches.
+
+Autrement dit, dans la méthode *ClustGeo*, l'espace est introduit sous la forme d'une matrice de distances entre les entités spatiales (**agencement spatial**) tandis que dans la méthode du *Spatial fuzzy c-means*, il est introduit sous la forme d'une matrice de données sémantiques spatialement décalées (**information sémantique dans l'environnement immédiat**).
+
+### Classification ascendante hiérarchique spatiale (*ClustGeo*) {#sec-0821}
+
+#### Description de la méthode *ClustGeo* {#sec-08211}
+
+La méthode *ClustGeo*, proposée par Marie Chavent et ses collègues [-@packageClustGeo], est une extension de la classification ascendante hiérarchique (CAH) qui intègre la dimension spatiale des entités géographiques. Cette méthode repose sur une idée brillante, soit de classer (regrouper) les observations (unités spatiales) en combinant deux matrices de dissimilarité :
+
+-   Une matrice sémantique calculée sur *p* variables caractérisant les unités spatiales ($D_0$).
+
+-   Une matrice spatiale calculée à partir des distances spatiales (habituellement euclidienne) entre les unités spatiales ($D_1$). Ces deux matrices sont ensuite fusionnées en une seule matrice finale représentant la combinaison de la distance spatiale et de la dissimilarité sémantique (attributaire) entre les observations. Notez qu'un paramètre $\alpha$, variant de 0 à 1, permet de définir le poids de la matrice spatiale comparativement à celui de la sémantique :
+
+    -   Avec $\alpha=0$, le poids accordé à la matrice spatiale est nul. Nous obtenons ainsi une CAH classique puisque seules les différences attributaires sont conservées.
+
+    -   Avec $\alpha=1$, le poids accordé à la matrice spatiale est maximal; la classification est alors purement spatiale et ignore les différences attributaires.
+
+Par conséquent, « \[...\] l'enjeu principal est de fixer la valeur du paramètre 𝛼, considérant qu'une augmentation de 𝛼 revient à améliorer l'inertie expliquée de la matrice spatiale, au détriment d'une perte de l'inertie expliquée sur le plan sémantique » [@ClassificationFloue, p. 16].
+
+#### Calcul de la CAH classique {#sec-08212}
+
+::: bloc_attention
+::: bloc_attention-header
+::: bloc_attention-icon
+:::
+
+**Retour sur la classification ascendante hiérarchique (CAH)**
+:::
+
+::: bloc_attention-body
+Pour une description détaillée de la CAH, consultez la [section suivante](https://laeq.github.io/LivreMethoQuantBolR/sect133.html) [@RBoldAir].
+:::
+:::
+
+Le code ci-dessous permet de construire l'arbre de classification selon le critère de Ward à partir de la matrice sémantique (@fig-Dendrogramme).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: true
+#| label: fig-Dendrogramme
+#| fig-align: center
+#| fig-cap: Arbre de classification (dendrogramme)
+#| out-width: 100%
+
+## Variables pour la CAH
+VarsEnv <- c("Lden", "NO2", "PM25", "VegHautPrt")
+## Dataframe sans la géométrie et les quatre variables
+load("data/chap08/DonneesLyon.Rdata")
+Data <- st_drop_geometry(LyonIris[VarsEnv])
+## Centrage (moyenne = 0) et réduction des données (variance = 1)
+DataZscore <- data.frame(scale(Data))
+## Matrice sémantique : dissimilarité des observations selon les variables
+Matrice.Semantique <- dist(DataZscore, method = "euclidean")
+# Calcul du dendrogramme avec le critère WARD
+Arbre <- hclust(Matrice.Semantique, method = "ward.D")
+plot(Arbre, hang = -1, label = FALSE,
+     main = "Dendrogramme \n(arbre de classification selon le critère de Ward)",
+     sub = "", ylab = "Hauteur", xlab = ""
+     )
+```
+
+À la lecture de la @fig-CAHCoude, nous ne détectons pas de seuils marqués dans l'inertie expliquée en fonction du nombre de groupes. Par conséquent, nous fixons arbitrairement le nombre de groupes à 5.
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-CAHCoude
+#| fig-align: center
+#| fig-cap: Méthode du coude reposant sur l'inertie expliquée pour CAH
+#| out-width: 65%
+
+library(ggplot2)
+# Fonction pour l'inertie expliquée par les classes
+prop_inert_cutree <- function(K,tree,n){
+  P <- cutree(tree,k=K)
+  W <- sum(tree$height[1:(n-K)])
+  Tot <- sum(tree$height)
+  return(1-W/Tot)
+}
+# Inertie expliquée par des CAH de 2 à 10 classes
+df.inertie <- data.frame(NGroupes = 2:10,
+                         Inertie = sapply(2:10,
+                                          prop_inert_cutree,
+                                          tree=Arbre,
+                                          n=nrow(DataZscore)))
+ggplot(df.inertie)+
+  geom_line(aes(x=NGroupes,y=Inertie))+
+  geom_point(aes(x=NGroupes,y=Inertie), color = "red") +
+  labs(y = "Inertie expliquée", x = "Nombre de groupes")
+```
+
+Nous pouvons visualiser l'arbre avec une coupure à cinq classes.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: true
+
+plot(Arbre, labels = FALSE, 
+     main = "Partition en 2, 5 ou 9 classes", 
+     xlab = "", ylab = "", sub = "", axes = FALSE, hang = -1)
+rect.hclust(Arbre, 5, border = "red")
+## Coupure de l'arbre à cinq classes
+LyonIris$CAH5 <- as.character(cutree(Arbre, k=5))
+## Nombre d'observations par classe
+table(LyonIris$CAH5)
+## Valeurs moyennes des classes
+aggregate(cbind(Lden,NO2,PM25,VegHautPrt) ~ CAH5, data = st_drop_geometry(LyonIris), FUN = mean)
+```
+
+Les résultats de la CAH sont cartographiés à la @fig-CAHCarto tandis que le nombre d'observations et les valeurs moyennes des classes sont reportés au tableau \@tbl-dataCAHtab.
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-CAHCarto
+#| fig-align: center
+#| fig-cap: CAH avec le critère de Ward avec cinq classes
+#| out-width: 65%
+
+library(tmap)
+## Cartographie des résultats
+Carte.CAH5 <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+              tm_fill(col="CAH5", palette = "Set1", title ="")+
+              tm_layout(frame=FALSE, 
+                main.title = "CAH (critère de Ward)", 
+                main.title.position = "center", 
+                main.title.size = 1)
+Carte.CAH5
+```
+
+```{r}
+#| label: tbl-dataCAHtab
+#| tbl-cap: Valeurs moyennes des variables pour les cinq classes obtenues avec la CAH
+#| echo: false
+
+Temp1 <- aggregate(cbind(Lden,NO2,PM25,VegHautPrt) ~ CAH5, data = st_drop_geometry(LyonIris), FUN = mean)
+Temp2 <- data.frame(table(LyonIris$CAH5))
+Temp1$Var1 <- Temp2$Freq
+knitr::kable(Temp1,
+           format.args = list(decimal.mark = ',', big.mark = " "),
+		       digits = 1,
+           col.names=c("Classe","Lden","NO2", "PM25", "Végétation", "Nombre d'IRIS"),
+           align= c("c","c", "c", "c","c", "c"),
+           format = "markdown"
+           )
+```
+
+#### Calcul de la méthode *ClustGeo* {#sec-08213}
+
+**Calcul des deux matrices (sémantique et spatiale)**
+
+Dans un premier temps, nous créons les matrices sémantique ($D_0$) et spatiale ($D_1$). Notez ici que les distances spatiales utilisées correspondent aux distances euclidiennes entre les centroïdes des IRIS.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: true
+
+library(sf)
+library(ClustGeo)
+## Variables
+VarsEnv <- c("Lden", "NO2", "PM25", "VegHautPrt")
+## Dataframe sans la géométrie et les quatre variables
+load("data/chap08/DonneesLyon.Rdata")
+Data <- st_drop_geometry(LyonIris[VarsEnv])
+## Centrage (moyenne = 0) et réduction des données (variance = 1)
+DataZscore <- data.frame(scale(Data))
+## Matrice sémantique : dissimilarité des observations selon les variables
+Matrice.Semantique <- dist(DataZscore, method = "euclidean")
+## Matrice spatiale entre les unités spatiales
+xy <- st_coordinates(st_centroid(LyonIris))
+Matrice.Spatiale <- dist(xy, method = "euclidean")
+```
+
+**Optimisation de la valeur de** $\alpha$
+
+Pour la méthode *ClustGeo* (avec k = 5), nous évaluons l'impact du paramètre α pour des valeurs de 0 à 1, avec un saut de 0,05. Pour ce faire, nous utilisons la fonction `choicealpha` du *package* `ClustGeo`. À la lecture de la @fig-GraphAlpha, nous constatons que :
+
+-   Plus la valeur de $\alpha$ augmente, plus l'inertie expliquée par la matrice sémantique diminue (trait noir) et inversement, plus l'inertie expliquée par la matrice spatiale est forte.
+
+-   Avec $\alpha = \text{0,30}$, l'inertie expliquée par la matrice spatiale est de 50 % pour une perte d'inertie expliquée par la matrice sémantique de seulement 7 %. Avec $\alpha = \text{0,35}$, nous constatons une chute importante de l'inertie sémantique expliquée. Par conséquent, nous retenons la valeur de 0,30 pour la méthode *ClustGeo*. Ce choix donne un excellent compromis entre la préservation de l'inertie expliquée des données attributaires et la cohérence spatiale de la classification finale.
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-GraphAlpha
+#| fig-align: center
+#| fig-cap: Impact des deux matrices dans la classification
+#| out-width: 75%
+
+alphas <- seq(0, 1, 0.05)
+result <- choicealpha(D0 = Matrice.Semantique, # matrice sémantique
+                      D1 = Matrice.Spatiale,   # matrice spatiale 
+                      range.alpha = alphas,    # valeurs de alpha
+                      K = 5,                   # nombre de classes
+                      wt = NULL, scale = TRUE, graph = FALSE)
+# Graphique avec Alpha
+df.alpha <- data.frame(result$Q)
+df.alpha$alpha <- alphas
+ggplot(df.alpha)+
+  geom_line(aes(x=alphas,y= Q0), color = "black")+
+  geom_point(aes(x=alphas,y= Q0), color = "black", size=3) +
+  geom_line(aes(x=alphas,y= Q1), color = "red")+
+  geom_point(aes(x=alphas,y= Q1), color = "red", size=3) +
+  labs(y = "Pseudo-inertie", 
+       x = "Paramètre alpha",
+       subtitle = "Matrice sémantique (noir) et matrice spatiale (rouge)")
+```
+
+**Réalisation de la méthode *ClustGeo***
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: true
+
+## Dendrogramme avec ClustGeo
+Arbre.ClustGeo <- hclustgeo(D0 = Matrice.Semantique, D1 = Matrice.Spatiale, alpha = 0.30)
+## Coupure de l'arbre à cinq classes
+LyonIris$ClustGeo5 <- as.character(cutree(Arbre.ClustGeo, k=5))
+## Nombre d'observations par classe
+table(LyonIris$ClustGeo5)
+## Valeurs moyennes des classes
+aggregate(cbind(Lden,NO2,PM25,VegHautPrt) ~ ClustGeo5, 
+          data = st_drop_geometry(LyonIris), FUN = mean)
+
+```
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-GraphAlpha2
+#| fig-align: center
+#| fig-cap: "Classification ClustGeo avec alpha = 0,30"
+#| out-width: 75%
+
+## Cartographie des résultats
+Carte.ClusteGeo <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+                    tm_fill(col="ClustGeo5", palette = "Set1", title ="")+
+                    tm_layout(frame=FALSE, 
+                      main.title = "ClustGeo avec alpha = 0,30", 
+                      main.title.position = "center", 
+                      main.title.size = 1)
+Carte.ClusteGeo
+```
+
+```{r}
+#| label: tbl-dataClusteGeotab
+#| tbl-cap: Valeurs moyennes des variables pour cinq classes obtenues par la méthode ClustGeo (alpha = 0,30)
+#| echo: false
+#| message: false
+#| warning: false
+
+Temp1 <- aggregate(cbind(Lden,NO2,PM25,VegHautPrt) ~ ClustGeo5, 
+                   data = st_drop_geometry(LyonIris), FUN = mean)
+Temp2 <- data.frame(table(LyonIris$ClustGeo5))
+Temp1$Var1 <- Temp2$Freq
+knitr::kable(Temp1,
+           format.args = list(decimal.mark = ',', big.mark = " "),
+		   digits = 1,
+           col.names=c("Classe","Lden","NO2", "PM25", "Végétation", "Nombre d'IRIS"),
+           align= c("c","c", "c", "c","c", "c"),
+		   format = "markdown"
+           )
+```
+
+La comparaison des typologies obtenues avec la CAH et la ClusteGeo démontre clairement que l'introduction d'une matrice spatiale dans la classification *ClustGeo* génère des classes qui sont moins discontinues spatialement (@fig-ComparaisonCAHClusteo).
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-ComparaisonCAHClusteo
+#| fig-align: center
+#| fig-cap: Impact des deux matrices dans la classification
+#| out-width: 75%
+
+tmap_arrange(Carte.CAH5, Carte.ClusteGeo, nrow = 1, ncol = 2)
+```
+
+### *Spatial fuzzy c-means* {#sec-0822}
+
+La méthode SFCM (*Spatial fuzzy c-means*), proposée par Weiling Cai et ses collègues [-@cai2007fast], est une extension de FCM, soit une version floue de l'algorithme des k-moyennes. Le principe de base est le suivant :
+
+« Comparativement au FCM classique, le SFCM introduit dans son calcul, en plus du jeu de données original ($D_0$), une version spatialement décalée ($D_s$) de ce dernier [@cai2007fast]. En analyse d'image, cela revient à calculer $D_s$ en appliquant un filtre moyen ou médian à $D_0$ (la médiane étant moins sensible aux valeurs extrêmes locales). Ce processus peut facilement s'appliquer à des entités géographiques vectorielles, en créant une matrice de pondération spatiale $W_{kl}$ (*l* étant les voisins de *k* et la diagonale de cette matrice valant 0) [@getis2009spatial] et en utilisant les poids de cette matrice dans le calcul d'une moyenne ou d'une médiane pondérée locale » [@ClassificationFloue, p. 8].
+
+Comme pour la méthode *ClustGeo*, il est possible de fixer une pondération à la dimension spatiale ($D_s$) avec un paramètre $\alpha$, qui varie de 0 à $\infty$. Une valeur de 0 signale qu'aucun poids n'est accordé à la dimension spatiale, ce qui revient à calculer un FCM classique. Si $\alpha = \text{2}$, alors la version spatialement décalée aura deux fois plus de poids dans la classification que le jeu de données original.
+
+::: bloc_attention
+::: bloc_attention-header
+::: bloc_attention-icon
+:::
+
+**Retour sur une variable spatialement décalée et la classification k-moyennes**
+:::
+
+::: bloc_attention-body
+La notion de variable spatialement décalée a été abordée au chapitre 2 (@fig-Chap02FigureVariableSpatialementDecalee). Pour une description détaillée de la classification k-moyennes, consultez la [section suivante](https://laeq.github.io/LivreMethoQuantBolR/sect133.html) [@RBoldAir].
+:::
+:::
+
+#### Calcul de la classification c-moyennes floue classique (*fuzzy c-means*) {#sec-08221}
+
+À des fins de comparaison avec la CAH, nous proposons de calculer une classification c-moyennes floue classique (*fuzzy c-means*) avec cinq classes (*k* = 5). Puis, pour déterminer la valeur optimale de *m* (soit le degré de logique floue), nous calculons l'inertie expliquée et l'indice de silhouette pour des valeurs de *m* variant de 1,1 à 3 (avec un incrément de 0,1). Les résultats de ces deux indicateurs, présentés à la @fig-GraphCmeans, signalent que :
+
+-   Plus le paramètre *m* augmente, plus l'inertie expliquée diminue (@fig-GraphCmeans, a).
+-   La valeur de l'indice de silhouette est maximale avec *m* = 1,8 (@fig-GraphCmeans, b).
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-GraphCmeans
+#| fig-align: center
+#| fig-cap: Évaluation de la qualité de la classification FCM avec cinq classes selon le degré de flou (m)
+#| out-width: 75%
+
+library(geocmeans)
+library(ggpubr)
+## Variables pour la CAH
+VarsEnv <- c("Lden", "NO2", "PM25", "VegHautPrt")
+## Dataframe sans la géométrie et les quatre variables
+load("data/chap08/DonneesLyon.Rdata")
+Data <- st_drop_geometry(LyonIris[VarsEnv])
+## Centrage (moyenne = 0) et réduction des données (variance = 1)
+DataZscore <- data.frame(scale(Data))
+## Dataframe pour les différents paramètres avec k = 5 et degré de flou
+FCM_selection <- select_parameters(algo = "FCM",
+                  data = DataZscore,
+                  k = 5, # nous pourrions ici tester avec k=2:10
+                  m = seq(1.1,3,0.1),
+                  classidx = TRUE, spconsist = FALSE,
+                  tol = 0.001, seed = 456,
+                  verbose = FALSE)
+# Graphique avec l'inertie expliquée
+G1 <- ggplot(FCM_selection) +
+      geom_line(aes(x = m, y = Explained.inertia)) +
+      geom_point(aes(x = m,  y = Explained.inertia), color = "red")+
+      labs(title ="a. Variation des données expliquées",
+           y = "Inertie expliquée", x = "Paramètre m")
+# Graphique avec l'indice de silhouette
+G2 <- ggplot(FCM_selection) +
+      geom_line(aes(x = m, y = Silhouette.index)) +
+      geom_point(aes(x = m,  y = Silhouette.index), color = "red")+
+      labs(title ="b. Consistance des groupes",
+           y = "Critère de silhouette floue", x = "Paramètre m")
+# Combinaison des deux graphiques dans la figure
+ggarrange(G1, G2)
+```
+
+Réalisons la classification c-moyennes floue et cartographions les probabilités d'appartenance à chacune des classes (@fig-FigureCmeansProb), puis l'appartenance à une classe (@fig-FigureCmeansCluster).
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-FigureCmeansProb
+#| fig-align: center
+#| fig-cap: Cartographie des probabilités d'appartenance aux cinq classes avec la classification c-moyennes
+#| out-width: 100%
+
+## Classification du c-moyennes 
+FCM <- CMeans(DataZscore, k = 5, m = 1.8, tol = 0.0001, verbose = FALSE, seed = 456)
+## Calcul des indicateurs de qualité
+calcqualityIndexes(DataZscore, FCM$Belongings, 1.5)
+
+## Cartographie des probabilités d'appartenance à chaque classe
+Cartes.FCM <- mapClusters(LyonIris,FCM$Belongings)
+names(Cartes.FCM)
+tmap_arrange(Cartes.FCM$ProbaMaps, ncol = 2)
+```
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-FigureCmeansCluster
+#| fig-align: center
+#| fig-cap: Cartographie des classes issues de la classification c-moyennes
+#| out-width: 75%
+
+Cartes.FCM$ClusterPlot
+```
+
+#### Calcul de la classification c-moyennes floue et spatiale (*spatial fuzzy c-means*) {#sec-08222}
+
+Dans l'exemple ci-dessous, nous calculons une classification SFCM (*spatial fuzzy c-means*). Nous avons déterminé avec l'analyse du simple FCM que la valeur de 1,8 pour *m* semblait satisfaisante avec cinq groupes (*k* = 5). Nous devons maintenant déterminer la valeur de *alpha*, soit le poids accordé aux variables spatialement décalées comparativement aux données originales.
+
+Pour cela, nous calculons toutes les valeurs possibles d'*alpha* entre 0 et 2 avec un intervalle de 0,05. Nous comparons ensuite les valeurs des indices de silhouette (qualité sémantique de la classification) et d'incohérence spatiale des différentes solutions.
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-SFCMChoiceAlpha
+#| fig-align: center
+#| fig-cap: Comparaison de différentes valeurs d'alpha pour le SFCM
+#| out-width: 75%
+
+library(spdep)
+library(ggplot2)
+# Création d'une matrice de contiguïté standardisée
+Neighbours <- poly2nb(LyonIris, queen = TRUE)
+WMat <- nb2listw(Neighbours, style="W", zero.policy = TRUE)
+SFCM_selection <- select_parameters(algo = "SFCM",
+                  data = DataZscore,
+                  k = 5,
+                  m = 1.8,
+                  nblistw = WMat,
+                  alpha = seq(0,2,0.05),
+                  classidx = TRUE,
+                  tol = 0.001, seed = 456,
+                  spconsist  = TRUE,
+                  verbose = FALSE)
+
+graph1 <- ggplot(SFCM_selection) + 
+  geom_line(aes(x = alpha, y = Silhouette.index), color = 'black') + 
+  geom_point(aes(x = alpha, y = Silhouette.index), color = 'red')+
+  labs(x = "Alpha", y = "Indice de silhouette", )
+
+graph2 <- ggplot(SFCM_selection) + 
+  geom_line(aes(x = alpha, y = spConsistency), color = 'black') + 
+  geom_point(aes(x = alpha, y = spConsistency), color = 'red')+
+  labs(x = "Alpha", y = "Indice d'incohérence spatiale")
+
+ggarrange(graph1, graph2, ncol = 2, nrow = 1)
+
+```
+
+La @fig-SFCMChoiceAlpha démontre que l'augmentation d'*alpha* a pour effet de réduire la qualité sémantique de la classification (indice de silhouette), mais aussi de limiter l'inconsistance spatiale des résultats produits. Nous constatons aussi que l'augmentation d'*alpha* a un effet quasiment linéaire sur la dégradation de l'indice de silhouette et un effet curvilinéaire sur l'inconsistance spatiale. Cette dernière est donc plus impactée par les premières augmentations d'*alpha*. Nous proposons ici de retenir une solution avec $\alpha$ = 0,55, car elle correspond à une baisse relativement faible de l'indice de silhouette (0,55 versus 0,50) pour une augmentation importante de la cohérence spatiale des résultats (0,39 versus 0,22).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: true
+
+# Calcul du SFCM
+SFCM <- SFCMeans(DataZscore, WMat, 
+                 k = 5, 
+                 m = 1.8, 
+                 alpha = 0.55,
+                 tol = 0.0001, standardize = FALSE,
+                 verbose = FALSE, seed = 456)
+```
+
+**Résultats des indicateurs de qualité du SFCM**
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: true
+calcqualityIndexes(DataZscore, SFCM$Belongings, 1.5)
+```
+
+**Cartographie des probabilités d'appartenance à chaque classe**
+
+La cartographie des probabilité d'appartenance pour chacune des cinq classes est présentée aux figures
+[-@fig-FigureSFCMProb1], [-@fig-FigureSFCMProb2], [-@fig-FigureSFCMProb3], [-@fig-FigureSFCMProb4] et [-@fig-FigureSFCMProb4].
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-FigureSFCMProb1
+#| fig-align: center
+#| fig-cap: Cartographie des probabilités d'appartenance issues de la classification SFCM (classe 1)
+#| out-width: 100%
+Cartes.SFCM <- mapClusters(LyonIris, SFCM$Belongings, undecided = 0.45)
+Cartes.SFCM$ProbaMaps[[1]]
+```
+
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-FigureSFCMProb2
+#| fig-align: center
+#| fig-cap: Cartographie des probabilités d'appartenance issues de la classification SFCM (classe 2)
+#| out-width: 100%
+Cartes.SFCM$ProbaMaps[[2]]
+```
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-FigureSFCMProb3
+#| fig-align: center
+#| fig-cap: Cartographie des probabilités d'appartenance issues de la classification SFCM (classe 3)
+#| out-width: 100%
+Cartes.SFCM$ProbaMaps[[3]]
+```
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-FigureSFCMProb4
+#| fig-align: center
+#| fig-cap: Cartographie des probabilités d'appartenance issues de la classification SFCM (classe 4)
+#| out-width: 100%
+Cartes.SFCM$ProbaMaps[[4]]
+```
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-FigureSFCMProb5
+#| fig-align: center
+#| fig-cap: Cartographie des probabilités d'appartenance issues de la classification SFCM (classe 5)
+#| out-width: 100%
+Cartes.SFCM$ProbaMaps[[5]]
+```
+
+**Cartographie des probabilités d'appartenance à chaque classe du SFCM (@fig-FigureSFCMCluster)**
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+#| label: fig-FigureSFCMCluster
+#| fig-align: center
+#| fig-cap: Cartographie des classes issues de la classification SFCM
+#| out-width: 75%
+Cartes.SFCM$ClusterPlot
+```
+
+Il est intéressant de noter que les groupes construits par les deux algorithmes (ClustGeo et SFCM) produisent des solutions assez différentes. Nous retrouvons dans les deux classifications un groupe caractérisant les quartiers centraux, puis une distinction assez nette entre les secteurs est et ouest de l'agglomération. Cependant, *ClustGeo* regroupe les Iris du sud dans un groupe spécifique alors que SFCM a identifié deux groupes plus atypiques spatialement. Le groupe 5 correspond aux Iris situés le long du boulevard périphérique encerclant Lyon.
+
+Le groupe 5 correspond donc à un ensemble d'Iris avec les plus hauts niveaux de concentration de pollutions atmosphérique et sonore (figure ci-dessous). Il est similaire en cela au groupe 1, qui est cependant marqué par des niveaux de bruit un peu moins élevés.
+
+```{r}
+#| echo: true 
+#| eval: true 
+#| message: false 
+#| warning: false
+spiderPlots(Data,SFCM$Belongings,
+            chartcolors = c("darkorange3",
+							"grey4",
+							"darkgreen",
+							"royalblue", 
+							"blueviolet"))
+```
+
+::: bloc_aller_loin
+::: bloc_aller_loin-header
+::: bloc_aller_loin-icon
+:::
+
+**De multiples saveurs du SFCM**
+:::
+
+::: bloc_aller_loin-body
+Plusieurs variantes du SFCM sont proposées par le *package* `geocmeans` qui offrent une grande flexibilité :
+
+-   La version généralisée du SFCM (appelée SFGCM) avec l'ajout d'un paramètre supplémentaire (*beta*) qui accélère la convergence du SFCM en limitant la probabilité attribuée au groupe le moins probable de chaque observation.
+-   Les versions robustes du SFCM et SFGCM, qui normalisent les distances calculées entre les observations pour réaliser des classifications non sphériques.
+-   L'ajout d'un groupe de résidus, permettant d'attribuer les observations très incertaines à un groupe « poubelle », ce qui évite d'influencer la cohérence des « vrais groupes » avec des observations très atypiques.
+:::
+:::
+
+## Quiz de révision du chapitre {#sec-083}
+
+```{r}
+#| label: quizChapitre08
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| results: asis
+
+source("code_complementaire/QuizzFunctions.R")
+Chap08Quiz <- quizz("quiz/Chap08.yml", "Chap08")
+render_quizz(Chap08Quiz)
+```
+
+## Exercices de révision {#sec-084}
+
+::: bloc_exercice
+::: bloc_exercice-header
+::: bloc_exercice-icon
+:::
+
+**Exercice 1.** Réalisation de classification avec contrainte spatiale avec des variables socioéconomiques
+:::
+
+::: bloc_exercice-body
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: false
+library(rgeoda)
+library(sf)
+library(tmap)
+## Préparation des données
+load("data/chap08/DonneesLyon.Rdata")
+VarSocioEco <- c("Pct0_14", "Pct_65", "Pct_Img", "Pct_brevet", "NivVieMed")
+Data2 <- st_drop_geometry(LyonIris[VarSocioEco])
+queen_w <- queen_weights(LyonIris)
+## Classification avec k = 4
+azp5_sa  <- à compléter
+azp5_tab <- à compléter
+skater5  <- rgeoda::skater(à compléter)
+redcap5  <- à compléter
+## Cartographie des résultats
+LyonIris$SE.azp4_sa  <- à compléter
+LyonIris$SE.azp4_tab <- à compléter
+LyonIris$SE.skater4 <- à compléter
+LyonIris$SE.recap4  <- à compléter
+Carte1 <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+  tm_fill(col="SE.azp4_sa", palette = "Set1", title ="")+
+  tm_layout(frame=FALSE,  main.title = "a. AZP-SA",
+            main.title.position = "center", main.title.size = 1)
+Carte2 <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+  tm_fill(col="SE.azp4_tab", palette = "Set1", title ="")+
+  tm_layout(frame=FALSE,  main.title = "b. AZP-TABU",
+            main.title.position = "center", main.title.size = 1)
+Carte3 <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+  tm_fill(col="SE.skater4", palette = "Set1", title ="")+
+  tm_layout(frame=FALSE,  main.title = "c. Skater",
+            main.title.position = "center", main.title.size = 1)
+Carte4 <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
+  tm_fill(col="SE.recap4", palette = "Set1", title ="")+
+  tm_layout(frame=FALSE,  main.title = "d. RECAP",
+            main.title.position = "center", main.title.size = 1)
+
+tmap_arrange(à compléter)
+```
+
+Correction à la [section @sec-10081].
+:::
+:::

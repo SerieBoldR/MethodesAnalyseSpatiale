@@ -1,0 +1,1942 @@
+# Mesures d'accessibilité spatiale selon différents modes de transport {#sec-chap05}
+
+Dans ce chapitre, nous voyons comment construire un réseau multimode (voiture, marche, vélo, transport en commun) pour calculer différentes mesures d'accessibilité dans R. Aussi, nous discutons de la notion d'accessibilité à un service, notamment des cinq dimensions identifiées par Penchansky et Thomas [-@penchansky1981concept], de l'accessibilité réelle versus l'accessibilité potentielle et de l'accessibilité spatiale versus l'accessibilité aspatiale [@luo2003measures].
+
+::: bloc_package
+::: bloc_package-header
+::: bloc_package-icon
+:::
+
+**Liste des *packages* utilisés dans ce chapitre**
+:::
+
+::: bloc_package-body
+-   Pour importer et manipuler des fichiers géographiques :
+    -   `sf` pour importer et manipuler des données vectorielles.
+    -   `terra` pour importer et manipuler des données matricielles.
+-   Pour construire des cartes et des graphiques :
+    -   `tmap` est certainement le meilleur *package* pour la cartographie.
+    -   `ggplot2` pour construire des graphiques.
+-   Pour construire un réseau :
+    -   `osmextract` pour extraire des fichiers OpenStreetMap.
+    -   `gtfstools` pour valider la structure d'un fichier GTFS.
+    -   `R5R` pour calculer des trajets et des matrices origines-destinations selon différents modes de transport.
+-   Pour manipuler les données :
+    -   `dplyr` pour calculer des moyennes pondérées.
+:::
+:::
+
+## Notions relatives à l'analyse de réseau {#sec-051}
+
+### Définition d'un réseau {#sec-0511}
+
+Un réseau est un ensemble de lignes connectées par des nœuds -- voies ferrées, voies routières, canalisations d'eau ou de gaz, fleuves et affluents drainant une région, etc. -- reliant un territoire (@fig-fig1Reseau). Pour un réseau routier, l'information sémantique rattachée tant aux lignes (sens de circulation, vitesse autorisée, rues piétonnières, pistes cyclables, etc.) qu'aux nœuds (types d'intersection, autorisation de virage à gauche, etc.) est utilisée pour modéliser un réseau.
+
+![Réseau : un ensemble de lignes connectées par des nœuds](images/Chap05/Reseau.png){#fig-fig1Reseau width="15%" fig-align="center"}
+
+### Principaux problèmes résolus en analyse de réseau {#sec-0512}
+
+L'analyse de réseau permet de résoudre trois principaux problèmes (@fig-fig2PrincipauxPbs) :
+
+-   Trouver le trajet le plus court ou le plus rapide entre deux points, basé sur [l'algorithme de Dijkstra](https://fr.wikipedia.org/wiki/Algorithme_de_Dijkstra) [-@dijkstra1959note].
+
+-   Trouver la route optimale comprenant plusieurs arrêts ([problème du voyageur de commerce](https://fr.wikipedia.org/wiki/Probl%C3%A8me_du_voyageur_de_commerce#:~:text=En%20informatique%2C%20le%20probl%C3%A8me%20du,une%20et%20une%20seule%20fois.)).
+
+-   Définir des zones de desserte autour d'une origine, basé aussi sur l'algorithme de Dijkstra.
+
+![Trois principaux problèmes résolus en analyse de réseau](images/Chap05/PrincipauxProblemes.png){#fig-fig2PrincipauxPbs width="100%" fig-align="center"}
+
+À cela s'ajoutent quatre autres problèmes :
+
+-   Trouver les *k* services les plus proches à partir d'une origine (@fig-fig3AutresPrincipauxPbs, a).
+
+-   Construire une matrice de distance origines-destinations (@fig-fig3AutresPrincipauxPbs, b), dont l'intérêt principal est de permettre par la suite le calcul de n'importe quelle mesure d'accessibilité.
+
+-   Résoudre le [problème de tournées de véhicules](https://fr.wikipedia.org/wiki/Probl%C3%A8me_de_tourn%C3%A9es_de_v%C3%A9hicules) dont l'objectif est d'optimiser les tournées d'une flotte de véhicules en fonction des ressources disponibles, de la localisation des clients, des lieux de dépôt de marchandises, etc.
+
+-   Réaliser un [modèle localisation-affectation](https://en.wikipedia.org/wiki/Location-allocation) dont l'objectif est d'optimiser la localisation d'un ou plusieurs nouveaux équipements en fonction de la demande, et ce, en minimisant la distance agrégée entre les points d'offre et de demande. Par exemple, une région ayant 15 hôpitaux desservant deux millions d'habitants souhaiterait ajouter trois autres établissements. En fonction de l'offre existante (hôpitaux pondérés par le nombre de lits), de la distribution spatiale de la population et de la localisation des sites potentiels des trois hôpitaux, il s'agit de choisir ceux qui minimisent la distance entre les points d'offre et de demande.
+
+![Autres problèmes résolus en analyse de réseau](images/Chap05/PrincipauxAutresProblemes.png){#fig-fig3AutresPrincipauxPbs width="80%" fig-align="center"}
+
+Ces problèmes peuvent être résolus selon différents modes de transport, à savoir le chemin le plus rapide en véhicule motorisé, à pied, en vélo et en transport en commun (@fig-TypesDistancesTransport).
+
+![Chemin le plus rapide selon différents modes de transport](images/Chap05/TypesDistances.png){#fig-TypesDistancesTransport width="60%" fig-align="center"}
+
+### Analyse de réseau et entités polygonales {#sec-0513}
+
+Vous avez compris que les problèmes présentés plus haut sont réalisés à partir d'entités spatiales ponctuelles. Pour estimer le trajet le plus court ou le plus rapide entre un point et un polygone (un parc urbain par exemple), il faut préalablement le convertir en point. Plusieurs solutions sont envisageables [@apparicio2006measuring] :
+
+-   Calculer le trajet entre le point et le centroïde du parc (@fig-ReseauPointPolygone, a). Le centroïde est alors rattaché au tronçon de rue le plus proche. Cette solution est peu précise : plus la superficie du polygone est grande, plus l'imprécision augmente.
+
+-   Si le parc a plusieurs entrées, il suffit de les positionner le long du périmètre et de calculer les trajets à partir de ces points.
+
+-   Si le parc n'a pas d'entrée, il convient de positionner des points le long du périmètre, espacés d'une distance prédéterminée (@fig-ReseauPointPolygone, b). Bien qu'elle soit longue à calculer, cette solution est bien plus précise. Par exemple, avec des points espacés de 20 mètres le long du périmètre du parc, l'erreur maximale est de 10 mètres.
+
+![Méthode pour déterminer le trajet le plus court entre une entité ponctuelle et une entité polygonale](images/Chap05/ReseauPointPolygone.png){#fig-ReseauPointPolygone width="90%" fig-align="center"}
+
+::: bloc_aller_loin
+::: bloc_aller_loin-header
+::: bloc_aller_loin-icon
+:::
+
+**Modélisation d'un réseau dans un logiciel SIG (systèmes d'information géographique)**
+:::
+
+::: bloc_aller_loin-body
+Il est aussi possible de construire un réseau dans un logiciel SIG (QGIS et ArcGIS Pro par exemple). Pour une description détaillée de la construction d'un réseau selon différents modes de transport (voiture, marche, vélo et transport en commun) dans un SIG, consultez l'article d'Apparicio *et al.* [-@ApparicioGelbrevisited].
+:::
+:::
+
+## Construction d'un réseau avec R5R {#sec-052}
+
+Pour construire un réseau pour différents modes de transport dans R, nous utilisons le *package* `R5R` [@packageR5R]. Il existe d'autres *packages*, notamment `opentripplanner` [@packageOpenTripPlanner] qui a été largement utilisé ces dernières années. Étant plus rapide, `R5R` s'impose actuellement comme la solution la plus efficace pour calculer des trajets à travers un réseau de rues selon différents modes de transport.
+
+::: bloc_notes
+::: bloc_notes-header
+::: bloc_notes-icon
+:::
+
+**Documentation du *package*`R5R`**
+:::
+
+::: bloc_notes-body
+Nous vous conseillons vivement de lire la documentation de `R5R` sur [le site de CRAN](https://cran.r-project.org/web/packages/r5r/index.html), notamment les nombreuses vignettes présentant des exemples d'analyses avec du code R très bien documenté.
+:::
+:::
+
+### Extraction des données spatiales pour R5R {#sec-0521}
+
+Pour construire un réseau multimode, `R5R` a besoin de trois fichiers qui doivent être localisés dans le même dossier (@fig-DonneesReseauR5R) :
+
+1.  un fichier *pbf* (*Protocolbuffer Binary Format*) pour les données d'OpenStreetMap.
+2.  un ou plusieurs fichiers *GTFS* (*General Transit Feed Specification*) pour les flux relatifs aux transports en commun.
+3.  un fichier *GeoTIFF* d'élévation.
+
+Notez que ce dernier fichier est optionnel. Toutefois, pour calculer des trajets à pied ou à vélo, il est préférable de tenir compte de la pente, surtout dans une ville comme Sherbrooke!
+
+![Trois types de données nécessaires pour modéliser un réseau dans R5R](images/Chap05/DonneesPourR5R.png){#fig-DonneesReseauR5R width="55%" fig-align="center"}
+
+#### Extraction d'un fichier OpenStreetMap {#sec-05212}
+
+Pour récupérer un fichier OpenStreetMap (OSM, format *pbf*), nous utilisons deux fonctions du *package* `osmextract` [@osmextractpackage] :
+
+-   `oe_match` pour repérer le fichier OSM pour la région de l'Estrie.
+-   `oe_download` pour télécharger le fichier OSM pour la région de l'Estrie.
+
+```{r}
+#| echo: true
+#| message: false 
+#| warning: false 
+
+library(osmextract)
+## Identification du fichier OSM (format pbf) pour l'Estrie
+Estrie = oe_match(place="Estrie", provider = "openstreetmap_fr")
+## Téléchargement du fichier OSM (format pbf) pour l'Estrie
+oe_download(
+  file_url = Estrie$url,
+  file_size = Estrie$file_size,
+  provider = "openstreetmap_fr",
+  download_directory = "data/chap05/__TempOSM")
+```
+
+Le fichier OSM téléchargé plus haut couvre la région de l'Estrie. À notre connaissance, il n'existe pas de solution pour découper un fichier *pbf* dans R. Par conséquent, nous récupérons les coordonnées minimales et maximales de l'enveloppe d'une zone tampon de 5000 mètres autour de la couche de la ville de Sherbrooke. Puis, pour découper le fichier *pbf*, nous utilisons l'outil [**osmconvert64-0.8.8p.exe**](https://wiki.openstreetmap.org/wiki/Osmconvert). Le code ci-dessous renvoie les quatre coordonnées de l'enveloppe.
+
+```{r}
+#| echo: true
+#| message: false 
+#| warning: false 
+
+library(sf)
+library(tmap)
+## Importation du polygone pour la ville de Sherbrooke avec sf
+Sherbrooke <- st_read(dsn = "data/chap05/AutresDonnees/Sherbrooke.shp", quiet=TRUE)
+## Création d'une zone tampon de 5 km
+zone <- st_buffer(Sherbrooke, dist = 5000)
+## Changement de la projection en 4326
+zone <- st_transform(zone, 4326)
+## Création de l'enveloppe autour de la couche
+enveloppe = st_bbox(zone)
+## Visualisation des coordonnées minimales et maximales
+cat(paste0("Minimum longitude : ", round(enveloppe[1],4),
+           "\n Minimum latitude : ", round(enveloppe[2],4),
+           "\n Maximum longitude : ", round(enveloppe[3],4),
+           "\n Maximum latitude : ", round(enveloppe[4],4)
+    ))
+```
+
+L'application **Osmconvert** est disponible pour [Windows](https://wiki.openstreetmap.org/wiki/Osmconvert#Windows) et [Linux](https://wiki.openstreetmap.org/wiki/Osmconvert#Linux). Pour découper un fichier avec les coordonnées latitude/longitude minimales et maximales avec **Osmconvert**, nous écrivons une commande système et l'exécutons avec la fonction `system`. Pour utiliser le code ci-dessous, vous devez avoir préalablement téléchargé **Osmconvert** et connaitre son emplacement.
+
+```{r}
+#| echo: true
+#| message: false 
+#| warning: false 
+
+## Préparation des chemins
+path_to_osm_convert <- paste0(getwd(),'/data/chap05/__TempOSM/osmconvert64-0.8.8p.exe')
+path_to_big_osm <- paste0(getwd(),'/data/chap05/__TempOSM/openstreetmap_fr_estrie-latest.osm.pbf')
+path_to_small_osm <- paste0(getwd(),'/data/chap05/__TempOSM/openstreetmap_fr_estrie-latest.osm_01.pbf')
+## Écriture de la commande
+commande <- paste0('"',path_to_osm_convert, '" "',
+                   path_to_big_osm, '" -b=',paste0(enveloppe[1:4], collapse = ','), 
+                   ' -o="',path_to_small_osm,'"')
+```
+
+Une fois que la commande est écrite, nous l'exécutons.
+
+```{r}
+#| echo: true
+#| message: false 
+#| warning: false 
+#| results: hide 
+
+system(commande)
+```
+
+Notez qu'il est possible d'obtenir le même résultat avec l'application [**Osmosis**](https://wiki.openstreetmap.org/wiki/Osmosis). Il s'agit d'un outil rédigé en **Java** et qui dispose de fonctionnalités similaires à celles de **Osmconvert**. Puisqu'il est rédigé en **Java**, il peut être utilisé sur davantage de plateformes qu'**Osmconvert**.
+
+#### Construction d'un fichier *GeoTIFF* pour l'élévation {#sec-05213}
+
+Pour créer un fichier *GeoTIFF* pour l'élévation, nous utilisons les modèles numériques de terrain (MNT) du [ministère des Ressources naturelles et des Forêts](https://www.donneesquebec.ca/recherche/dataset/modeles-numeriques-d-altitude-a-l-echelle-de-1-20-000).
+
+```{r}
+#| echo: false
+#| message: true 
+#| eval: false 
+
+library(terra)
+## Couche polygonale sf pour la ville de Sherbrooke
+# Shapefile pour les régions du Québec au 1/20000
+# https://www.donneesquebec.ca/recherche/dataset/decoupages-administratifs/resource/b368d470-71d6-40a2-8457-e4419de2f9c0
+Sherbrooke <- st_read(dsn = "data/chap05/AutresDonnees/Sherbrooke.shp", quiet=TRUE)
+Sherbrooke <- st_buffer(Sherbrooke, dist = 5000)
+## Feuillets pour les MNT au 1/20000
+## Importation du shapefile des feuillets
+## (https://www.donneesquebec.ca/recherche/dataset/modeles-numeriques-d-altitude-a-l-echelle-de-1-20-000/resource/2df157af-74cf-4b53-af9d-1d3ccee0d6e1)
+Feuillets <- st_read(dsn = "data/chap05/AutresDonnees/Index_MNT20k.shp", quiet=TRUE)
+### Nous nous assurons que les deux couches ont la même projection, soit EPSG 4326
+Sherbrooke <- st_transform(Sherbrooke, st_crs(Feuillets))
+### Sélection des feuillets qui intersectent le polygone de l'Estrie
+RequeteSpatiale <- st_intersects(Feuillets, Sherbrooke, sparse = FALSE)
+Feuillets$Intersect <-  RequeteSpatiale[, 1]
+FeuilletsSherbrooke <- subset(Feuillets,Intersect == TRUE)
+
+## Téléchargement des GRIDS
+### Création d'un dossier temporaire pour les MNT
+dir.create(paste0("data/chap05/AutresDonnees/MNT"))
+grids <- FeuilletsSherbrooke$GRID
+i = 0
+for (e in grids) {
+  i = i+1
+  # Téléchargement
+  Fichier <- substr(e, 88, nchar(e))
+  Chemin <-  "data/chap05/AutresDonnees/MNT"
+  CheminFichier <- paste0(Chemin, "/", Fichier)
+  download.file(e, destfile = CheminFichier)
+  # Décompression du fichier zip
+  unzip(CheminFichier, exdir = Chemin)
+}
+
+## Importation des GRIDS avec le package Terra
+Fichier1 <- substr(grids, 88, 98)
+Fichier2 <- paste0(substr(tolower(Fichier1), 1, 7),
+                    substr(Fichier1, 9, 11))
+NomsFichiers <- paste0("data/chap05/AutresDonnees/MNT/",
+                        Fichier1, "/",
+                        Fichier2)
+rlist <- list()
+for(e in NomsFichiers) {
+ print(e)
+ rasterGrid <- terra::rast(e)
+ rlist[[length(rlist)+1]] <- rasterGrid
+}
+## Création d'une mosaique avec les GRIDS
+rsrc <- terra::sprc(rlist)
+MosaicSherbrooke <- mosaic(rsrc)
+MosaicSherbrooke
+
+## Exporter en GeoTIFF
+terra::writeRaster(MosaicSherbrooke, 
+                  "data/chap05/_DataReseau/Elevation.tif",
+                  filetype = "GTiff",
+                  overwrite = TRUE)
+
+## Suppression des GRIDS
+dossier <- "data/chap05/AutresDonnees/MNT/"
+f <- list.files(dossier, include.dirs = FALSE, full.names = TRUE, recursive = TRUE)
+file.remove(f)
+d <- list.dirs(dossier)
+unlink(d, recursive = TRUE)
+```
+
+Le fichier d'élévation ainsi construit est présenté à la @fig-figMNT.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-figMNT
+#| fig-align: center
+#| fig-cap: "Modèle numérique d'élévation au 1/20000 pour la région de Sherbrooke"
+#| out-width: 65%
+MosaicSherbrooke <- terra::rast("data/chap05/_DataReseau/Elevation.tif")
+terra::plot(MosaicSherbrooke)
+```
+
+#### Extraction et validation d'un fichier GTFS {#sec-05214}
+
+Le fichier GTFS pour la Société de Transport de Sherbrooke est disponible à l'adresse suivante : <https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip>. Pour le télécharger, nous utilisons la fonction `download.file`.
+
+```{r}
+#| echo: false
+#| message: true 
+#| eval: false 
+url <- "https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip"
+destfile <- "data/chap05/_DataReseau/GTFS_clients.zip"
+download.file(url, destfile)
+```
+
+Pour s'assurer du bon fonctionnement d'un GTFS dans `r5r`, il faut préalablement valider la structure du fichier. Dans un premier temps, vous pouvez valider la structure générale de votre GTFS en utilisant l'outil en ligne [gtfs-validator](https://gtfs-validator.mobilitydata.org/) proposé par l'organisation *MobilityData*. Dans un second temps, il convient de s'assurer que les types de lignes utilisés font partie des types standards définis par [Google](https://developers.google.com/transit/gtfs/reference?hl=fr#routestxt), soit avec l'un des numéros suivants : 0, 1, 2, 3, 4, 5, 6, 7, 11, 12. Si votre GTFS contient des lignes de transport en commun provenant par exemple des [types étendus](https://developers.google.com/transit/gtfs/reference/extended-route-types?hl=fr), `r5r` renverra une erreur.
+
+Nous vous proposons ci-dessous une fonction qui remplace les types problématiques dans un GTFS. Le plus simple est de les remplacer par un type *bus* (3), ce qui n'affectera pas les trajets estimés.
+
+```{r}
+#| echo: true
+#| message: true 
+
+library(gtfstools)
+## Fonction
+clean_gtfs_types <- function(gtfs_file, replace_by = 3){
+  # Lecture du GTFS
+  seed <- gtfstools::read_gtfs(gtfs_file)
+  print(unique(seed$routes$route_type))
+  # Vérification des types de routes
+  seed$routes$route_type <- ifelse(
+    seed$routes$route_type %in% c(0:7,11,12),
+    seed$routes$route_type,
+    replace_by
+  )
+  # Réécriture du fichier GTFS avec la modification
+  gtfstools::write_gtfs(seed, gtfs_file)
+}
+## Appel de la fonction
+destfile <- "data/chap05/_DataReseau/GTFS_clients.zip"
+clean_gtfs_types(destfile)
+```
+
+Pour ce fichier, le seul type de ligne utilisé est le numéro 3, soit des lignes de bus.
+
+### Construction du réseau avec R5R {#sec-0522}
+
+::: bloc_attention
+::: bloc_attention-header
+::: bloc_attention-icon
+:::
+
+**`R5R` et JDK Java et allocation de la mémoire**
+:::
+
+::: bloc_attention-body
+Le *package* `R5R` utilise la version 11 de la JDK de Java (*Java Development Kit*). Vous devez préalablement la [télécharger](https://www.oracle.com/ca-en/java/technologies/javase/jdk11-archive-downloads.html) et l'installer sur votre ordinateur. Les deux lignes de code ci-dessous permettent de vérifier si elle est bien installée sur votre ordinateur.
+
+```{r}
+#| echo: true
+#| message: true 
+## Vérification que la JDK version 11 est bien installée
+rJava::.jinit()
+rJava::.jcall("java.lang.System", "S", "getProperty", "java.version")
+```
+
+Il est fortement conseillé d'augmenter la mémoire allouée au processus JAVA, surtout si vous souhaitez calculer des matrices origines-destinations de grande taille. Par exemple, la commande `options(java.parameters = "-Xmx2G")` permet d'augmenter la mémoire disponible pour JAVA à deux gigaoctets. Si votre ordinateur ne manque pas de mémoire vive (16, 32 ou 64 gigaoctets), n'hésitez pas à augmenter ce paramètre (par exemple, `options(java.parameters = "-Xmx8G")`).
+:::
+:::
+
+Nous utilisons la fonction `setup_r5` pour construire un réseau multimode à partir des trois fichiers :
+
+-   Le fichier OSM (`openstreetmap_fr_sherbrooke.pbf`).
+
+-   Le fichier GTFS pour la Société de Transport de Sherbrooke (`GTFS_clients.zip`).
+
+-   Le fichier d'élévation pour la région de Sherbrooke (`Elevation.tif`).
+
+Notez les paramètres suivants pour la fonction `setup_r5` :
+
+-   `data_path` pour définir le dossier dans lequel sont présents les trois fichiers.
+
+-   `elevation = "TOBLER"` pour utiliser la fonction d'impédance de Tobler pour la marche et le vélo qui prend en compte la pente.
+
+-   `overwrite = FALSE` pour ne pas écraser le réseau s'il est déjà construit. La construction d'un réseau peut être très longue dépendamment de la taille des trois fichiers (OSM, GTFS, élévation). Par conséquent, n'oubliez pas de spécifier cette option si votre réseau a déjà été construit.
+
+```{r}
+#| echo: true
+#| message: false 
+library(r5r)
+## Allocation de la mémoire pour Java
+options(java.parameters = "-Xmx2G")
+## Construction du réseau R5R
+r5r_core <- setup_r5(data_path = "data/chap05/_DataReseau/",
+                     elevation = "TOBLER",
+                     verbose = FALSE, overwrite = FALSE)
+```
+
+La fonction `setup_r5` a créé deux nouveaux fichiers (*network.dat* et *network_settings.json*) qui sont utilisés par le *package* `r5r` pour les analyses de réseau.
+
+```{r}
+#| echo: true
+#| message: true 
+## Liste des fichiers dans le dossier 
+list.files("data/chap05/_DataReseau/")
+```
+
+### Calcul d'itinéraires avec R5R selon le mode de transport {#sec-0523}
+
+Pour calculer un trajet, nous utilisons la fonction `detailed_itineraries` dont les paramètres sont décrits dans l'encadré ci-dessous.
+
+::: bloc_notes
+::: bloc_notes-header
+::: bloc_notes-icon
+:::
+
+**Paramètres de la fonction `detailed_itineraries`**
+:::
+
+::: bloc_attention-body
+-   **`r5r_core`**: le réseau créé avec la fonction `setup_r5()` décrite plus haut.
+-   **`origins`**: un point `sf` projeté en WGS84 ou un `data.frame` comprenant les colonnes `id`, `lon` et `lat`.
+-   **`destinations`**: un point `sf` projeté en WGS84 ou un `data.frame` comprenant les colonnes `id`, `lon` et `lat`.
+-   **`mode`**: un vecteur de type caractères définissant les modes de transport dont les principaux sont :
+    -   `"WALK"` pour la marche.
+    -   `"BICYCLE"` pour le vélo.
+    -   `"CAR"` pour l'automobile.
+    -   `"c("WALK",TRANSIT")` pour la marche et le transport en commun.
+-   **`departure_datetime`**: un objet `POSIXct` définissant la date et l'heure de départ à utiliser si vous souhaitez calculer un trajet en transport en commun.
+-   **`max_walk_time=inf`**: un nombre entier définissant le temps de marche maximal en minutes pour chaque segment du trajet. La valeur par défaut est sans limite (`Inf`).
+-   **`max_bike_time = Inf`**: un nombre entier définissant le temps maximal à vélo en minutes.
+-   **`max_car_time = Inf`**: un nombre entier définissant le temps maximal en automobile en minutes.
+-   **`max_trip_duration = 120`**: un nombre entier définissant le temps maximal du trajet qui est fixé à 120 minutes par défaut. Par conséquent, tout trajet d'une durée supérieure à ce seuil ne sera pas calculé.
+-   **`walk_speed = 3.6`**: une valeur numérique définissant la vitesse moyenne de marche qui est fixée par défaut à 3,6 km/h. Ce seuil est très conservateur et pourrait être augmenté à 4,5 km/h.
+-   **`bike_speed = 12`**: une valeur numérique définissant la vitesse moyenne à vélo qui est fixée par défaut à 12 km/h. Ce seuil est aussi très conservateur et pourrait être augmenté à 15 ou 16 km/h.
+-   **`max_lts = 2`**: un nombre entier de 1 à 4 qui indique le niveau de stress lié à la circulation que les cyclistes sont prêts à tolérer. Une valeur de 1 signifie que les cyclistes n'emprunteront que les rues les plus calmes, tandis qu'une valeur de 4 indique que les cyclistes peuvent emprunter n'importe quelle route.
+    -   `max_lts = 1`: tolérable pour les enfants.
+    -   `max_lts = 2`: tolérable pour la population adulte en général.
+    -   `max_lts = 3`: tolérable pour les cyclistes enthousiastes et confiants.
+    -   `max_lts = 4`: tolérable uniquement pour les cyclistes intrépides.
+-   **`drop_geometry = FALSE`**: si ce paramètre est fixé à TRUE, la géométrie du trajet ne sera pas incluse.
+:::
+:::
+
+#### Calcul d'itinéraires selon les modes de transport actif {#sec-05231}
+
+Dans un premier temps, nous calculons des trajets à vélo entre les deux localisations suivantes :
+
+-   Le point `Pt.W` situé à l'intersection de la rue Wellington et de la Côte de l'Acadie (45,38947; -71,88393).
+
+-   Le point `Pt.D` situé à l'intersection des rues Darche et Dorval (45,38353; -71,89169).
+
+```{r}
+#| echo: true
+#| message: true 
+## Création d'une couche sf avec les deux points
+Pts <- data.frame(id = c("Rue Wellington S.", "Rue Darche"),
+                         lat = c( 45.38947,  45.38353),
+                         lon = c(-71.88393, -71.89169)
+                         )
+Pts <- st_as_sf(Pts, coords = c("lon","lat"), crs = 4326)
+Pt.W <- Pts[1,]
+Pt.D <- Pts[2,]
+```
+
+Avec la fonction `detailed_itineraries`, les durées sont estimées à respectivement six et huit minutes (@fig-TrajetsVelo). Bien que le chemin emprunté soit le même, cet écart s'explique par la Côte de l'Acadie, soit l'un des tronçons de rue les plus pentus de la ville de Sherbrooke.
+
+```{r}
+## Trajets en vélo
+velo.1 <- detailed_itineraries(r5r_core = r5r_core,
+                               origins = Pt.W,
+                               destinations = Pt.D,
+                               mode = "BICYCLE", # Vélo
+                               bike_speed = 12,
+                               shortest_path = FALSE,
+                               drop_geometry = FALSE)
+velo.2 <- detailed_itineraries(r5r_core = r5r_core,
+                               origins = Pt.D,
+                               destinations = Pt.W,
+                               mode = "BICYCLE", # Vélo
+                               bike_speed = 12,
+                               shortest_path = FALSE,
+                               drop_geometry = FALSE)
+velo.1
+velo.2
+```
+
+Pour visualiser les trajets, nous utilisons le *package* `tmap` en mode `view`. Notez qu'un clic sur le trajet fait apparaître une fenêtre surgissante.
+
+```{r}
+#| echo: false
+#| message: true 
+#| eval: false 
+library(tmap)
+# Cartographie des trajets avec tmap
+tmap_mode("view")
+Carte1 <- tm_shape(velo.1)+
+  tm_lines(col="black", lwd = 2, 
+           popup.vars = c("mode", "from_id", "to_id", "segment_duration", "distance"))+
+  tm_shape(Pt.W)+tm_dots(col="green", size = .15)+
+  tm_shape(Pt.D)+tm_dots(col="red", size = .15)
+Carte2 <- tm_shape(velo.2)+
+  tm_lines(col="black", lwd = 2,
+           popup.vars = c("mode", "from_id", "to_id", "segment_duration", "distance"))+
+  tm_shape(Pt.D)+tm_dots(col="green", size = .15)+
+  tm_shape(Pt.W)+tm_dots(col="red", size = .15)
+tmap_arrange(Carte1, Carte2, ncol = 2)
+```
+
+![Trajets à vélo entre les deux destinations](images/Chap05/TrajetsVelo.png){#fig-TrajetsVelo width="100%" fig-align="center"}
+
+Dans un second temps, nous calculons les trajets à pied avec les deux mêmes localisations qui sont estimées à 16 et 21 minutes (@fig-TrajetsMarche).
+
+```{r}
+#| echo: false
+#| message: true 
+#| eval: false 
+marche.1 <- detailed_itineraries(r5r_core = r5r_core,
+                                 origins = Pt.W,
+                                 destinations = Pt.D,
+                                 mode = "WALK", # Marche
+                                 walk_speed = 4.5,  # par défaut 3.6
+                                 shortest_path = FALSE,
+                                 drop_geometry = FALSE)
+marche.2 <- detailed_itineraries(r5r_core = r5r_core,
+                                 origins = Pt.D,
+                                 destinations = Pt.W,
+                                 mode = "WALK", # Marche
+                                 walk_speed = 4.5,
+                                 shortest_path = FALSE,
+                                 drop_geometry = FALSE)
+# Cartographie des trajets avec tmap
+Carte3 <- tm_shape(marche.1)+
+  tm_lines(col="black", lwd = 2,
+           popup.vars = c("mode", "from_id", "to_id", "segment_duration", "distance"))+
+  tm_shape(Pt.W)+tm_dots(col="green", size = .15)+
+  tm_shape(Pt.D)+tm_dots(col="red", size = .15)
+Carte4 <- tm_shape(marche.2)+
+  tm_lines(col="black", lwd = 2,
+           popup.vars = c("mode", "from_id", "to_id", "segment_duration", "distance"))+
+  tm_shape(Pt.D)+tm_dots(col="green", size = .15)+
+  tm_shape(Pt.W)+tm_dots(col="red", size = .15)
+tmap_arrange(Carte3, Carte4, ncol = 2)
+```
+
+![Trajets à pied entre les deux destinations](images/Chap05/TrajetsMarche.png){#fig-TrajetsMarche width="100%" fig-align="center"}
+
+#### Calcul d'itinéraires en automobile {#sec-05232}
+
+Nous calculons ici l'itinéraire entre le campus principal de l'[Université de Sherbrooke](https://www.usherbrooke.ca/) et une localisation (45,4220308; -71,881828). Nous fixons alors `mode = "CAR"` pour la fonction `detailed_itineraries`. Les trajets sont respectivement estimés à 21,7 et 18,8 minutes à destination et au départ du campus principal.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+UDeS <- data.frame(id = "Campus principal", lon = -71.929526, lat = 45.378017)
+UDeS <- st_as_sf(UDeS, coords = c("lon","lat"), crs = 4326)
+Point <- data.frame(id = "Départ", lon = -71.881828, lat = 45.4220308)
+Point <- st_as_sf(Point, coords = c("lon","lat"), crs = 4326)
+
+Auto.Aller <- detailed_itineraries(r5r_core = r5r_core,
+                                 origins = Point,
+                                 destinations = UDeS,
+                                 mode = "CAR", # Automobile
+                                 shortest_path = FALSE,
+                                 drop_geometry = FALSE)
+Auto.Retour <- detailed_itineraries(r5r_core = r5r_core,
+                               origins = UDeS,
+                               destinations = Point,
+                               mode = "CAR", # Automobile
+                               shortest_path = FALSE,
+                               drop_geometry = FALSE)
+Auto.Aller
+Auto.Retour
+```
+
+Bien entendu, les deux trajets sont différents en raison des sens de circulation (@fig-TrajetsAuto).
+
+```{r}
+#| echo: true
+#| message: true 
+#| eval: false 
+# Cartographie des trajets avec tmap
+Carte1 <- tm_shape(Auto.Aller)+
+  tm_lines(col="black", lwd = 2,
+           popup.vars = c("mode", "from_id", "to_id", "segment_duration", "distance"))+
+  tm_shape(Point)+tm_dots(col="green", size = .15)+
+  tm_shape(UDeS)+tm_dots(col="red", size = .15)
+Carte2 <- tm_shape(Auto.Retour)+
+  tm_lines(col="black", lwd = 2,
+           popup.vars = c("mode", "from_id", "to_id", "segment_duration", "distance"))+
+  tm_shape(Point)+tm_dots(col="red", size = .15)+
+  tm_shape(UDeS)+tm_dots(col="green", size = .15)
+# Figure avec les deux cartes
+tmap_arrange(Carte1, Carte2)
+```
+
+![Trajets en voiture entre les deux destinations](images/Chap05/TrajetsAuto.png){#fig-TrajetsAuto width="100%" fig-align="center"}
+
+#### Calcul d'itinéraires en transport en commun {#sec-05233}
+
+Pour le calcul d'itinéraires en transport en commun, nous devons fixer une heure de départ et un temps de marche maximal pour chaque segment du trajet réalisé à pied, soit :
+
+-   du domicile à l'arrêt de bus le plus proche;
+-   entre deux arrêts de bus de lignes différentes;
+-   du dernier arrêt de bus à la destination finale.
+
+Dans le code ci-dessous, nous fixons les heures de départ et d'arrivée à 8 h et à 18 h pour le 28 février 2024 et un temps de marche maximal de 20 minutes.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+### Définition de la journée et de l'heure de départ
+dateheure.matin <- as.POSIXct("28-02-2024 08:05:00",
+                              format = "%d-%m-%Y %H:%M:%S")
+
+dateheure.soir  <- as.POSIXct("28-02-2024 18:00:00",
+                              format = "%d-%m-%Y %H:%M:%S")
+### Définition du temps de marche maximal
+minutes_marches_max <- 20
+```
+
+Toujours avec la fonction `detailed_itineraries`, nous modifions les paramètres comme suit :
+
+-   `mode = c("WALK", "TRANSIT")` pour le transport en commun.
+
+-   `walk_speed = 4.5` pour une vitesse moyenne à la marche de 4,5 km/h.
+
+-   `departure_datetime = dateheure.matin` pour un départ le 28 février 2024 à 8 h.
+
+-   `departure_datetime = dateheure.soir` pour un départ le 28 février 2024 à 18 h.
+
+-   `max_walk_time = minutes_marches_max` pour un temps maximal de marche de 20 minutes.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+TC.Aller <- detailed_itineraries(r5r_core = r5r_core,
+                                   origins = Point,
+                                   destinations = UDeS,
+                                   mode = c("WALK", "TRANSIT"),
+                                   max_walk_time = minutes_marches_max,
+                                   walk_speed = 4.5,
+                                   departure_datetime = dateheure.matin,
+                                   shortest_path = FALSE,
+                                   drop_geometry = FALSE)
+TC.Retour <- detailed_itineraries(r5r_core = r5r_core,
+                                    origins = UDeS,
+                                    destinations = Point,
+                                    mode = c("WALK", "TRANSIT"),
+                                    max_walk_time = minutes_marches_max,
+                                    walk_speed = 4.5,
+                                    departure_datetime = dateheure.soir,
+                                    shortest_path = FALSE,
+                                    drop_geometry = FALSE)
+```
+
+Pour l'option 1, la durée du trajet à 8 h vers l'Université de Sherbrooke est estimée à 50,8 minutes avec trois segments :
+
+-   Un premier segment de 8,6 minutes et 661 mètres à pied.
+
+-   Un second de 39,0 minutes et 10,862 km en autobus.
+
+-   Un troisième de 1,8 minutes et 127 mètres à pied.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+TC.Aller
+```
+
+Pour l'option 1, la durée du trajet à 18 h au départ de l'Université de Sherbrooke est estimée à 53,5 minutes avec trois segments :
+
+-   Un premier segment de 1,3 minutes et 102 mètres à pied.
+
+-   Un second de 19,8 minutes et 7,060 km en autobus.
+
+-   Un troisième de 18,4 minutes et 1,183 km à pied.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+TC.Retour
+```
+
+Les deux trajets en transport en commun sont représentés à la @fig-TrajetsTC.
+
+```{r}
+#| echo: true
+#| message: true 
+#| eval: false
+tmap_mode("view")
+Carte1 <- tm_shape(subset(TC.Aller, option == 1))+
+            tm_lines(col="mode", lwd = 3,
+                     popup.vars = c("mode", "from_id", "to_id", 
+                                    "segment_duration", "distance",
+                                    "total_duration", "total_distance"))+
+  tm_shape(Point)+tm_dots(col="green", size = .15)+
+  tm_shape(UDeS)+tm_dots(col="red", size = .15)+
+  tm_view(view.legend.position = c("left", "top"))
+
+Carte2 <- tm_shape(subset(TC.Retour, option == 1))+
+              tm_lines(col="mode", lwd = 3,
+                       popup.vars = c("mode", "from_id", "to_id", 
+                                      "segment_duration", "distance",
+                                      "total_duration", "total_distance"))+
+  tm_shape(Point)+tm_dots(col="red", size = .15)+
+  tm_shape(UDeS)+tm_dots(col="green", size = .15)+
+  tm_view(view.legend.position = c("left", "top"))
+
+tmap_arrange(Carte1, Carte2, ncol = 2)
+```
+
+![Trajets en transport en commun entre les deux destinations](images/Chap05/TrajetsTC.png){#fig-TrajetsTC width="100%" fig-align="center"}
+
+### Délimitation d'isochrones avec R5R selon le mode de transport {#sec-0524}
+
+Le fonction `isochrone` du *package* `R5R` permet de délimiter des zones de desserte selon la distance-temps et différents modes de transport. Ses paramètres sont d'ailleurs les mêmes que ceux de la fonction `detailed_itineraries`, à l'exception de :
+
+-   Il n'y a pas de paramètre `destinations` puisque l'isochrone est uniquement délimité à partir de points d'origines (`origins`).
+
+-   Le paramètre `cutoffs = c(0, 15, 30)` permet de définir différentes isochrones en minutes.
+
+-   Le paramètre `sample_size` est utilisé pour tracer les isochrones. Variant de 0,2 à 1, sa valeur par défaut de 0,8 signifie que 80 % des nœuds du réseau de transport sont utilisés pour tracer l'isochrone. Plus cette valeur est proche de 1, plus l'isochrone est précise, mais plus sa vitesse de calcul est longue.
+
+Dans l'exemple ci-dessous, nous calculons plusieurs isochrones à partir du campus principal de l'Université de Sherbrooke en fonction du mode transport (@fig-Isochrones) :
+
+1.  Trois isochrones de 10, 20 et 30 minutes à pied.
+
+2.  Trois isochrones de 10, 20 et 30 minutes en vélo.
+
+3.  Trois isochrones de 5, 10 et 20 minutes en automobile.
+
+4.  Deux isochrone de 20 et 40 minutes en transport en commun le 28 février 2024 à 18 h avec un durée maximale de marche de 15 minutes.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: false
+#| warning: false
+## Point pour l'université de Sherbrooke
+UDeS <- data.frame(id = "Campus principal", lon = -71.929526, lat = 45.378017)
+UDeS <- st_as_sf(UDeS, coords = c("lon","lat"), crs = 4326)
+tmap_mode("view")
+tmap_options(check.and.fix = TRUE)
+## Trois isochrones à pied de 10, 20 et 30 minutes
+Isochrome.marche <- isochrone(r5r_core,
+                      origins = UDeS,
+                      mode = "WALK",
+                      cutoffs = c(10, 20, 30),
+                      sample_size = .8,
+                      time_window = 120,
+                      progress = FALSE)
+
+Carte.Marche <- tm_shape(Isochrome.marche)+
+                    tm_fill(col="isochrone", 
+                            alpha = .4, 
+                            breaks = c(0, 10, 20, 30),
+                            title ="Marche",
+                            legend.format = list(text.separator = "à"))+
+                    tm_shape(UDeS)+tm_dots(col="darkred", size = .25)
+
+## Trois isochrones à vélo de 10, 20 et 30 minutes
+Isochrome.velo <- isochrone(r5r_core,
+                      origins = UDeS,
+                      mode = "BICYCLE",
+                      cutoffs = c(10, 20, 30),
+                      sample_size = .8,
+                      time_window = 120,
+                      progress = FALSE)
+
+Carto.Velo <- tm_shape(Isochrome.velo)+
+                    tm_fill(col="isochrone", 
+                            alpha = .4, 
+                            breaks = c(0, 10, 20, 30),
+                            title ="Vélo",
+                            legend.format = list(text.separator = "à"))+
+                    tm_shape(UDeS)+tm_dots(col="darkred", size = .25)
+
+## Trois isochrones en auto de 5, 10 et 20 minutes
+Isochrome.auto <- isochrone(r5r_core,
+                      origins = UDeS,
+                      mode = "CAR",
+                      cutoffs = c(5, 10, 20),
+                      sample_size = 1,
+                      time_window = 120,
+                      progress = FALSE)
+
+Carto.Auto <- tm_shape(Isochrome.auto)+
+                    tm_fill(col="isochrone", 
+                            alpha = .4, 
+                            breaks = c(0, 5, 10, 20),
+                            title ="Automobile",
+                            legend.format = list(text.separator = "à"))+
+                    tm_shape(UDeS)+tm_dots(col="darkred", size = .25)
+
+## Deux isochrones en transport en commun de 20, 40 et 60 minutes
+dateheure.soir  <- as.POSIXct("28-02-2024 18:00:00",
+                              format = "%d-%m-%Y %H:%M:%S")
+Isochrome.tc <- isochrone(r5r_core,
+                      origins = UDeS,
+                      mode = c("WALK", "TRANSIT"),
+                      max_walk_time = 15,
+                      departure_datetime = dateheure.soir,
+                      cutoffs = c(20, 40),
+                      sample_size = 1,
+                      time_window = 120,
+                      progress = FALSE)
+
+Carto.TC <- tm_shape(Isochrome.tc)+
+                    tm_fill(col="isochrone", 
+                            alpha = .4, 
+                            breaks = c(0, 20, 40),
+                            title ="Transport en commun",
+                            legend.format = list(text.separator = "à"))+
+                    tm_shape(UDeS)+tm_dots(col="darkred", size = .25)
+## Figure avec les quatre cartes
+tmap_arrange(Carte.Marche, Carto.Velo,
+             Carto.Auto, Carto.TC,
+             ncol = 2, nrow = 2)
+```
+
+![Isochrones selon les quatre modes de transport](images/Chap05/Isochrones.png){#fig-Isochrones width="100%" fig-align="center"}
+
+### Calcul de matrices OD selon différents modes de transport {#sec-0525}
+
+Pour calculer des matrices origines-destinations selon différents modes de transport, nous utilisons la fonction `travel_time_matrix` dont les paramètres sont quasi les mêmes que la `detailed_itineraries` ([section @sec-0523]). Dans le code ci-dessous, nous importons 284 adresses tirées aléatoirement et les supermarchés présents sur le territoire de la ville de Sherbrooke.
+
+```{r}
+#| echo: true
+#| message: true 
+## Importation des couches
+Adresses <- st_read(dsn = "data/Chap05/AutresDonnees/Commerces.gpkg",
+                        layer = "AdressesAleatoires", quiet = TRUE)
+supermarches <- st_read(dsn = "data/Chap05/AutresDonnees/Commerces.gpkg",
+                        layer = "supermarche", quiet = TRUE)
+## Nombre de distances à calculer
+nO = nrow(Adresses)
+nD = nrow(supermarches)
+NOD = nO * nD
+cat("Origines (O) :", nO, "adresses",
+    "\n Destinations (D) :", nD, "supermarchés",
+    "\n Distances OD à calculer = ", NOD)
+## Origines et destinations
+Origines <- Adresses
+Origines$id <- as.character(Adresses$id)
+Origines$lat <- st_coordinates(Adresses)[,2]
+Origines$lon <- st_coordinates(Adresses)[,1]
+Destinations <- supermarches
+Destinations$id <- supermarches$osm_id
+Destinations$lat <- st_coordinates(supermarches)[,2]
+Destinations$lon <- st_coordinates(supermarches)[,1]
+names(Destinations)[1] <- "id"
+```
+
+Par la suite, nous calculons les différentes matrices OD :
+
+-   **`matriceOD.Auto`** avec `mode = "CAR"`.
+
+-   **`matriceOD.Marche`** avec `mode = "WALK"`, `walk_speed = 4.5` et `max_trip_duration = 60`. La durée du trajet est limitée à 60 minutes avec une vitesse moyenne de 4,5 km/h.
+
+-   **`matriceOD.Velo`** avec `mode = "BICYCLE"`, `bike_speed = 15` et `max_trip_duration = 60`. La durée du trajet est limitée à 60 minutes avec une vitesse moyenne de 15 km/h.
+
+-   **`matriceOD.Auto`** avec `mode = "c("WALK", "TRANSIT")"`, `walk_speed = 4.5`, `max_walk_time = 30`, `max_trip_duration = 120` et `departure_datetime = dateheure.soir`. La durée du trajet est limitée à 60 minutes avec une vitesse moyenne de marche de 4,5 km/h et une durée maximale de 30 minutes pour chaque segment à la marche. L'heure de départ a été fixée comme suit : `dateheure.soir  <- as.POSIXct("04-05-2023 18:00:00", format = "%d-%m-%Y %H:%M:%S")`.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+## Matrice OD en voiture
+t1 <-Sys.time()
+matriceOD.Auto <- travel_time_matrix(r5r_core = r5r_core,
+                                     origins = Origines,
+                                     destinations = Destinations,
+                                     mode = "CAR")
+t2 <-Sys.time()
+duree.auto = as.numeric(difftime(t2, t1), units = "secs")
+## Matrice OD à la marche
+t1 <-Sys.time()
+matriceOD.Marche <- travel_time_matrix(r5r_core = r5r_core,
+                                       origins = Origines,
+                                       destinations = Destinations,
+                                       mode = "WALK",
+                                       walk_speed = 4.5,  # valeur par défaut 3.6
+                                       max_trip_duration = 60, # 1 heure de marche maximum
+                                       max_walk_time = Inf)
+t2 <-Sys.time()
+duree.marche = as.numeric(difftime(t2, t1), units = "secs")
+## Matrice OD en vélo
+t1 <-Sys.time()
+matriceOD.Velo <- travel_time_matrix(r5r_core = r5r_core,
+                                     origins = Origines,
+                                     destinations = Destinations,
+                                     mode = "BICYCLE",
+                                     bike_speed = 15,
+                                     max_trip_duration = 60,
+                                     max_bike_time = Inf)
+t2 <-Sys.time()
+duree.velo = as.numeric(difftime(t2, t1), units = "secs")
+## Matrice OD en transport en commun
+dateheure.soir  <- as.POSIXct("04-05-2023 18:00:00",
+                              format = "%d-%m-%Y %H:%M:%S")
+t1 <-Sys.time()
+matriceOD.TC <- travel_time_matrix(r5r_core = r5r_core,
+                                   origins = Origines,
+                                   destinations = Destinations,
+                                   mode = c("WALK", "TRANSIT"),
+                                   walk_speed = 4.5,
+                                   max_walk_time = 30,
+                                   max_trip_duration = 120,
+                                   departure_datetime = dateheure.soir)
+t2 <-Sys.time()
+duree.tc = as.numeric(difftime(t2, t1), units = "secs")
+```
+
+Les temps de calcul des différentes matrices sont reportés ci-dessous.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+cat("Temps de calcul des matrices :", 
+     "\n Voiture : ", round(duree.auto,2), "secondes",
+     "\n Marche : ", round(duree.marche,2), "secondes",
+     "\n Vélo : ", round(duree.velo,2), "secondes",
+     "\n Transport en commun : ", round(duree.tc,2), "secondes")
+```
+
+Une fois les matrices obtenues, nous les enregistrons dans un fichier `Rdata`.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+save(matriceOD.Auto, matriceOD.Marche, 
+     matriceOD.Velo, matriceOD.TC,
+     file="data/chap05/Resultats/MatricesOD.Rdata")
+```
+
+::: bloc_attention
+::: bloc_attention-header
+::: bloc_attention-icon
+:::
+
+**Libération de la mémoire allouée à JAVA**
+:::
+
+::: bloc_attention-body
+Une fois les calculs avec `R5R` terminés, il convient de détruire l'objet `r5r_core` et d'arrêter le processus JAVA avec les deux lignes de code ci-dessous.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: false
+r5r::stop_r5(r5r_core)
+rJava::.jgc(R.gc = TRUE)
+```
+:::
+:::
+
+À partir de ces matrices, nous extrayons la valeur minimale pour chacune des adresses pour les quatre modes de transport. Puis, nous opérons une jointure attributaire avec la couche des adresses aléatoires avec la fonction `merge`.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+## Création d'un vecteur pour la distance au supermarché le plus proche 
+SupermarchePlusProche.Auto <- aggregate(travel_time_p50 ~ from_id, matriceOD.Auto, min)
+SupermarchePlusProche.Pied <- aggregate(travel_time_p50 ~ from_id, matriceOD.Marche, min)
+SupermarchePlusProche.Velo <- aggregate(travel_time_p50 ~ from_id, matriceOD.Velo, min)
+SupermarchePlusProche.tc   <- aggregate(travel_time_p50 ~ from_id, matriceOD.TC, min)
+## Changement des noms des champs
+names(SupermarchePlusProche.Auto) <- c("id", "SupPlusProcheAuto")
+names(SupermarchePlusProche.Pied) <- c("id", "SupPlusProchePied")
+names(SupermarchePlusProche.Velo) <- c("id", "SupPlusProcheVelo")
+names(SupermarchePlusProche.tc)   <- c("id", "SupPlusProcheTC")
+## Jointure avec la couche des adresses
+Adresses <- merge(Adresses, SupermarchePlusProche.Auto, by ="id", all.x=TRUE)
+Adresses <- merge(Adresses, SupermarchePlusProche.Pied, by ="id", all.x=TRUE)
+Adresses <- merge(Adresses, SupermarchePlusProche.Velo, by ="id", all.x=TRUE)
+Adresses <- merge(Adresses, SupermarchePlusProche.tc, by ="id", all.x=TRUE)
+```
+
+Finalement, nous utilisons le *package* `tmap` pour cartographier les résultats et réaliser une figure avec la fonction `tmap_arrange`.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CartoAdressesSupPlusProche
+#| fig-align: center
+#| fig-cap: Supermarché le plus proche en minutes selon le mode de transport
+#| out-width: 100%
+
+## Importation des arrondissements de la ville de Sherbrooke
+arrondissements <- st_read(dsn = "data/Chap05/AutresDonnees/Arrondissements.shp", 
+                           quiet=TRUE)
+## Construction des cartes
+tmap_mode("plot")
+max.auto <- max(Adresses$SupPlusProcheAuto,na.rm=TRUE)
+Carte1 <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_shape(Adresses)+
+            tm_dots(col="SupPlusProcheAuto", 
+                    border.lwd = 1,
+                    style = "fixed",
+                    breaks = c(0,5,10,max.auto),
+                    palette="YlOrRd",
+                    size = .2, 
+					legend.format = list(text.separator = "à"),
+                    title="Voiture")+
+          tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_layout(legend.format = list(text.separator = "à"),
+                    frame = FALSE, legend.outside = TRUE)
+
+max.pied <- max(Adresses$SupPlusProchePied,na.rm=TRUE)
+Carte2 <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_shape(Adresses)+
+            tm_dots(col="SupPlusProchePied", 
+                    border.lwd = 1,
+                    style = "fixed",
+                    breaks = c(0,5,10,15,20,30,45, max.pied),
+                    palette="YlOrRd",
+                    size = .2, 
+                    title="Marche",
+                    textNA = "Plus de 60")+
+          tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_layout(legend.format = list(text.separator = "à"),
+                    frame = FALSE, legend.outside = TRUE)
+
+max.velo <- max(Adresses$SupPlusProcheVelo,na.rm=TRUE)
+Carte3 <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_shape(Adresses)+
+            tm_dots(col="SupPlusProcheVelo", 
+                    border.lwd = 1,
+                    style = "fixed",
+                    breaks = c(0,5,10,20,30,45,max.velo),
+                    palette="YlOrRd",
+                    size = .2, 
+                    title="Vélo",
+                    textNA = "Plus de 60")+
+          tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_layout(legend.format = list(text.separator = "à"),
+                    frame = FALSE, legend.outside = TRUE)
+
+max.tc <- max(Adresses$SupPlusProcheTC,na.rm=TRUE)
+Carte4 <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_shape(Adresses)+
+            tm_dots(col="SupPlusProcheTC", 
+                    border.lwd = 1,
+                    style = "fixed",
+                    breaks = c(0,10,15,20,25,max.tc),
+                    palette="YlOrRd",
+                    size = .2, 
+                    title="Bus",
+                    textNA = "Plus de 60")+
+          tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_layout(legend.format = list(text.separator = "à"),
+                    frame = FALSE, legend.outside = TRUE)
+
+## Figure avec les quatre cartes
+tmap_arrange(Carte1, Carte2, Carte3, Carte4)
+```
+
+## Mesures d'accessibilité {#sec-053}
+
+### Notion d'accessibilité {#sec-0531}
+
+Dans un article fondateur intitulé *The concept of access: definition and relationship to consumer satisfaction*, Roy Penchansky et William Thomas [-@penchansky1981concept] ont identifié cinq dimensions fondamentales au concept d'accessibilité aux services de santé :
+
+1.  **L'accessibilité spatiale** (*accessibility*) renvoie à la proximité géographique du service par rapport à la population.
+
+2.  **La disponibilité** (*availability*) renvoie à la quantité et aux types de services offerts selon les besoins des individus.
+
+3.  **L'organisation** (*accommodation*) renvoie au fonctionnement du service (horaires, délais d'attente, prises de rendez-vous, etc.).
+
+4.  **L'accessibilité financière** (*affordability*) renvoie aux coûts du service qui peuvent constituer une barrière financière pour les personnes défavorisées.
+
+5.  **L'accessibilité socioculturelle** (*acceptability*) renvoie à l'acceptation et à l'adaptation des services aux différences sociales, culturelles ou linguistiques des personnes.
+
+::: bloc_notes
+::: bloc_notes-header
+::: bloc_notes-icon
+:::
+
+**Les cinq dimensions de l'accessibilité et le type de service analysé**
+:::
+
+::: bloc_objectif-body
+L'importance accordée à chacune des cinq dimensions identifiées par Roy Penchansky et William Thomas [-@penchansky1981concept] varie en fonction du type de service à l'étude. Prenons l'exemple des parcs urbains :
+
+1.  L'**accessibilité spatiale**, soit la proximité géographique est sans aucun doute une dimension très importante.
+
+2.  La **disponibilité** (*availability*) renvoie à différents équipements (aires de jeu pour enfants, terrains de sports, etc.) présents dans le parc.
+
+3.  La dimension de l'**organisation** (*accommodation*) risque d'être moins importante puisque les heures d'ouverture et les modalités de réservation de certains types de terrain de sport (comme un terrain de tennis) ne varient habituellement pas d'un parc à l'autre au sein d'une même ville.
+
+4.  La dimension de l'**accessibilité financière** (*affordability*) risque aussi d'être moins importante puisque l'accès au parc et à ses équipements est gratuit, à l'exception de certains terrains de sport très spécialisés.
+
+5.  L'**accessibilité socioculturelle** (*acceptability*) peut être une dimension très importante et renvoie à l'acceptation des différences sociales, générationnelles et ethnoculturelles des personnes utilisatrices des parcs.
+:::
+:::
+
+Plus récemment, la notion d'accessibilité à un service a été définie selon deux dimensions, soit **réelle (ou révélée)** ou **potentielle** et **spatiale** ou **aspatiale** [@guagliardo2004spatial; @luo2003measures; @khan1992integrated] :
+
+1.  L'accessibilité réelle renvoie à l'utilisation effective des services tandis que l'accessibilité potentielle renvoie à leur utilisation probable.
+
+2.  L'accessibilité spatiale renvoie à l'importance de la séparation spatiale entre l'offre et la demande de services en tant que barrière ou facilitateur, et l'accessibilité aspatiale (dimensions financière, socioculturelle, organisationnelle) se concentre sur les barrières ou facilitateurs non géographiques [@luo2003measures; @ngui2011optimizing].
+
+Par conséquent, la notion d'accessibilité aux services de santé englobe quatre catégories principales : **l'accessibilité spatiale réelle**, **l'accessibilité aspatiale réelle**, **l'accessibilité spatiale potentielle** et **l'accessibilité aspatiale potentielle** [@khan1992integrated]. Par exemple, si nous questionnons un groupe de personnes sur la localisation des parcs qu'elles fréquentent habituellement, nous pourrions dresser un portrait sur leur accessibilité spatiale réelle aux parcs. Par contre, si nous calculons le nombre d'hectares de parcs présents dans un rayon de 20 minutes de marche autour de leur domicile, nous pourrions évaluer leur accessibilité spatiale potentielle aux parcs.
+
+### Accessibilité spatiale potentielle {#sec-0532}
+
+Dans le cadre de cette section, nous abordons l'accessibilité spatiale potentielle qui suppose de paramétrer quatre éléments : l'unité spatiale de référence, la méthode d'agrégation, la ou les mesures d'accessibilité et le type de distance [@ApparicioGelbrevisited].
+
+#### Unité spatiale de référence {#sec-05321}
+
+L'entité spatiale de référence correspond aux entités spatiales pour lesquelles l'accessibilité sera évaluée et cartographiée qui pourrait être :
+
+-   Les centroïdes des bâtiments résidentiels d'une ville donnée.
+
+-   Des entités polygonales représentant des zones résidentielles comme des [aires de diffusion](https://www150.statcan.gc.ca/n1/pub/92-195-x/2011001/geo/da-ad/def-fra.htm) (comprenant de 400 à 700 habitants) ou des [secteurs de recensement](https://www150.statcan.gc.ca/n1/pub/92-195-x/2011001/geo/ct-sr/ct-sr-fra.htm) (de 2500 à 8000 habitants).
+
+L'aire de diffusion et surtout le secteur de recensement sont souvent choisis puisqu'une panoplie de variables socioéconomiques, sociodémographiques et relatives au logement sont rattachées à ces entités spatiales pour les différents recensements de Statistique Canada. La sélection de ces entités spatiales (aire de diffusion ou secteur de recensement) permet alors d'évaluer les relations entre les mesures d'accessibilité et les variables socioéconomiques ou sociodémographiques. Néanmoins, cela nécessite de recourir à méthodes d'agrégation afin de limiter les erreurs dans la mesure de l'accessibilité spatiale potentielle [@ApparicioGelbrevisited; @hewko2002measuring].
+
+#### Méthodes d'agrégation {#sec-05322}
+
+Dans un article méthodologique sur la comparaison des approches pour évaluer l'accessibilité spatiale potentielle, Apparicio *et al.* [-@ApparicioGelbrevisited] ont répertorié quatre principales méthodes d'agrégation pour évaluer une mesure d'accessibilité pour les secteurs de recensement. Ces approches, de la moins à la plus précise, sont les suivantes :
+
+-   La première approche consiste à calculer la distance entre le centroïde du secteur de recensement et le service (@fig-MethodesAgregations, a). Plus la taille du secteur de recensement est grande, plus l'erreur d'agrégation (l'imprécision de la mesure d'accessibilité) risque d'être importante puisqu'elle ne tient pas compte de la distribution spatiale de la population à l'intérieur du secteur de recensement. Autrement dit, cette approche revient à supposer que toute la population réside en son centroïde.
+
+-   La seconde approche consiste à calculer la distance entre les services et les centroïdes d'entités spatiales entièrement incluses dans les secteurs de recensement, puis à calculer la moyenne de ces distances pondérée par la population totale de chaque entité spatiale. Cette approche est réalisée avec les aires de diffusion et les îlots inclus dans les secteurs de recensement (@fig-MethodesAgregations, b et c). Bien entendu, les résultats sont plus précis avec les îlots de diffusion que les aires de diffusion puisqu'ils sont de taille plus réduite.
+
+-   La troisième approche consiste à ajuster la localisation des centroïdes des îlots en ne retenant que la partie résidentielle avec une carte d'occupation du sol (@fig-MethodesAgregations, d).
+
+-   Finalement, la quatrième approche consiste à utiliser le rôle d'évaluation foncière. Nous calculons alors les distances entre chaque unité d'évaluation foncière et les services, puis la moyenne pondérée de ces distances par le nombre de logements. Cette approche est sans aucun doute la plus précise, mais elle est bien plus chronophage. En effet, à la @fig-MethodesAgregations, nous avons respectivement 4 secteurs de recensement (a), 23 aires de diffusion (b), 69 îlots (c et d) et 3497 unités d'évaluation foncière (e).
+
+![Méthodes d'agrégation et erreurs potentielles](images/Chap05/MethodesAgregation.png){#fig-MethodesAgregations width="90%" fig-align="center"}
+
+#### Mesures d'accessibilité {#sec-05323}
+
+Différentes mesures renvoyant à différentes conceptualisations de l'accessibilité peuvent être utilisées pour évaluer l'accessibilité spatiale potentielle; les principales sont reportées au @tbl-ConceptualisationAccessibilite. Pour une description détaillée de ces mesures et de leurs formules, consultez l'article d'Apparicio *et al.* [-@ApparicioGelbrevisited].
+
+```{r}
+#| label: tbl-ConceptualisationAccessibilite
+#| tbl-cap: Liste des formats avec le *package* `sf` (`st_drivers`)
+#| echo: false
+#| message: false
+#| warning: false
+
+c1 <- c("Proximité immédiate",
+        "Offre de services dans l'environnement immédiat",
+        "Coût moyen pour atteindre tous les services",
+        "Coût moyen pour atteindre toutes les *n* destinations",
+        "Accessibilité en fonction de l'offre et la demande")
+c2 <- c("Distance entre l'origine et le service le plus proche",
+        "Nombre de services présents à moins de *n* mètres ou minutes",
+        "Distance moyenne entre une origine et tous les services",
+        "Distance moyenne entre une origine et *n* services",
+        "Modèles gravitaires et méthodes *two-step floating catchment area* (2SFCA)")
+
+tableau <- data.frame(A = c1, B = c2)
+
+knitr::kable(tableau, 
+            format.args = list(decimal.mark = ',', big.mark = " "),
+			col.names = c("Conceptualisation", "Mesures d'accessibilité"),
+            caption = "Conceptualisation et mesures de l'accessibilité spatiale potentielle aux services",
+            align= c("l", "l"),
+			format = "markdown")
+```
+
+Source : Apparicio *et al.* [-@ApparicioGelbrevisited].
+
+Pour poser un diagnostic d'accessibilité spatiale potentielle à un service pour un territoire donné, plusieurs chercheuses et chercheurs recommandent d'utiliser plusieurs mesures d'accessibilité.
+
+Par exemple, dans une étude sur les déserts alimentaires à Montréal, Apparicio *et al.* [-@apparicio2007case] utilisent trois mesures d'accessibilité : la distance au supermarché le plus proche (proximité immédiate), le nombre de supermarchés dans un rayon de 1000 mètres (offre dans l'environnement immédiat) et la distance moyenne aux trois supermarchés d'enseignes différentes (diversité en termes d'offre et de prix) à travers le réseau de rues.
+
+Dans une autre étude portant sur l'accessibilité spatiale potentielle aux parcs urbains à Montréal, Jepson *et al.* [-@jepson2022environmental] utilisent deux mesures d'accessibilité : la distance au parc le plus proche (proximité immédiate) et la mesure E2FCA (congestion potentielle en fonction de l'offre et la demande) calculées pour les aires de diffusion de la Communauté métropolitaine de Montréal (@fig-ESFSCAParcs). Concernant la proximité immédiate, le niveau d'accessibilité est bien élevé sur l'île de Montréal et inversement, plus faible à Laval et dans la Rive-Nord et la Rive-Sud (@fig-ESFSCAParcs, a). En effet, la quasi-totalité des aires de diffusion de l'île de Montréal a un parc à moins de 200 mètres de marche. Concernant la congestion potentielle des parcs, le portrait est tout autre : le niveau de congestion potentielle est faible dans les zones suburbaines (Laval et les deux Rives) tandis qu'il est élevé dans les quartiers centraux de l'île de Montréal (@fig-ESFSCAParcs, b). Autrement dit, les habitants des quartiers centraux de la ville de Montréal vivent plus près d'un parc, mais ce dernier est potentiellement plus congestionné. Or, une surutilisation des parcs peut entraîner une dégradation accélérée des équipements (aires de jeu, terrains de sports, etc.), voire décourager certaines personnes à visiter un parc durant les périodes plus achalandées.
+
+![Deux mesures d'accessibilité spatiale potentielle aux parcs, aires de diffusion de la Communauté métropolitaine de Montréal, 2016](images/Chap05/2SFCAParcs.png){#fig-ESFSCAParcs width="110%" fig-align="center"}
+
+#### Types de distance {#sec-05324}
+
+Tel que décrit à la [section @sec-0512], les mesures d'accessibilité peuvent être calculées en fonction de trajets les plus rapides selon différents modes de transport, soit en automobile, à pied, en vélo et en transport en commun (@fig-TypesDistancesTransport).
+
+## Mesures d'accessibilité spatiale potentielle dans R {#sec-054}
+
+### Accessibilité spatiale potentielle aux supermarchés {#sec-0541}
+
+Dans ce premier exemple applicatif dans R, nous élaborons un diagnostic de l'accessibilité spatiale potentielle aux supermarchés dans la ville de Sherbrooke avec les quatre paramètres suivants :
+
+1.  **Unité spatiale de référence** : aires de diffusion (AD) de 2021 de la ville de Sherbrooke.
+
+2.  **Méthode d'agrégation** : calcul des moyennes pondérées par le nombre de logements des [immeubles du rôle d'évaluation foncière](https://www.donneesquebec.ca/recherche/dataset/roles-d-evaluation-fonciere-du-quebec/resource/62c46738-6c05-4971-b598-d114db4e32cb) compris dans les AD.
+
+3.  **Trois mesures d'accessibilité** : le supermarché le plus proche (en minutes), le nombre de supermarchés à 30 minutes et moins, la distance moyenne aux trois supermarchés les plus proches.
+
+4.  **Type de distance** : chemin le plus rapide à la marche.
+
+**Étape 1.** Importation des trois couches géographiques.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+## Unités d'évaluation foncière
+Role <- st_read(dsn = "data/chap05/AutresDonnees/Role2022Sherb.gdb",
+                layer = "rol_unite_Sherbrooke", quiet = TRUE)
+## Aires de diffusion
+AD <- st_read(dsn = "data/chap05/AutresDonnees/Commerces.gpkg",
+                        layer = "AD_Sherbrooke", quiet=TRUE)
+## Supermarchés
+Supermarches <- st_read(dsn = "data/chap05/AutresDonnees/Commerces.gpkg",
+                        layer = "supermarche", quiet=TRUE)
+## Changement de projection
+Supermarches <- st_transform(Supermarches, crs = 4326)
+Role <- st_transform(Role, crs = 4326)
+AD <- st_transform(AD, crs = 4326)
+```
+
+**Étape 2.** Réalisation d'une jointure spatiale pour attribuer à chaque unité d'évaluation l'identifiant de l'aire de diffusion (champ `ADIDU`) dans laquelle elle est comprise.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+## Jointure spatiale entre le Role et les AD
+Role <- st_join(Role, AD[,"ADIDU"], join = st_intersects)
+Role <- subset(Role, is.na(ADIDU)==FALSE)
+## Nombre de distances à calculer
+nO = nrow(Role)
+nD = nrow(Supermarches)
+NOD = nO * nD
+cat("Origines (O) :", nO, "îlots",
+    "\n Destinations (D) :", nD, "supermarchés",
+    "\n Distances OD = ", NOD)
+```
+
+**Étape 3.** Création des points d'origine et de destination.
+
+::: bloc_attention
+::: bloc_attention-header
+::: bloc_attention-icon
+:::
+
+**Rattacher les points aux tronçons de rue**
+:::
+
+::: bloc_attention-body
+Puisque nous utilisons le trajet le plus court à pied, les points d'origine et de destination doivent être rattachés à des tronçons de rues qui ne sont pas des autoroutes ou tout autre tronçon interdit à la marche. Pour ce faire, le *package* `R5R` dispose d'une fonction très intéressante :
+
+`find_snap(r5r_core, points, mode = "WALK")`.
+
+Sans le recours à cette fonction, un point d'origine ou de destination risque d'être rattaché à un tronçon autoroutier, faisant en sorte que le trajet ne pourra être calculé à la marche.
+:::
+:::
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+## Origines
+Origines <- Role
+Origines$lat <- st_coordinates(Origines)[,2]
+Origines$lon <- st_coordinates(Origines)[,1]
+Origines$id <- Origines$mat18
+Origines <- find_snap(r5r_core, Origines, mode = "WALK")
+Origines$lat <- Origines$snap_lat
+Origines$lon <- Origines$snap_lon
+Origines <- Origines[, c("point_id", "lat", "lon", "distance")]
+names(Origines) <- c("id", "lat", "lon", "distance")
+## Destinations
+Destinations <- Supermarches
+Destinations$lat <- st_coordinates(Destinations)[,2]
+Destinations$lon <- st_coordinates(Destinations)[,1]
+names(Destinations)[1] <- "id"
+Destinations <- find_snap(r5r_core, Destinations, mode = "WALK")
+Destinations$lat <- Destinations$snap_lat
+Destinations$lon <- Destinations$snap_lon
+Destinations <- Destinations[, c("point_id", "lat", "lon", "distance")]
+names(Destinations) <- c("id", "lat", "lon", "distance")
+```
+
+**Étape 4.** Construction de la matrice origines-destinations avec la fonction `travel_time_matrix` et sauvegarde dans un fichier `Rdata`.
+
+```{r}
+#| echo: true
+#| message: true 
+#| eval: false 
+## Matrice OD à la marche
+t1 <-Sys.time()
+matriceOD.Marche <- travel_time_matrix(r5r_core = r5r_core,
+                                       origins = Origines,
+                                       destinations = Destinations,
+                                       mode = "WALK",
+                                       walk_speed = 4.5,  # valeur par défaut 3.6
+                                       max_trip_duration = 240,
+                                       max_walk_time = Inf)
+t2 <-Sys.time()
+duree.marche = as.numeric(difftime(t2, t1), units = "mins")
+cat("Temps de calcul :", round(duree.marche,2), "minutes")
+## Enregistrement des résultats dans un fichier Rdata
+save(duree.marche, matriceOD.Marche,
+     file="data/chap05/Resultats/MatricesMarcheRoleSupermarche.Rdata")
+```
+
+**Étape 5.** Calcul des trois mesures d'accessibilité pour les unités d'évaluation.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+## Chargement du fichier Rdata
+load("data/chap05/Resultats/MatricesMarcheRoleSupermarche.Rdata")
+cat("Temps de calcul pour la matrice :", round(duree.marche,2), "minutes")
+## Supermarché le plus proche
+Supermarche.PlusProche <- aggregate(travel_time_p50 ~  # champ numérique
+                                    from_id,           # champ pour le group by 
+                                    matriceOD.Marche,  # DataFrame
+                                    FUN = min)         # Minimum
+# Modification des noms des champs
+names(Supermarche.PlusProche) <- c("mat18", "SupPlusProcheMin")
+## Nombre de supermarchés à 30 minutes
+# Matrice avec des valeurs inférieures ou égale à 30
+matriceOD.30min <- subset(matriceOD.Marche, travel_time_p50 <= 30)
+# Agrégation
+Supermarche.N30mins <- aggregate(travel_time_p50 ~  # champ numérique
+                                 from_id,           # champ pour le group by 
+                                 matriceOD.30min,   # DataFrame
+                                 FUN = length)      # Nombre d'observations
+# Modification des noms des champs
+names(Supermarche.N30mins) <- c("mat18", "SupN30min")
+## Distance moyenne aux trois supermarchés les plus proches
+# Tri de la matrice en fonction du from_id et du travel_time_p50
+matriceOD.Marche <- matriceOD.Marche[order(matriceOD.Marche$from_id, 
+                                           matriceOD.Marche$travel_time_p50), ]
+# Ajout d'un champ pour le rang par from_id
+matriceOD.Marche$Rang <- ave(matriceOD.Marche$travel_time_p50, 
+                             matriceOD.Marche$from_id, 
+                             FUN = seq_along)
+# Création d'une matrice avec les trois supermarchés les plus proches
+matriceOD.3sup <-  subset(matriceOD.Marche, Rang <= 3)
+# Agrégation
+Supermarche.Moy3Sup <- aggregate(travel_time_p50 ~  # champ numérique
+                                 from_id,           # champ pour le group by 
+                                 matriceOD.3sup,    # DataFrame
+                                 FUN = mean)        # Moyenne
+# Modification des noms des champs
+names(Supermarche.Moy3Sup) <- c("mat18", "Moy3Sup")
+## Fusion avec la couche Role
+Role <- merge(Role, Supermarche.PlusProche, by="mat18")
+Role <- merge(Role, Supermarche.N30mins, by="mat18", all.x=TRUE)
+Role <- merge(Role, Supermarche.Moy3Sup, by="mat18", all.x=TRUE)
+# Certaines observations n'ont pas de supermarchés à 30 minutes.
+# Nous mettons alors les valeurs à 0
+Role$SupN30min[is.na(Role$SupN30min)] <- 0
+```
+
+**Étape 6.** Calcul des moyennes pondérées par le nombre de logements (champ `Logements`) pour les aires de diffusion avec le *package* `dplyr`.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+library(dplyr)
+## Création d'un DataFrame temporaire sans la géométrie
+Role.Temp <- st_drop_geometry(Role)
+## Moyennes pondérées pour le supermarché le plus proche
+MesureAcc1 <- as.data.frame(Role.Temp %>%
+                group_by(ADIDU) %>%
+                summarize(SupPlusProcheMin = weighted.mean(SupPlusProcheMin, Logements)))
+## Moyennes pondérées pour le nombre de supermarchés à 30 minutes
+MesureAcc2 <- as.data.frame(Role.Temp %>%
+                group_by(ADIDU) %>%
+                summarize(SupN30min = weighted.mean(SupN30min, Logements)))
+## Moyennes pondérées pour les trois supermarchés les plus proches
+MesureAcc3 <- as.data.frame(Role.Temp %>%
+                group_by(ADIDU) %>%
+                summarize(Moy3Sup = weighted.mean(Moy3Sup, Logements)))
+## Fusion avec la couche des îlots
+AD <- merge(AD, MesureAcc1, by="ADIDU")
+AD <- merge(AD, MesureAcc2, by="ADIDU")
+AD <- merge(AD, MesureAcc3, by="ADIDU")
+```
+
+**Étape 7.** Cartographie des résultats avec le *package* `tmap`.
+
+Tout d'abord, nous analysons les statistiques univariées pour repérer les valeurs minimales et maximales pour les trois mesures d'accessibilité avec la fonction `summary`.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+TroisMesures <- c("SupPlusProcheMin","SupN30min","Moy3Sup")
+summary(AD[, TroisMesures])
+```
+
+Une fois les valeurs maximales et minimales analysées, réalisons les cartes (@fig-CartoSuperm).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CartoSuperm
+#| fig-align: center
+#| fig-cap: Accessibilité spatiale potentielle à pied aux supermarchés (en minutes), aires de diffusion de la ville de Sherbrooke, 2021
+#| out-width: 100%
+
+## Importation des arrondissements de la ville de Sherbrooke
+arrondissements <- st_read(dsn = "data/Chap05/AutresDonnees/Arrondissements.shp", 
+                           quiet=TRUE)
+## Construction des cartes
+tmap_mode("plot")
+# Carte pour les supermarchés
+Carte0 <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_shape(Supermarches)+
+              tm_dots(col="red", size=0.25)+
+          tm_layout(frame = FALSE, legend.outside = TRUE, 
+					legend.format = list(text.separator = "à"),
+                    title = "Supermarché",
+                    title.size = 1)
+# Carte pour le supermarché le plus proche
+max.acc1 <- max(AD$SupPlusProcheMin,na.rm=TRUE)
+Carte1 <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_shape(AD)+
+            tm_fill(col="SupPlusProcheMin", 
+                    border.lwd = 1,
+                    style = "fixed",
+                    breaks = c(0,10,20,30,40,60,max.acc1),
+                    palette="-YlOrRd",
+                    size = .2, 
+ 					legend.format = list(text.separator = "à"),
+                    title="Plus proche")+
+          tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_layout(frame = FALSE, legend.outside = TRUE)
+# Carte pour le nombre de supermarchés à 30 minutes ou moins
+max.acc2 <- max(AD$SupN30min,na.rm=TRUE)
+Carte2 <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_shape(AD)+
+            tm_fill(col="SupN30min", 
+                    border.lwd = 1,
+                    style = "fixed",
+                    breaks = c(0,1,2,3,4,5,max.acc2),
+                    palette="YlOrRd",
+                    size = .2, 
+					legend.format = list(text.separator = "à"),
+                    title="Sup. à 30 min")+
+          tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_layout(frame = FALSE, legend.outside = TRUE)
+# Carte pour la distance moyenne aux trois supermarchés les plus proches
+max.acc3 <- max(AD$Moy3Sup,na.rm=TRUE)
+Carte3 <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_shape(AD)+
+            tm_fill(col="Moy3Sup", 
+                    border.lwd = 1,
+                    style = "fixed",
+                    breaks = c(5,10,20,30,40,60,max.acc3),
+                    palette="-YlOrRd",
+                    size = .2, 
+					legend.format = list(text.separator = "à"),
+                    title="Moy. 3 plus proches")+
+          tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_layout(frame = FALSE, legend.outside = TRUE)
+## Figure avec les quatre cartes
+tmap_arrange(Carte0, Carte1, Carte2, Carte3)
+```
+
+### Accessibilité spatiale potentielle aux patinoires extérieures {#sec-0542}
+
+Dans ce second exemple applicatif dans R, nous élaborons un diagnostic de l'accessibilité spatiale potentielle aux patinoires extérieures dans la ville de Sherbrooke avec les quatre paramètres suivants :
+
+1.  **Unité spatiale de référence** : aires de diffusion (AD) de 2021 de la ville de Sherbrooke.
+
+2.  **Méthode d'agrégation** : calcul des moyennes pondérées par la population totale des îlots compris dans les AD.
+
+3.  **Deux mesures d'accessibilité** : patinoire la plus proche (en minutes); E2SFCA (*Enhanced two-step floating catchment area*), soit le nombre de patinoires pour 1000 habitants dans un rayon de 30 minutes de marche.
+
+4.  **Type de distance** : chemin le plus rapide à la marche.
+
+**Étape 1.** Importation des trois couches géographiques.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+## Unités d'évaluation foncière
+Patinoires <- st_read(dsn = "data/chap05/AutresDonnees/Patinoires.shp",
+                         quiet = TRUE)
+## Aires de diffusion
+AD <- st_read(dsn = "data/chap05/AutresDonnees/Commerces.gpkg",
+                        layer = "AD_Sherbrooke", quiet=TRUE)
+## Ilots de recensements
+Ilots <- st_read(dsn = "data/chap05/AutresDonnees/Commerces.gpkg",
+                        layer = "Ilots", quiet=TRUE)
+## Changement de projection
+Patinoires <- st_transform(Patinoires, crs = 4326)
+AD <- st_transform(AD, crs = 4326)
+Ilots <- st_transform(Ilots, crs = 4326)
+```
+
+**Étape 2.** Réalisation d'une jointure spatiale pour attribuer à chaque îlot l'identifiant de l'aire de diffusion (champ `ADIDU`) dans laquelle il est compris.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+## Jointure spatiale entre le Rôle et les AD
+Ilots <- st_join(Ilots, AD[,"ADIDU"], join = st_intersects)
+Ilots <- Ilots[,c("id","pop2021","ADIDU")]
+```
+
+**Étape 3.** Création des points d'origine et de destination.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+## Origines
+Origines <- Ilots
+Origines$lat <- st_coordinates(Origines)[,2]
+Origines$lon <- st_coordinates(Origines)[,1]
+Origines <- find_snap(r5r_core, Origines, mode = "WALK")
+Origines$lat <- Origines$snap_lat
+Origines$lon <- Origines$snap_lon
+Origines <- Origines[, c("point_id", "lat", "lon", "distance")]
+names(Origines) <- c("id", "lat", "lon", "distance")
+## Destinations
+Destinations <- Patinoires
+Destinations$lat <- st_coordinates(Destinations)[,2]
+Destinations$lon <- st_coordinates(Destinations)[,1]
+Destinations$id <- as.character(1:nrow(Destinations))
+Destinations <- find_snap(r5r_core, Destinations, mode = "WALK")
+Destinations$lat <- Destinations$snap_lat
+Destinations$lon <- Destinations$snap_lon
+Destinations <- Destinations[, c("point_id", "lat", "lon", "distance")]
+names(Destinations) <- c("id", "lat", "lon", "distance")
+```
+
+**Étape 4.** Construction de la matrice origines-destinations avec la fonction `travel_time_matrix` et sauvegarde dans un fichier `Rdata`.
+
+```{r}
+#| echo: true
+#| message: true 
+#| eval: false 
+## Matrice OD à la marche
+t1 <-Sys.time()
+matriceODPatinoire.Marche <- travel_time_matrix(r5r_core = r5r_core,
+                                                origins = Origines,
+                                                destinations = Destinations,
+                                                mode = "WALK",
+                                                walk_speed = 4.5,
+                                                max_trip_duration = 240,
+                                                max_walk_time = Inf)
+t2 <-Sys.time()
+duree.marche = as.numeric(difftime(t2, t1), units = "mins")
+cat("Temps de calcul :", round(duree.marche,2), "minutes")
+## Enregistrement des résultats dans un fichier Rdata
+save(duree.marche, matriceODPatinoire.Marche,
+     file="data/chap05/Resultats/matriceODPatinoire.Rdata")
+```
+
+**Étape 5.** Calcul des deux mesures d'accessibilité pour les îlots.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+## Chargement du fichier Rdata
+load("data/chap05/Resultats/matriceODPatinoire.Rdata")
+cat("Temps de calcul pour la matrice :", round(duree.marche,2), "minutes")
+```
+
+Le code ci-dessous permet de calculer la distance à la patinoire la plus proche pour les aires de diffusion.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+## Patinoire la plus proche
+Patinoire.PlusProche <- aggregate(travel_time_p50 ~  # champ numérique
+                                  from_id,           # champ pour le group by 
+                                  matriceODPatinoire.Marche,  # DataFrame
+                                  FUN = min)         # Minimum
+# Modification des noms des champs
+names(Patinoire.PlusProche) <- c("id", "PatinoirePlusProche")
+## Fusion avec la couche des îlots
+Ilots <- merge(Ilots, Patinoire.PlusProche, by="id")
+```
+
+Puis, nous calculons la version de la méthode du E2SFCA avec une fonction de gradient continue [@mcgrail2009measuring].
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+source("code_complementaire/E2SFCA.R")
+## Ajout des champs de population dans la matrice
+TempIlots <- st_drop_geometry(Ilots)
+matriceODPatinoire <- merge(matriceODPatinoire.Marche, 
+                   TempIlots[,c("id","pop2021")],
+                   by.x = "from_id", by.y="id")
+matriceODPatinoire$Wd <- 1
+names(matriceODPatinoire) <- c("from_id", "to_id", "Marche", "Wo", "Wd")
+head(matriceODPatinoire, n=2)
+
+MesureE2SFCA <- GE2SFCA(MatriceOD = matriceODPatinoire,
+                        IDorigine = "from_id",
+                        IDdestination = "to_id",
+                        CoutDistance = "Marche",
+                        RatioHabitants = 1000,
+                        Rayon = 30,
+                        Palier = 5,
+                        Wo = "Wo",
+                        Wd = "Wd",
+                        ChampSortie = "E2SFCA_G")
+
+MesureE2SFCA$E2SFCA_G[is.na(Role$E2SFCA_G)] <- 0
+Ilots <- merge(Ilots, MesureE2SFCA, by.x ="id", by="from_id", all.x = TRUE)
+Ilots$E2SFCA_G[is.na(Ilots$E2SFCA_G)] <- 0
+```
+
+**Étape 6.** Calcul des moyennes pondérées par la population des îlots (champ `pop2021`) pour les aires de diffusion avec le *package* `dplyr`.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+## Création d'un DataFrame temporaire sans la géométrie
+Ilots.Temp <- st_drop_geometry(Ilots)
+## Moyenne pondérées pour la patinoire la plus proche
+MesureAcc1 <- as.data.frame(Ilots.Temp %>%
+                group_by(ADIDU) %>%
+                summarize(PatinoirePlusProche = weighted.mean(PatinoirePlusProche, pop2021)))
+## Moyenne non pondérée pour le E2SFCA, car la population est déjà prise en compte
+MesureAcc2 <- aggregate(E2SFCA_G ~ ADIDU, Ilots.Temp, FUN = mean)
+## Fusion avec la couche des îlots
+AD <- merge(AD, MesureAcc1, by="ADIDU")
+AD <- merge(AD, MesureAcc2, by="ADIDU")
+```
+
+**Étape 7.** Cartographie des résultats avec le *package* `tmap`.
+
+Tout d'abord, nous analysons les statistiques univariées pour repérer les valeurs minimales et maximales pour les trois mesures d'accessibilité.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+DeuxMesures <- c("PatinoirePlusProche","E2SFCA_G")
+summary(AD[, DeuxMesures])
+```
+
+Une fois avoir pris connaissance des valeurs maximales et minimales, nous pouvons réaliser les cartes (@fig-CartoPatinoires).
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false
+#| label: fig-CartoPatinoires
+#| fig-align: center
+#| fig-cap: Accessibilité spatiale potentielle à pied aux patinoires extérieures, aires de diffusion de la ville de Sherbrooke, 2021
+#| out-width: 100%
+
+## Importation des arrondissements de la ville de Sherbrooke
+arrondissements <- st_read(dsn = "data/Chap05/AutresDonnees/Arrondissements.shp", 
+                           quiet=TRUE)
+## Construction des cartes
+tmap_mode("plot")
+# Carte pour les patinoires
+Carte0p <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_shape(Patinoires)+
+              tm_dots(col="red", size=0.25)+
+          tm_layout(frame = FALSE, legend.outside = TRUE, 
+                    title = "Patinoire extérieure",
+                    title.size = 1)
+# Carte pour la patinoire la plus proche
+max.acc1 <- max(AD$PatinoirePlusProche,na.rm=TRUE)
+Carte1p <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_shape(AD)+
+            tm_fill(col="PatinoirePlusProche", 
+                    border.lwd = 1,
+                    style = "fixed",
+                    breaks = c(0,10,20,30,40,60,max.acc1),
+                    palette="-YlOrRd",
+                    size = .2, 
+                    legend.format = list(text.separator = "à"),
+					title="Plus proche (min)")+
+          tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_layout(frame = FALSE, legend.outside = TRUE)
+# Carte pour le 2ESFCA
+AD2 <- subset(AD, E2SFCA_G !=0)
+min.acc2 <- min(AD2$E2SFCA_G,na.rm=TRUE)
+max.acc2 <- max(AD2$E2SFCA_G,na.rm=TRUE)
+Carte2p <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_shape(AD)+tm_fill(col="gray")+
+          tm_shape(AD2)+
+            tm_fill(col="E2SFCA_G", 
+                    border.lwd = 1,
+                    style = "fixed",
+                    breaks = c(min.acc2,0.25,0.50,0.75,1,1.5,max.acc2),
+                    palette="YlOrRd",
+                    size = .2, 
+                    legend.format = list(text.separator = "à"),
+                    title="Patinoire pour 1000 hab.")+
+          tm_shape(arrondissements)+tm_borders(lwd = 2)+
+          tm_layout(frame = FALSE, legend.outside = TRUE)
+## Figure avec les trois cartes
+tmap_arrange(Carte0p, Carte1p, Carte2p)
+## Arrêt de Java
+r5r::stop_r5(r5r_core)
+rJava::.jgc(R.gc = TRUE)
+```
+
+## Quiz de révision du chapitre {#sec-055}
+
+```{r}
+#| label: quizChapitre05
+#| echo: false 
+#| eval: true 
+#| message: false 
+#| warning: false 
+#| results: asis
+
+source("code_complementaire/QuizzFunctions.R")
+Chap05Quiz <- quizz("quiz/Chap05.yml", "Chap05")
+render_quizz(Chap05Quiz)
+```
+
+## Exercices de révision {#sec-056}
+
+::: bloc_exercice
+::: bloc_exercice-header
+::: bloc_exercice-icon
+:::
+
+**Exercice 1.** Calcul de trajets selon différents modes de transport
+:::
+
+::: bloc_exercice-body
+Complétez le code ci-dessous pour réaliser les étapes suivantes :
+
+1.  Construisez un réseau R5R pour la région de Laval avec un fichier OMS (pbf), un fichier d'élévation et un fichier GTFS.
+
+2.  Créez deux points : l'un pour la station de métro Morency (-73.7199, 45.5585) l'autre pour une adresse fictive (-73.7183, 45.5861).
+
+3.  Calculez les trajets en automobile, à vélo, à pied, et en transport en commun de l'adresse vers la station de métro et l'inverse avec (10 points) :
+
+    -   Une vitesse de 15 km/h pour le vélo.
+
+    -   Une vitesse de 4,5 km/h pour la marche.
+
+    -   Un trajet aller le 12-02-2024 à 8h de l'adresse vers la station de métro.
+
+    -   Un trajet retour le 12-02-2024 à 18h de la station de métro vers l'adresse.
+
+4.  Réalisez deux figures :
+
+    -   Une figure avec quatre cartes des trajets aller (marche, vélo, auto, transport en commun).
+
+    -   Une figure avec quatre cartes des trajets retour (marche, vélo, auto, transport en commun).
+
+5.  Arrêtez java.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: false
+library(sf)
+library(tmap)
+library(r5r)
+
+setwd("data/chap05/Laval")
+rJava::.jinit()
+options(java.parameters = "-Xmx2G")
+
+# 1. Construction du réseau
+dossierdata <- paste0(getwd(),"/_DataReseau")
+list.files(dossierdata)
+r5r_core <- setup_r5(à compléter)
+
+# 2. Création de deux points
+Pts <- data.frame(id = c("Station Morency", "Adresse 1"),
+                  lon = c(à compléter),
+                  lat = c(à compléter))
+Pts <- st_as_sf(Pts, coords = c("lon","lat"), crs = 4326)
+StationMorency <- Pts[1,]
+Adresse1 <- Pts[2,]
+
+## 2.1. Trajets en automobile
+Auto.1 <- detailed_itineraries(r5r_core = r5r_core,
+                                   origins = Adresse1,
+                                   destinations = StationMorency,
+                                   mode = "CAR",
+                                   shortest_path = FALSE,
+                                   drop_geometry = FALSE)
+Auto.2 <- detailed_itineraries(r5r_core = r5r_core,
+                               origins = StationMorency,
+                               destinations = Adresse1,
+                               mode = "CAR",
+                               shortest_path = FALSE,
+                               drop_geometry = FALSE)
+## 2.2. Trajets en vélo
+velo.1 <- detailed_itineraries(à compléter)
+velo.2 <- detailed_itineraries(à compléter)
+## 2.3. Trajets à pied
+marche.1 <- detailed_itineraries(à compléter)
+marche.2 <- detailed_itineraries(à compléter)
+
+## 2.4. Trajets en transport en commun
+dateheure.matin <- as.POSIXct("12-02-2024 08:00:00",
+                              format = "%d-%m-%Y %H:%M:%S")
+dateheure.soir  <- as.POSIXct("12-02-2024 18:00:00",
+                              format = "%d-%m-%Y %H:%M:%S")
+### Définir le temps de marche maximal
+minutes_marches_max <- 20
+TC.1 <- detailed_itineraries(à compléter)
+TC.2 <- detailed_itineraries(à compléter)
+
+
+# 4. Cartographie
+  # - Map1.Aller : Marche (de la résidence à la station de métro)
+  # - Map2.Aller : Vélo (de la résidence à la station de métro)
+  # - Map3.Aller : Auto (de la résidence à la station de métro)
+  # - Map4.Aller : Transport en commun (de la résidence à la station de métro)
+tmap_mode(view)
+Map1.Aller <- tm_shape(marche.1)+tm_lines(col="mode", lwd = 3,
+                                      popup.vars = c("mode", "from_id", "to_id",
+                                                     "segment_duration", "distance",
+                                                     "total_duration", "total_distance"))+
+              tm_shape(Adresse1)+tm_dots(col="green", size = .15)+
+              tm_shape(StationMorency)+tm_dots(col="red", size = .15)
+
+Map2.Aller <- à compléter
+Map3.Aller <- à compléter
+Map4.Aller <- à compléter
+
+tmap_arrange(Map1.Aller, Map2.Aller, Map3.Aller, Map4.Aller, ncol = 2, nrow = 2)
+
+## Réaliser une figure avec quatre figures pour les trajets retour :
+  # - Map1.Retour : Marche (de la station de métro à la résidence)
+  # - Map2.Retour : Vélo (de la station de métro à la résidence)
+  # - Map3.Retour : Auto (de la station de métro à la résidence)
+  # - Map4.Retour : Transport en commun (de la station de métro à la résidence)
+
+Map1.Retour <- tm_shape(marche.2)+tm_lines(col="mode", lwd = 3,
+                                          popup.vars = c("mode", "from_id", "to_id",
+                                                         "segment_duration", "distance",
+                                                         "total_duration", "total_distance"))+
+  tm_shape(Adresse1)+tm_dots(col="red", size = .15)+
+  tm_shape(StationMorency)+tm_dots(col="green", size = .15)
+
+Map2.Retour <- à compléter
+Map3.Retour <- à compléter
+Map4.Retour <- à compléter
+
+tmap_arrange(Map1.Retour, Map2.Retour, Map3.Retour, Map4.Retour, ncol = 2, nrow = 2)
+
+# 5.  Arrêt de java
+r5r::stop_r5(r5r_core)
+rJava::.jgc(R.gc = TRUE)
+```
+
+Correction à la [section @sec-10051].
+:::
+:::
+
+::: bloc_exercice
+::: bloc_exercice-header
+::: bloc_exercice-icon
+:::
+
+**Exercice 2.** Calcul d'isochrones
+:::
+
+::: bloc_exercice-body
+Complétez le code ci-dessous pour réaliser les étapes suivantes :
+
+1.  Calculez des isochrones à pied de 5, 10 et 15 minutes.
+
+2.  Calculez des isochrones à vélo de 5, 10 et 15 minutes.
+
+3.  Cartographiez les résultats.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: false
+library(sf)
+library(tmap)
+library(r5r)
+
+## Construction du réseau
+setwd("data/chap05/Laval")
+rJava::.jinit()
+options(java.parameters = "-Xmx2G")
+dossierdata <- paste0(getwd(),"/_DataReseau")
+list.files(dossierdata)
+r5r_core <- setup_r5(data_path = dossierdata,
+                     elevation = "TOBLER",
+                     verbose = FALSE, overwrite = FALSE)
+
+## Point pour la Station Morency
+StationMorency <- data.frame(id = "Station Morency",
+                             lon = -73.7199,
+                             lat = 45.5585,  45.5861)
+StationMorency <- st_as_sf(StationMorency, 
+                           coords = c("lon","lat"), crs = 4326)
+
+# 1. Calcul d'isochrones à pied de 5, 10 et 15 minutes
+Iso.Marche <- isochrone(à compléter)
+# 1.2. Isochrone à vélo de 5, 10 et 15 minutes
+Iso.Velo <- isochrone(à compléter)
+
+# 3. Cartographie les résultats
+tmap_mode("view")
+tmap_options(check.and.fix = TRUE)
+Carte.Marche <- tm_shape(à compléter)+
+                    tm_fill(à compléter)+
+                tm_shape(StationMorency)+tm_dots(col="darkred", size = .25)
+
+Carte.Velo <- tm_shape(à compléter)+
+                    tm_fill(à compléter)+
+                tm_shape(StationMorency)+tm_dots(col="darkred", size = .25)
+
+tmap_arrange(Carte.Marche, Carte.Velo, ncol = 2)
+
+# 4. Arrêt de java
+r5r::stop_r5(r5r_core)
+rJava::.jgc(R.gc = TRUE)
+```
+
+Correction à la [section @sec-10052].
+:::
+:::
