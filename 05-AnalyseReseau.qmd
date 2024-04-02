@@ -127,6 +127,7 @@ Pour récupérer un fichier OpenStreetMap (OSM, format *pbf*), nous utilisons de
 #| echo: true
 #| message: false 
 #| warning: false 
+#| eval: false
 
 library(osmextract)
 ## Identification du fichier OSM (format pbf) pour l'Estrie
@@ -170,6 +171,7 @@ L'application **Osmconvert** est disponible pour [Windows](https://wiki.openstre
 #| echo: true
 #| message: false 
 #| warning: false 
+#| eval: false
 
 ## Préparation des chemins
 path_to_osm_convert <- paste0(getwd(),'/data/chap05/__TempOSM/osmconvert64-0.8.8p.exe')
@@ -188,6 +190,7 @@ Une fois que la commande est écrite, nous l'exécutons.
 #| message: false 
 #| warning: false 
 #| results: hide 
+#| eval: false
 
 system(commande)
 ```
@@ -234,6 +237,8 @@ for (e in grids) {
   download.file(e, destfile = CheminFichier)
   # Décompression du fichier zip
   unzip(CheminFichier, exdir = Chemin)
+  # suppression du zip
+  unlink(CheminFichier)
 }
 
 ## Importation des GRIDS avec le package Terra
@@ -254,10 +259,13 @@ rsrc <- terra::sprc(rlist)
 MosaicSherbrooke <- mosaic(rsrc)
 MosaicSherbrooke
 
+# pour alléger le fichier final, nous allons arrondir les élévations au mètre
+MosaicSherbrooke <- round(MosaicSherbrooke)
+
 ## Exporter en GeoTIFF
 terra::writeRaster(MosaicSherbrooke, 
                   "data/chap05/_DataReseau/Elevation.tif",
-                  filetype = "GTiff",
+                  filetype = "GTiff", datatype = 'INT2U',
                   overwrite = TRUE)
 
 ## Suppression des GRIDS
@@ -281,6 +289,21 @@ Le fichier d'élévation ainsi construit est présenté à la @fig-figMNT.
 MosaicSherbrooke <- terra::rast("data/chap05/_DataReseau/Elevation.tif")
 terra::plot(MosaicSherbrooke)
 ```
+
+::: bloc_aller_loin
+::: bloc_aller_loin-header
+::: bloc_aller_loin-icon
+:::
+***Package* `elevatr` pour extraire des images d'élévation pour une région donnée**
+:::
+
+::: bloc_aller_loin-body
+Plus haut, nous avons utilisé des modèles numériques de terrain (MNT) du [ministère des Ressources naturelles et des Forêts](https://www.donneesquebec.ca/recherche/dataset/modeles-numeriques-d-altitude-a-l-echelle-de-1-20-000) pour construire un fichier *GeoTIFF* pour l'élévation pour la ville de Sherbrooke (Québec). Pour d'autres régions du monde, vous pouvez aussi utiliser le *package* `elevatr` [@hollister2017elevatr] pour extraire une image d'élévation à partir de l'[API OpenTopography](https://opentopography.org/developers/).
+
+Pour plus d'information, consultez cette [vignette](https://cran.r-project.org/web/packages/elevatr/vignettes/introduction_to_elevatr.html),
+:::
+:::
+
 
 #### Extraction et validation d'un fichier GTFS {#sec-05214}
 
@@ -1171,6 +1194,145 @@ Dans une autre étude portant sur l'accessibilité spatiale potentielle aux parc
 
 ![Deux mesures d'accessibilité spatiale potentielle aux parcs, aires de diffusion de la Communauté métropolitaine de Montréal, 2016](images/Chap05/2SFCAParcs.png){#fig-ESFSCAParcs width="110%" fig-align="center"}
 
+::: bloc_aller_loin
+::: bloc_aller_loin-header
+::: bloc_aller_loin-icon
+:::
+
+**Le 2SFCA et ses fonctions de pondération**
+:::
+
+::: bloc_aller_loin-body
+Les mesures appartenant à la famille des *Two Step Floating Catchement Area* permettent de mesurer l'accessibilité à des aménités tout en tenant compte de leur disponibilité compte tenu de la population vivant à proximité de ces aménités. Le calcul de ce type de mesure implique deux étapes comme leur nom le suggère. Si nous conservons ici l'exemple des parcs, la première étape consiste à calculer pour chaque parc le nombre de personne habitant à proximité du parc. 
+
+$$
+ R_{j} = \frac{S_j}{\sum^{n}_{i=1}{P_i \times W(d_{ji}) }}
+$$ {#eq-TSFCARj}
+
+Avec :
+* $j$ un parc
+* $S_j$ la capacité du parc $j$ (ici sa superficie)
+* $i$ une entité géographique (ici une aire de diffusion)
+* $d_{ij}$ la distance entre $j$ et $i$
+* $P_i$ la population au sein de $i$
+* $W$ une fonction de pondération permettant de contrôler le fait qu'un parc plus éloigné est moins attractif et contribue moins au score final d'accessibilité.
+* $R_j$ le nombre de personnes situées à proximité du parc $j$
+
+Nous obtenons ainsi $R_j$, soit le ratio entre la capacité du parc et le total de la population ayant accès au parc. Il mesure donc le niveau de disponibilité du parc en hectare par habitant.
+
+La deuxième étape consiste à calculer la somme pour chaque aire de diffusion $i$ de la disponibilité des parcs à proximité.
+
+$$
+ A_{i} = \sum^{m}_{j=1}{R_j \times W(d_{ji}) }
+$$ {#eq-TSFCAAi}
+
+Nous obtenons au final $A_i$, soit pour chaque aire de diffusion le nombre total d'hectare de parc disponible par habitant.
+
+Notez que la fonction $W$ joue un rôle très important dans la formulation du 2FCA. Elle peut prendre plusieurs formes, la plus simple étant une fonction binaire donnant un poid de 1 à des parcs situés en dessous d'une certaine distance. Par exemple, la fonction R ci-dessous donne un poids de 1 à des parcs situés à moins de 500m et 0 au delà.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+w_binaire <- function(d){ifelse(d <= 500, 1, 0)}
+
+```
+
+Le problème de cette formulation est qu'elle implique que l'accessibilité au parc est la même si l'on est situé à 25m du parc et 500m. Il a donc été proposé d'améliorer la méthode en ajoutant une fonction de pondération par pallier, c'est à dire accordant un poids différent selon des seuils de distances prédéfinis. Les fonctions R ci-dessous font ainsi varier le poids dans trois catégories de distance selon une pondération appelée *slow decay* et *fast decay* [@luo2009enhanced] et des palliers de 150m, 300m et 500m.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+w_slow_decay <- function(d){
+  w <- case_when(
+    d <= 150 ~ 1,
+    d > 150 & d <= 300 ~ 0.68,
+    d > 300 & d <= 500 ~ 0.22,
+    d > 500 ~ 0
+  )
+  return(w)
+}
+
+w_fast_decay <- function(d){
+  w <- case_when(
+    d <= 150 ~ 1,
+    d > 150 & d <= 300 ~ 0.42,
+    d > 300 & d <= 500 ~ 0.09,
+    d > 500 ~ 0
+  )
+  return(w)
+}
+
+```
+
+Finalement, il a aussi été proposé d'utiliser des fonctions de pondération continues et décroissantes. Les fonctions R ci-dessous illustrent une fonction incluant un effet de pallier tel que proposé par McGrail [-@mcgrail2012spatial] et une fonction logistique décroissante.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+# pallier à 125m, maximum à 500m
+W_cont_pallier <- function(x){
+  w <- ifelse(x < 125, 1,((500 - x) / (500 - 125))**1.5)
+  w[x  > 500] <- 0
+  return(w)
+}
+
+logit_fun <- function(x,a,b){
+  (1 + exp(-(a*pi)/(b*sqrt(3)))) / (1 + exp(((x-a)*pi)/(b*sqrt(3))))
+}
+w_logit1 <- function(x){logit_fun(x, 250, 80)}
+w_logit2 <- function(x){logit_fun(x, 250, 40)}
+```
+
+Concernant la fonction logistique, elle comporte deux paramètre, $\alpha$ et $\beta$. Le premier paramètre permet de contrôler la distance à laquelle la pondération atteindra la valeur de 0,5. Le second contrôle la vitesse de décroissance de la courbe.
+
+La figure ci-dessous permet d'illustrer les poids obtenus selon chacune de ces fonctions de pondération.
+
+```{r}
+#| echo: true 
+#| message: true 
+#| eval: true
+
+library(dplyr, quietly = TRUE)
+library(tidyr, quietly = TRUE)
+library(ggplot2, quietly = TRUE)
+
+
+d <- 1:600
+df <- data.frame(
+  distance = d,
+  binaire = w_binaire(d),
+  slow_decay = w_slow_decay(d),
+  fast_decay = w_fast_decay(d),
+  pallier = W_cont_pallier(d),
+  logistique1 = w_logit1(d),
+  logistique2 = w_logit2(d)
+)
+pond_cols <- names(df)[names(df) != 'distance']
+
+df2 <- df %>% pivot_longer(cols = all_of(pond_cols))
+
+ggplot(df2) + 
+  geom_line(aes(x = distance, y = value, color = name, group = name)) + 
+  labs(x = 'distance (m)', 
+       y = 'pondération',
+       color = 'fonction'
+       ) + 
+  theme_minimal()
+
+```
+
+Le choix d'une fonction de pondération doit avant tout reposer sur des considérations théoriques et représenter correctement la décroissance de l'attractivité d'une aménité en fonction de sa distance d'éloignement. Dans l'idéal, ces fonctions devraient être ajustées en fonction de données sur les habitudes de déplacement des individus.
+:::
+:::
+
+
+
 #### Types de distance {#sec-05324}
 
 Tel que décrit à la [section @sec-0512], les mesures d'accessibilité peuvent être calculées en fonction de trajets les plus rapides selon différents modes de transport, soit en automobile, à pied, en vélo et en transport en commun (@fig-TypesDistancesTransport).
@@ -1309,44 +1471,51 @@ save(duree.marche, matriceOD.Marche,
 ## Chargement du fichier Rdata
 load("data/chap05/Resultats/MatricesMarcheRoleSupermarche.Rdata")
 cat("Temps de calcul pour la matrice :", round(duree.marche,2), "minutes")
+
 ## Supermarché le plus proche
-Supermarche.PlusProche <- aggregate(travel_time_p50 ~  # champ numérique
-                                    from_id,           # champ pour le group by 
-                                    matriceOD.Marche,  # DataFrame
-                                    FUN = min)         # Minimum
-# Modification des noms des champs
-names(Supermarche.PlusProche) <- c("mat18", "SupPlusProcheMin")
-## Nombre de supermarchés à 30 minutes
-# Matrice avec des valeurs inférieures ou égale à 30
-matriceOD.30min <- subset(matriceOD.Marche, travel_time_p50 <= 30)
-# Agrégation
-Supermarche.N30mins <- aggregate(travel_time_p50 ~  # champ numérique
-                                 from_id,           # champ pour le group by 
-                                 matriceOD.30min,   # DataFrame
-                                 FUN = length)      # Nombre d'observations
-# Modification des noms des champs
-names(Supermarche.N30mins) <- c("mat18", "SupN30min")
-## Distance moyenne aux trois supermarchés les plus proches
-# Tri de la matrice en fonction du from_id et du travel_time_p50
-matriceOD.Marche <- matriceOD.Marche[order(matriceOD.Marche$from_id, 
-                                           matriceOD.Marche$travel_time_p50), ]
-# Ajout d'un champ pour le rang par from_id
-matriceOD.Marche$Rang <- ave(matriceOD.Marche$travel_time_p50, 
-                             matriceOD.Marche$from_id, 
-                             FUN = seq_along)
-# Création d'une matrice avec les trois supermarchés les plus proches
-matriceOD.3sup <-  subset(matriceOD.Marche, Rang <= 3)
-# Agrégation
-Supermarche.Moy3Sup <- aggregate(travel_time_p50 ~  # champ numérique
-                                 from_id,           # champ pour le group by 
-                                 matriceOD.3sup,    # DataFrame
-                                 FUN = mean)        # Moyenne
-# Modification des noms des champs
-names(Supermarche.Moy3Sup) <- c("mat18", "Moy3Sup")
-## Fusion avec la couche Role
-Role <- merge(Role, Supermarche.PlusProche, by="mat18")
-Role <- merge(Role, Supermarche.N30mins, by="mat18", all.x=TRUE)
-Role <- merge(Role, Supermarche.Moy3Sup, by="mat18", all.x=TRUE)
+Supermarche.PlusProche <- matriceOD.Marche %>% 
+  group_by(from_id) %>% 
+  summarise(
+    plus_proche = min(travel_time_p50))
+
+## Nombre de supermarchés à moins de 30 minutes
+Supermarche.N30mins <- matriceOD.Marche %>% 
+  filter(travel_time_p50 <= 30) %>% 
+  group_by(from_id) %>% 
+  summarise(
+    nb_30_min = n())
+
+# calcul de la distance moyenne aux trois supermarchés les plus proches
+Supermarche.3 <- matriceOD.Marche %>% 
+  group_by(from_id) %>% 
+  mutate(dist_rank = order(order(travel_time_p50, decreasing=FALSE))) %>%
+  filter(dist_rank <= 3) %>%
+  summarise(nb = n(),
+            sum_dist = sum(travel_time_p50))
+
+# Notez ici que nous pouvons avoir des origines pour lesquels
+# n'avons pas 3 supermarchés à moins de 240 minutes.
+# pour ces quelques cas, nous allons ajouter des temps de 240 minutes pour les 
+# origines avec des supermarchés manquants
+Supermarche.3$sum_dist <- Supermarche.3$sum_dist + 240 * (3 - Supermarche.3$nb)
+Supermarche.3$mean_n3 <- Supermarche.3$sum_dist / 3
+Supermarche.3$nb <- NULL
+Supermarche.3$sum_dist <- NULL
+
+# nous pouvons a présent fusionner nos différent dataframe avec nos 
+# indicateurs d'accessibilité
+
+Role <- Role %>% 
+  left_join(Supermarche.PlusProche, by = c('mat18' = 'from_id')) %>%
+  left_join(Supermarche.N30mins, by = c('mat18' = 'from_id')) %>%
+  left_join(Supermarche.3, by = c('mat18' = 'from_id')) %>%
+  rename(
+      SupPlusProcheMin = 'plus_proche',
+      SupN30min = 'nb_30_min',
+      Moy3Sup = 'mean_n3',
+  )
+
+
 # Certaines observations n'ont pas de supermarchés à 30 minutes.
 # Nous mettons alors les valeurs à 0
 Role$SupN30min[is.na(Role$SupN30min)] <- 0
@@ -1362,22 +1531,17 @@ Role$SupN30min[is.na(Role$SupN30min)] <- 0
 library(dplyr)
 ## Création d'un DataFrame temporaire sans la géométrie
 Role.Temp <- st_drop_geometry(Role)
-## Moyennes pondérées pour le supermarché le plus proche
-MesureAcc1 <- as.data.frame(Role.Temp %>%
+## Moyennes pondérées pour les trois indicateurs d'accessibilité
+MesureAcc <- Role.Temp %>%
                 group_by(ADIDU) %>%
-                summarize(SupPlusProcheMin = weighted.mean(SupPlusProcheMin, Logements)))
-## Moyennes pondérées pour le nombre de supermarchés à 30 minutes
-MesureAcc2 <- as.data.frame(Role.Temp %>%
-                group_by(ADIDU) %>%
-                summarize(SupN30min = weighted.mean(SupN30min, Logements)))
-## Moyennes pondérées pour les trois supermarchés les plus proches
-MesureAcc3 <- as.data.frame(Role.Temp %>%
-                group_by(ADIDU) %>%
-                summarize(Moy3Sup = weighted.mean(Moy3Sup, Logements)))
-## Fusion avec la couche des îlots
-AD <- merge(AD, MesureAcc1, by="ADIDU")
-AD <- merge(AD, MesureAcc2, by="ADIDU")
-AD <- merge(AD, MesureAcc3, by="ADIDU")
+                summarize(
+                  SupPlusProcheMin = weighted.mean(SupPlusProcheMin, Logements),
+                  SupN30min = weighted.mean(SupN30min, Logements),
+                  Moy3Sup = weighted.mean(Moy3Sup, Logements)
+                )
+
+## Fusion avec la couche des AD
+AD <- left_join(AD, MesureAcc, by="ADIDU")
 ```
 
 **Étape 7.** Cartographie des résultats avec le *package* `tmap`.
@@ -1580,14 +1744,13 @@ Le code ci-dessous permet de calculer la distance à la patinoire la plus proche
 #| eval: true
 
 ## Patinoire la plus proche
-Patinoire.PlusProche <- aggregate(travel_time_p50 ~  # champ numérique
-                                  from_id,           # champ pour le group by 
-                                  matriceODPatinoire.Marche,  # DataFrame
-                                  FUN = min)         # Minimum
-# Modification des noms des champs
-names(Patinoire.PlusProche) <- c("id", "PatinoirePlusProche")
+Patinoire.PlusProche <- matriceODPatinoire.Marche %>% 
+  group_by(from_id) %>%
+  summarise(PatinoirePlusProche = min(travel_time_p50))
+
+
 ## Fusion avec la couche des îlots
-Ilots <- merge(Ilots, Patinoire.PlusProche, by="id")
+Ilots <- left_join(Ilots, Patinoire.PlusProche, by=c("id" = 'from_id'))
 ```
 
 Puis, nous calculons la version de la méthode du E2SFCA avec une fonction de gradient continue [@mcgrail2009measuring].
@@ -1600,25 +1763,35 @@ Puis, nous calculons la version de la méthode du E2SFCA avec une fonction de gr
 source("code_complementaire/E2SFCA.R")
 ## Ajout des champs de population dans la matrice
 TempIlots <- st_drop_geometry(Ilots)
+
 matriceODPatinoire <- merge(matriceODPatinoire.Marche, 
                    TempIlots[,c("id","pop2021")],
                    by.x = "from_id", by.y="id")
+
 matriceODPatinoire$Wd <- 1
 names(matriceODPatinoire) <- c("from_id", "to_id", "Marche", "Wo", "Wd")
 head(matriceODPatinoire, n=2)
 
-MesureE2SFCA <- GE2SFCA(MatriceOD = matriceODPatinoire,
+# nous utilisons la pondération de gradiant continu du E2SFCA
+Wfun <- function(x){
+  w <- ifelse(x < 5, 1,((30 - x) / (30 - 5))**1.5)
+  w[x  > 30] <- 0
+  return(w)
+}
+
+# on va calculer le résultat en milliers d'habitants
+matriceODPatinoire$Wo <- matriceODPatinoire$Wo / 1000
+
+MesureE2SFCA <- GTSFCA(dist_mat = matriceODPatinoire,
+                        Wfun = Wfun,
                         IDorigine = "from_id",
                         IDdestination = "to_id",
                         CoutDistance = "Marche",
-                        RatioHabitants = 1000,
-                        Rayon = 30,
-                        Palier = 5,
                         Wo = "Wo",
                         Wd = "Wd",
                         ChampSortie = "E2SFCA_G")
 
-MesureE2SFCA$E2SFCA_G[is.na(Role$E2SFCA_G)] <- 0
+MesureE2SFCA$E2SFCA_G[is.na(MesureE2SFCA$E2SFCA_G)] <- 0
 Ilots <- merge(Ilots, MesureE2SFCA, by.x ="id", by="from_id", all.x = TRUE)
 Ilots$E2SFCA_G[is.na(Ilots$E2SFCA_G)] <- 0
 ```
@@ -1633,9 +1806,9 @@ Ilots$E2SFCA_G[is.na(Ilots$E2SFCA_G)] <- 0
 ## Création d'un DataFrame temporaire sans la géométrie
 Ilots.Temp <- st_drop_geometry(Ilots)
 ## Moyenne pondérées pour la patinoire la plus proche
-MesureAcc1 <- as.data.frame(Ilots.Temp %>%
+MesureAcc1 <- Ilots.Temp %>%
                 group_by(ADIDU) %>%
-                summarize(PatinoirePlusProche = weighted.mean(PatinoirePlusProche, pop2021)))
+                summarize(PatinoirePlusProche = weighted.mean(PatinoirePlusProche, pop2021))
 ## Moyenne non pondérée pour le E2SFCA, car la population est déjà prise en compte
 MesureAcc2 <- aggregate(E2SFCA_G ~ ADIDU, Ilots.Temp, FUN = mean)
 ## Fusion avec la couche des îlots
@@ -1703,7 +1876,7 @@ Carte2p <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
             tm_fill(col="E2SFCA_G", 
                     border.lwd = 1,
                     style = "fixed",
-                    breaks = c(min.acc2,0.25,0.50,0.75,1,1.5,max.acc2),
+                    breaks = c(min.acc2,0.25,0.50,0.75,1,max.acc2),
                     palette="YlOrRd",
                     size = .2, 
                     legend.format = list(text.separator = "à"),

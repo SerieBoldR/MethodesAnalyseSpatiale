@@ -1861,13 +1861,13 @@ La @fig-fig3PointsEtMarkers illustre la différence entre les fonctions `tm_dots
 #| out-width: 85%
 
 ## Points avec tm_dots()
-CartePoints = 
+CartePoints <- 
   tm_shape(Arrondissements) + tm_polygons(col="wheat", border.col = "black") +
   tm_shape(PointsGPS.Sherb) + tm_dots(shape=21, col="blue", size=.3)
 ## Icones avec tm_markers()
-CarteMarkers = 
+CarteMarkers <- 
   tm_shape(Arrondissements) + tm_polygons(col="wheat", border.col = "black") +
-  tm_shape(PointsGPS.Sherb) + tm_markers(size = 0.2)
+  tm_shape(PointsGPS.Sherb) + tm_markers(size = 0.2, border.col = rgb(0,0,0,0))
 ## Combinaison des deux cartes
 tmap_arrange(CartePoints, CarteMarkers, ncol=2, nrow=1)
 ```

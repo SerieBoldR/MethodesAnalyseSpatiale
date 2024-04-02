@@ -1,6 +1,6 @@
 project:
   type: book
-  output-dir: livre
+  output-dir: docs
 license: CC BY-SA
 latex-auto-install: true
 

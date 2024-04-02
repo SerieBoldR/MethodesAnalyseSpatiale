@@ -376,7 +376,6 @@ Le code ci-dessous permet de centrer et de réduire les quatre variables (foncti
 #| warning: false 
 #| eval: true
 
-library(rgdal)
 library(spdep)
 library(tmap)
 ## Variables

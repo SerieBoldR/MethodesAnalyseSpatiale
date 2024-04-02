@@ -282,7 +282,7 @@ routes <- sf::st_cast(routes, 'LINESTRING')
 net_distances <- spNetwork::network_listw(
   origins = lixels_centers,
   lines = routes,
-  maxdistance = 2500,
+  maxdistance = 1000,
   mindist = 1,
   dist_func = 'identity',
   matrice_type = 'I',

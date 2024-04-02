@@ -1,0 +1,633 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document id="root_doc">
+<Schema name="PointsGPS" id="PointsGPS">
+	<SimpleField name="id" type="int"></SimpleField>
+	<SimpleField name="HotelVille2km" type="int"></SimpleField>
+</Schema>
+<Folder><name>PointsGPS</name>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">1</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9998529072272,45.360097229426</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">2</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9909558006383,45.3753535888635</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">3</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9844364024145,45.4696425283716</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">4</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.0987286171694,45.3712601652043</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">5</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.0487954404394,45.4103518023825</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">6</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9500012569733,45.3257028718887</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">7</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.0067876301985,45.3481132339541</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">8</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.0154450616453,45.3705115941606</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">9</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.999202634286,45.4286324512364</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">10</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.0674798199903,45.3820901924324</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">11</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.0387592305415,45.4058510310396</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">12</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.0415456645301,45.4251754211016</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">13</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9870075869469,45.4537449977643</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">14</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9502897336682,45.333534052091</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">15</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.0086978482076,45.3232787835646</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">16</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.0625491469246,45.3451050148227</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">17</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.0300608616843,45.4221449906495</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">18</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.025128904933,45.336374787191</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">19</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9537300135158,45.452690272711</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">20</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.942152464399,45.4713666410107</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">21</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9348516761361,45.4206560871241</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">22</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9406337437461,45.3670043615157</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">23</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.914208364128,45.3823438253454</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">24</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9572031682921,45.3864441040817</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">25</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9727614922159,45.4187630999049</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">26</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9483627281527,45.4035408917733</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">27</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.912300828418,45.4120824425087</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">28</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9304766317987,45.4008935041602</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">29</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9159728392191,45.4334645948616</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">30</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9146370028228,45.420498088092</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">31</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9272944202808,45.3984117286895</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">32</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9281009631363,45.4028786200922</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">33</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9011615996281,45.3924726080341</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">34</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9209352197383,45.3837055612493</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">35</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9178144833691,45.3793756182764</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">36</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.959246500755,45.4134115712412</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">37</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9497917737627,45.3972689690453</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">38</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.926472229175,45.3617441489195</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">39</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9439974472063,45.3525039383069</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">40</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9326254904194,45.367905244104</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">41</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8512527320743,45.3704581726354</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">42</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8249858418608,45.325282123232</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">43</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8297888335724,45.3592805471183</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">44</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8315695140746,45.375625280846</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">45</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8400742319138,45.3516798768153</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">46</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8297959931385,45.351794742868</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">47</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8131973061841,45.3968480170286</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">48</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8246801838582,45.3757894449789</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">49</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8192731454855,45.3795915227538</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">50</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8816132469368,45.38458826714</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">51</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8543102731978,45.3497257678817</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">52</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8173275124781,45.3991379198954</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">53</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8241883891396,45.3787789066069</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">54</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8279757708992,45.3492452508234</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">55</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8704912311682,45.3605755694218</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">56</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8565843610845,45.3548365131885</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">57</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8764670719627,45.3704064053476</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">58</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8704145214698,45.36451068864</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">59</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.845429534478,45.3743831585317</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">60</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8279335631127,45.3578439856466</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">61</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8747817954333,45.4023340850702</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">62</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9050531396907,45.4284726873291</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">63</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8437435562254,45.4407264043673</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">64</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8908015063169,45.4424052919038</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">65</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8572809872545,45.4304844116031</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">66</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8436822967185,45.4305167638142</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">67</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8132073436235,45.4079768436252</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">68</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8743001803073,45.390540315357</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">69</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8268836504732,45.4239714049877</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">70</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8757620488701,45.404287756488</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">71</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8748320474265,45.3954506436582</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">72</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8330144010169,45.4273438237423</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">73</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8862403307076,45.4239050396855</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">74</SimpleData>
+		<SimpleData name="HotelVille2km">1</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8844960950343,45.4088483125584</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">75</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8226405371,45.4067817620411</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">76</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8602361567618,45.4278316018928</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">77</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8367542726324,45.4070412631231</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">78</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8506380641791,45.4487255311342</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">79</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8697951139531,45.4487169104388</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">80</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8197385260804,45.3996549661563</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">81</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.0272206504753,45.4515296787761</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">82</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-72.0508710317864,45.4615707274839</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">83</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8641574951201,45.4772835621294</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">84</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8454861414535,45.4624437776572</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">85</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8865631195201,45.349708686263</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">86</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9207939345756,45.3387727865314</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">87</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8865631195201,45.3208333377283</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">88</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.8666470089424,45.3295849981819</coordinates></Point>
+  </Placemark>
+  <Placemark>
+	<ExtendedData><SchemaData schemaUrl="#PointsGPS">
+		<SimpleData name="id">89</SimpleData>
+		<SimpleData name="HotelVille2km">0</SimpleData>
+	</SchemaData></ExtendedData>
+      <Point><coordinates>-71.9151925284756,45.3221461729887</coordinates></Point>
+  </Placemark>
+</Folder>
+</Document></kml>

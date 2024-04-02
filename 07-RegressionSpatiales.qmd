@@ -237,15 +237,23 @@ Modele.SLX <- lmSLX(NO2 ~ Pct0_14+Pct_65+Pct_Img+Pct_brevet+NivVieMed,
 summary(Modele.SLX)
 ```
 
+
+::: bloc_attention
+::: bloc_attention-header
+::: bloc_attention-icon
+:::
+
 **Effets directs, indirects et totaux**
+:::
 
-Les effets des variables indépendantes sont donc décomposés en trois composantes :
+::: bloc_attention-body
+La formulation d'un modèle SLX, implique deux types d'effets de la part des variables $X$ : les effets directs et indirects. En effet, si pour une obseration $i$, la valeur d'une caractéristique $X$ augmente, alors la valeur $y_i$ va changer en fonction du coefficient $\beta$. Il s'agit de l'effet direct. De plus, les valeurs des moyennes spatiales ($WX$) de voisins $j$ de $i$ vont aussi être amenées à augmenter, impactant alors les valeurs $y_j$ des voisins selon les coefficients $\theta$.
 
--   les **effets directs**, soit ceux des caractéristiques des entités spatiales. Ils correspondent aux coefficients $\beta$ des variables indépendantes ($X$)
--   les **effets indirects**, soit ceux des caractéristiques des entités spatiales voisines ou proches définies selon la matrice de pondération spatiale. Ils correspondent aux coefficients $\theta$ des variables indépendantes spatialement décalées ($WX$).
--   les **effets totaux**, soit la somme des deux précédents.
+Prenons un exemple concret et admettons que nous construisions un modèle ayant pour objectif de prédire le prix des maisons sur un territoire à partir d'un ensemble de caractérisiques des maisons. Admettons que la taille du jardin associé à la maison fasse partie des variable $X$ et que nous ayons aussi intégré une version spatialement décalée de cette variable dans notre modèle. Dans ce cas précis, pour une maison $i$, admettons qu'un jardin plus grand augmente le prix de la maison $i$. Cette augmentation de la taille du jardin va aussi avoir un impact sur le prix des maisons voisines car leur propre prix est dépendant de la taille des jardins des maisons voisines. Ainsi, chaque maison $j$, voisine de $i$ verra son prix augmenter à cause de l'augmentation de la taille du jardin de la maison $i$.
 
-Le code suivant permet de les obtenir.
+Pour capturer l'impact total sur le prix des maisons de l'aumgentation de la taille du jardin dans $i$, on va donc combiner son effet direct (augmentation du prix de la maison $i$) et son effet indirect (augmentation du prix des maisons $j$) pour obtenir son effet total.
+
+Le code suivant permet de calculer ces effets directs et indirects.
 
 ```{r}
 #| echo: true 
@@ -256,6 +264,11 @@ impacts(Modele.SLX)
 ## Effets directs, indirects et totaux (coefficients, valeurs de z et de p)
 summary(impacts(Modele.SLX))
 ```
+En regardat les valeurs de *p*, nous pouvons constater que dans ce modèle, seule la variable `Pct0_14` a un impact direct et indirect significatif au seuil 0.01. L'augmentation de un point de pourcentage de la population des 14 ans et moins est donc associé localement à une réduction de 0.2 de la concentration de NO2 annuelle. Chez les entités voisines, cette réduction est de 0.78 et l'effet total est donc une réduction de 0.98.
+
+:::
+:::
+
 
 **Dépendance spatiale du modèle SLX?**
 
@@ -283,7 +296,7 @@ tm_shape(LyonIris)+
 
 #### Modèle SAR : autocorrélation spatiale sur la variable dépendante {#sec-07122}
 
-Dans le modèle SAR, l'autocorrélation spatiale est intégrée au niveau de la variable indépendante ($Wy$), qui est ainsi spatialement décalée. L'idée générale est que la valeur de la variable dépendante pour une observation ($y_i$) peut être influencée par les valeurs de $y$ des observations voisines et proches. L'exemple le plus classique est le prix de vente des maisons : il est influencé à la fois par les caractéristiques intrinsèques de la maison ($X$, par exemple, la superficie habitable, le nombre de chambres à coucher, de salles de bains, etc.) et par le prix de vente des maisons voisines ($Wy$). Jean Dubé et Diègo Legros [-@dube2014econometrie] qualifient ce phénomène « **d'effets d'entraînement ou d'effets de débordement** (*spillover effects*) » [-@dube2014econometrie, p. 123]. L'équation du modèle SAR s'écrit alors :
+Dans le modèle SAR (aussi appelé SAR-LAG), l'autocorrélation spatiale est intégrée au niveau de la variable indépendante ($Wy$), qui est ainsi spatialement décalée. L'idée générale est que la valeur de la variable dépendante pour une observation ($y_i$) peut être influencée par les valeurs de $y$ des observations voisines et proches. L'exemple le plus classique est le prix de vente des maisons : il est influencé à la fois par les caractéristiques intrinsèques de la maison ($X$, par exemple, la superficie habitable, le nombre de chambres à coucher, de salles de bains, etc.) et par le prix de vente des maisons voisines ($Wy$). Jean Dubé et Diègo Legros [-@dube2014econometrie] qualifient ce phénomène « **d'effets d'entraînement ou d'effets de débordement** (*spillover effects*) » [-@dube2014econometrie, p. 123]. L'équation du modèle SAR s'écrit alors :
 
 $$
 y = Wy\rho + X\beta + \epsilon
@@ -318,7 +331,32 @@ summary(Modele.SAR, Nagelkerke=TRUE)
 
 Dans les résultats ci-dessus, la valeur de *rho* est de 0,88 (LR = 620, *p* \< 0,001), traduisant un très fort effet d'entraînement. Autrement dit, lorsqu'en moyenne la concentration de dioxyde d'azote augmente dans les IRIS voisines ($Wy$), elle augmente aussi fortement chaque IRIS ($y$).
 
+
+::: bloc_attention
+::: bloc_attention-header
+::: bloc_attention-icon
+:::
+
 **Effets directs, indirects et totaux**
+:::
+
+::: bloc_attention-body
+Tout comme le modèle SLX vu ci-dessus, la formulation du modèle SAR-LAG implique des effets particuliers. En effet, reprenons l'exemple d'un modèle prédisant le prix de vente des maisons et admettons que nous utilisons cette fois-ci un modèle de type SAR-LAG.
+
+1. L'augmentation de la taille du jardin de la maison $i$ va augmenter le prix de la maison $i$ ($y_i$).
+2. Cette augmentation de prix de la maison $i$ va avoir un impact sur les voisins de $i$, soit les maisons $j$ car le prix de ces maisons dépend du prix de la maison $i$ au travers du terme $Wy\rho$ du modèle. Si $\rho$ vaut par exemple 0.8, alors 80% de l'augmentation du prix de $i$ va se répercuter sur le prix des maisons $j$.
+3. De même, les voisines des maisons $j$, les maisons $k$ vont aussi être impactées par le changement de prix des maisons $j$ et ainsi de suite de voisin en voisins.
+4. Au final, la maison $i$ verra son propre prix augmenter encore plus car le prix de ces voisines aura augmenté par effet de rétro actions.
+
+Ce processus de propagation est appelé l'effet de déversement (*spillover*) en économétrie. 
+
+L'effet original de l'augmentation de la taille du jardin sur la maison $i$, combiné à l'augmentation par rétro-action est appelé l'effet direct.
+
+L'effet cumulé de l'augmentation de la taille du jardin sur toutes les autres maisons ($\neq i$) est appelé l'effet indirect.
+
+La somme des effets indirects et des directs est appelé l'effet total.
+
+À nouveau, il est possible d'utiliser la fonction `impacts` pour calculer ces effets directs et indirects.
 
 ```{r}
 #| echo: true 
@@ -329,6 +367,14 @@ impacts(Modele.SAR, listw = W.Rook, R = 999)
 ## Effets directs, indirects et totaux (coefficients, valeurs de z et de p)
 summary(impacts(Modele.SAR, listw = W.Rook, R = 999), zstats = TRUE, short = TRUE)
 ```
+L'interprétation des effets directs se rapproche de celle des coefficients classiques. Ainsi, selon ce modèle, l'augmentation du niveau de vie médian de 1000€ dans un IRIS serait associée avec une diminution moyenne de la concentration de NO2 de 0.14 dans cet IRIR. L'effet total est de -0.82, indiquant qu'en moyenne, l'augmentation de 1000€ du niveau de vie médian dans un IRIS serait associé avec une diminution moyenne de 0.82 de la concentration de NO2 dans l'ensmble des IRIS. Au final, l'effet indirect est simplement la différence entre l'effet total et l'effet direct. Nous pouvons constater ici que les effets indirects sont plus importants que les effets directs.
+
+:::
+:::
+
+**Effets directs, indirects et totaux**
+
+
 
 **Dépendance spatiale du modèle SAR?**
 
@@ -358,7 +404,7 @@ tm_shape(LyonIris)+
 
 #### Modèle SEM : autocorrélation spatiale sur le terme d'erreur {#sec-07123}
 
-Dans le modèle SEM (*spatial error model*), l'intégration de l'autocorrélation spatiale est réalisée sur le terme d'erreur, ce qui pourrait se justifier par l'omission d'une variable dépendante spatialement structurée [@dube2014econometrie, p. 126]. L'équation du modèle SEM s'écrit :
+Dans le modèle SEM (aussi appelé *SAR-ERROR*), l'intégration de l'autocorrélation spatiale est réalisée sur le terme d'erreur, ce qui pourrait se justifier par l'omission d'une variable dépendante spatialement structurée [@dube2014econometrie, p. 126]. L'équation du modèle SEM s'écrit :
 
 $$
 y = X\beta + u \textrm{, } u = \lambda Wu + \epsilon

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.433">
+<meta name="generator" content="quarto-1.3.450">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Méthodes d’analyse spatiale : un grand bol d’R - 7&nbsp; Introduction aux modèles de régression spatiale</title>
 <style>
@@ -578,7 +578,7 @@ Observed Moran I      Expectation         Variance
 </div>
 <p>Avec une valeur du <em>I</em> de Moran de 0,587 (<em>p</em>&nbsp;&lt;&nbsp;0,001), les résidus sont fortement autocorrélés spatialement, traduisant ainsi un problème de dépendance spatiale du modèle MCO et la nécessité de recourir à des modèles économétriques spatiaux. La cartographie des résidus à la <a href="#fig-figCartoResMCO">figure&nbsp;<span>7.2</span></a> corrobore ce résultat.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap">tmap</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap">tmap</a></span><span class="op">)</span></span>
 <span><span class="co">## Ajout de la colonne dans LyonIris avec les valeurs des résidus</span></span>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">ModeleMCO.Residus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">Modele.MCO</span><span class="op">)</span></span>
 <span><span class="co">## Cartographie</span></span>
@@ -651,39 +651,33 @@ Call:
 lm(formula = formula(paste("y ~ ", paste(colnames(x)[-1], collapse = "+"))), 
     data = as.data.frame(x), weights = weights)
 
-Residuals:
-     Min       1Q   Median       3Q      Max 
--18.6087  -3.5084  -0.7178   2.9128  26.8724 
-
 Coefficients:
-               Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)    50.67786    4.18791  12.101  &lt; 2e-16 ***
-Pct0_14        -0.20404    0.06268  -3.255  0.00121 ** 
-Pct_65         -0.03771    0.05361  -0.703  0.48217    
-Pct_Img         0.10406    0.04849   2.146  0.03235 *  
-Pct_brevet     -0.07363    0.03550  -2.074  0.03857 *  
-NivVieMed      -0.18441    0.11063  -1.667  0.09617 .  
-lag.Pct0_14    -0.77591    0.10295  -7.537 2.32e-13 ***
-lag.Pct_65     -0.06454    0.09115  -0.708  0.47924    
-lag.Pct_Img     0.64654    0.08593   7.524 2.53e-13 ***
-lag.Pct_brevet -0.30128    0.06157  -4.893 1.34e-06 ***
-lag.NivVieMed  -0.01805    0.17499  -0.103  0.91790    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 5.77 on 495 degrees of freedom
-Multiple R-squared:  0.4713,    Adjusted R-squared:  0.4606 
-F-statistic: 44.13 on 10 and 495 DF,  p-value: &lt; 2.2e-16</code></pre>
+                Estimate    Std. Error  t value     Pr(&gt;|t|)  
+(Intercept)      5.068e+01   4.188e+00   1.210e+01   1.040e-29
+Pct0_14         -2.040e-01   6.268e-02  -3.255e+00   1.211e-03
+Pct_65          -3.771e-02   5.361e-02  -7.033e-01   4.822e-01
+Pct_Img          1.041e-01   4.849e-02   2.146e+00   3.235e-02
+Pct_brevet      -7.363e-02   3.550e-02  -2.074e+00   3.857e-02
+NivVieMed       -1.844e-01   1.106e-01  -1.667e+00   9.617e-02
+lag.Pct0_14     -7.759e-01   1.030e-01  -7.537e+00   2.315e-13
+lag.Pct_65      -6.454e-02   9.115e-02  -7.081e-01   4.792e-01
+lag.Pct_Img      6.465e-01   8.593e-02   7.524e+00   2.526e-13
+lag.Pct_brevet  -3.013e-01   6.157e-02  -4.893e+00   1.344e-06
+lag.NivVieMed   -1.805e-02   1.750e-01  -1.031e-01   9.179e-01</code></pre>
 </div>
+</div>
+<div class="bloc_attention">
+<div class="bloc_attention-header">
+<div class="bloc_attention-icon">
+
 </div>
 <p><strong>Effets directs, indirects et totaux</strong></p>
-<p>Les effets des variables indépendantes sont donc décomposés en trois composantes&nbsp;:</p>
-<ul>
-<li>les <strong>effets directs</strong>, soit ceux des caractéristiques des entités spatiales. Ils correspondent aux coefficients <span class="math inline">\(\beta\)</span> des variables indépendantes (<span class="math inline">\(X\)</span>)</li>
-<li>les <strong>effets indirects</strong>, soit ceux des caractéristiques des entités spatiales voisines ou proches définies selon la matrice de pondération spatiale. Ils correspondent aux coefficients <span class="math inline">\(\theta\)</span> des variables indépendantes spatialement décalées (<span class="math inline">\(WX\)</span>).</li>
-<li>les <strong>effets totaux</strong>, soit la somme des deux précédents.</li>
-</ul>
-<p>Le code suivant permet de les obtenir.</p>
+</div>
+<div class="bloc_attention-body">
+<p>La formulation d’un modèle SLX, implique deux types d’effets de la part des variables <span class="math inline">\(X\)</span>&nbsp;: les effets directs et indirects. En effet, si pour une obseration <span class="math inline">\(i\)</span>, la valeur d’une caractéristique <span class="math inline">\(X\)</span> augmente, alors la valeur <span class="math inline">\(y_i\)</span> va changer en fonction du coefficient <span class="math inline">\(\beta\)</span>. Il s’agit de l’effet direct. De plus, les valeurs des moyennes spatiales (<span class="math inline">\(WX\)</span>) de voisins <span class="math inline">\(j\)</span> de <span class="math inline">\(i\)</span> vont aussi être amenées à augmenter, impactant alors les valeurs <span class="math inline">\(y_j\)</span> des voisins selon les coefficients <span class="math inline">\(\theta\)</span>.</p>
+<p>Prenons un exemple concret et admettons que nous construisions un modèle ayant pour objectif de prédire le prix des maisons sur un territoire à partir d’un ensemble de caractérisiques des maisons. Admettons que la taille du jardin associé à la maison fasse partie des variable <span class="math inline">\(X\)</span> et que nous ayons aussi intégré une version spatialement décalée de cette variable dans notre modèle. Dans ce cas précis, pour une maison <span class="math inline">\(i\)</span>, admettons qu’un jardin plus grand augmente le prix de la maison <span class="math inline">\(i\)</span>. Cette augmentation de la taille du jardin va aussi avoir un impact sur le prix des maisons voisines car leur propre prix est dépendant de la taille des jardins des maisons voisines. Ainsi, chaque maison <span class="math inline">\(j\)</span>, voisine de <span class="math inline">\(i\)</span> verra son prix augmenter à cause de l’augmentation de la taille du jardin de la maison <span class="math inline">\(i\)</span>.</p>
+<p>Pour capturer l’impact total sur le prix des maisons de l’aumgentation de la taille du jardin dans <span class="math inline">\(i\)</span>, on va donc combiner son effet direct (augmentation du prix de la maison <span class="math inline">\(i\)</span>) et son effet indirect (augmentation du prix des maisons <span class="math inline">\(j\)</span>) pour obtenir son effet total.</p>
+<p>Le code suivant permet de calculer ces effets directs et indirects.</p>
 <div class="cell">
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (uniquement les coefficients)</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">Modele.SLX</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -732,6 +726,9 @@ Pct_brevet 0.0380546 9.9198e-07 3.5221e-10
 NivVieMed  0.0955397 0.91786    0.17454   </code></pre>
 </div>
 </div>
+<p>En regardat les valeurs de <em>p</em>, nous pouvons constater que dans ce modèle, seule la variable <code>Pct0_14</code> a un impact direct et indirect significatif au seuil 0.01. L’augmentation de un point de pourcentage de la population des 14 ans et moins est donc associé localement à une réduction de 0.2 de la concentration de NO2 annuelle. Chez les entités voisines, cette réduction est de 0.78 et l’effet total est donc une réduction de 0.98.</p>
+</div>
+</div>
 <p><strong>Dépendance spatiale du modèle SLX?</strong></p>
 <p>Ce modèle a-t-il corrigé le problème de dépendance spatiale du modèle de régression linéaire classique? Avec une valeur du <em>I</em> de Moran de 0,605 (<em>p</em>&nbsp;&lt;&nbsp;0,001), les résidus sont toujours fortement autocorrélés spatialement (<a href="#fig-figCartoResSLX">figure&nbsp;<span>7.3</span></a>).</p>
 <div class="cell" data-layout-align="center">
@@ -767,7 +764,7 @@ Observed Moran I      Expectation         Variance
 </div>
 </section><section id="sec-07122" class="level4" data-number="7.1.2.2"><h4 data-number="7.1.2.2" class="anchored" data-anchor-id="sec-07122">
 <span class="header-section-number">7.1.2.2</span> Modèle SAR&nbsp;: autocorrélation spatiale sur la variable dépendante</h4>
-<p>Dans le modèle SAR, l’autocorrélation spatiale est intégrée au niveau de la variable indépendante (<span class="math inline">\(Wy\)</span>), qui est ainsi spatialement décalée. L’idée générale est que la valeur de la variable dépendante pour une observation (<span class="math inline">\(y_i\)</span>) peut être influencée par les valeurs de <span class="math inline">\(y\)</span> des observations voisines et proches. L’exemple le plus classique est le prix de vente des maisons&nbsp;: il est influencé à la fois par les caractéristiques intrinsèques de la maison (<span class="math inline">\(X\)</span>, par exemple, la superficie habitable, le nombre de chambres à coucher, de salles de bains, etc.) et par le prix de vente des maisons voisines (<span class="math inline">\(Wy\)</span>). Jean Dubé et Diègo Legros <span class="citation" data-cites="dube2014econometrie">(<a href="references.html#ref-dube2014econometrie" role="doc-biblioref">2014</a>)</span> qualifient ce phénomène «&nbsp;<strong>d’effets d’entraînement ou d’effets de débordement</strong> (<em>spillover effects</em>)&nbsp;» <span class="citation" data-cites="dube2014econometrie">(<a href="references.html#ref-dube2014econometrie" role="doc-biblioref">2014, 123</a>)</span>. L’équation du modèle SAR s’écrit alors&nbsp;:</p>
+<p>Dans le modèle SAR (aussi appelé SAR-LAG), l’autocorrélation spatiale est intégrée au niveau de la variable indépendante (<span class="math inline">\(Wy\)</span>), qui est ainsi spatialement décalée. L’idée générale est que la valeur de la variable dépendante pour une observation (<span class="math inline">\(y_i\)</span>) peut être influencée par les valeurs de <span class="math inline">\(y\)</span> des observations voisines et proches. L’exemple le plus classique est le prix de vente des maisons&nbsp;: il est influencé à la fois par les caractéristiques intrinsèques de la maison (<span class="math inline">\(X\)</span>, par exemple, la superficie habitable, le nombre de chambres à coucher, de salles de bains, etc.) et par le prix de vente des maisons voisines (<span class="math inline">\(Wy\)</span>). Jean Dubé et Diègo Legros <span class="citation" data-cites="dube2014econometrie">(<a href="references.html#ref-dube2014econometrie" role="doc-biblioref">2014</a>)</span> qualifient ce phénomène «&nbsp;<strong>d’effets d’entraînement ou d’effets de débordement</strong> (<em>spillover effects</em>)&nbsp;» <span class="citation" data-cites="dube2014econometrie">(<a href="references.html#ref-dube2014econometrie" role="doc-biblioref">2014, 123</a>)</span>. L’équation du modèle SAR s’écrit alors&nbsp;:</p>
 <p><span id="eq-SLM"><span class="math display">\[
 y = Wy\rho + X\beta + \epsilon
 \tag{7.4}\]</span></span></p>
@@ -833,7 +830,26 @@ test value: 0.6198, p-value: 0.43112</code></pre>
 </div>
 </div>
 <p>Dans les résultats ci-dessus, la valeur de <em>rho</em> est de 0,88 (LR&nbsp;=&nbsp;620, <em>p</em>&nbsp;&lt;&nbsp;0,001), traduisant un très fort effet d’entraînement. Autrement dit, lorsqu’en moyenne la concentration de dioxyde d’azote augmente dans les IRIS voisines (<span class="math inline">\(Wy\)</span>), elle augmente aussi fortement chaque IRIS (<span class="math inline">\(y\)</span>).</p>
+<div class="bloc_attention">
+<div class="bloc_attention-header">
+<div class="bloc_attention-icon">
+
+</div>
 <p><strong>Effets directs, indirects et totaux</strong></p>
+</div>
+<div class="bloc_attention-body">
+<p>Tout comme le modèle SLX vu ci-dessus, la formulation du modèle SAR-LAG implique des effets particuliers. En effet, reprenons l’exemple d’un modèle prédisant le prix de vente des maisons et admettons que nous utilisons cette fois-ci un modèle de type SAR-LAG.</p>
+<ol type="1">
+<li>L’augmentation de la taille du jardin de la maison <span class="math inline">\(i\)</span> va augmenter le prix de la maison <span class="math inline">\(i\)</span> (<span class="math inline">\(y_i\)</span>).</li>
+<li>Cette augmentation de prix de la maison <span class="math inline">\(i\)</span> va avoir un impact sur les voisins de <span class="math inline">\(i\)</span>, soit les maisons <span class="math inline">\(j\)</span> car le prix de ces maisons dépend du prix de la maison <span class="math inline">\(i\)</span> au travers du terme <span class="math inline">\(Wy\rho\)</span> du modèle. Si <span class="math inline">\(\rho\)</span> vaut par exemple 0.8, alors 80% de l’augmentation du prix de <span class="math inline">\(i\)</span> va se répercuter sur le prix des maisons <span class="math inline">\(j\)</span>.</li>
+<li>De même, les voisines des maisons <span class="math inline">\(j\)</span>, les maisons <span class="math inline">\(k\)</span> vont aussi être impactées par le changement de prix des maisons <span class="math inline">\(j\)</span> et ainsi de suite de voisin en voisins.</li>
+<li>Au final, la maison <span class="math inline">\(i\)</span> verra son propre prix augmenter encore plus car le prix de ces voisines aura augmenté par effet de rétro actions.</li>
+</ol>
+<p>Ce processus de propagation est appelé l’effet de déversement (<em>spillover</em>) en économétrie.</p>
+<p>L’effet original de l’augmentation de la taille du jardin sur la maison <span class="math inline">\(i\)</span>, combiné à l’augmentation par rétro-action est appelé l’effet direct.</p>
+<p>L’effet cumulé de l’augmentation de la taille du jardin sur toutes les autres maisons (<span class="math inline">\(\neq i\)</span>) est appelé l’effet indirect.</p>
+<p>La somme des effets indirects et des directs est appelé l’effet total.</p>
+<p>À nouveau, il est possible d’utiliser la fonction <code>impacts</code> pour calculer ces effets directs et indirects.</p>
 <div class="cell">
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (uniquement les coefficients)</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">Modele.SAR</span>, listw <span class="op">=</span> <span class="va">W.Rook</span>, R <span class="op">=</span> <span class="fl">999</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -861,29 +877,33 @@ Simulation results ( variance matrix):
 ========================================================
 Simulated standard errors
                Direct  Indirect     Total
-Pct0_14    0.04042043 0.2258288 0.2620679
-Pct_65     0.03787944 0.1932663 0.2302705
-Pct_Img    0.03303624 0.1680064 0.2002687
-Pct_brevet 0.02505642 0.1290173 0.1535453
-NivVieMed  0.06672088 0.3505909 0.4139674
+Pct0_14    0.04350672 0.2415946 0.2808340
+Pct_65     0.03697847 0.1921934 0.2281500
+Pct_Img    0.03450108 0.1778644 0.2115460
+Pct_brevet 0.02510405 0.1287807 0.1533722
+NivVieMed  0.07145396 0.3688481 0.4373654
 
 Simulated z-values:
               Direct  Indirect     Total
-Pct0_14    -3.427522 -3.041094 -3.149217
-Pct_65     -1.252640 -1.217140 -1.227606
-Pct_Img     1.326834  1.292716  1.303340
-Pct_brevet -1.111786 -1.064189 -1.075618
-NivVieMed  -2.073395 -1.957493 -1.991988
+Pct0_14    -3.192936 -2.870288 -2.963888
+Pct_65     -1.342617 -1.286551 -1.301400
+Pct_Img     1.258348  1.220984  1.231808
+Pct_brevet -1.081947 -1.049622 -1.058421
+NivVieMed  -1.933194 -1.862378 -1.886453
 
 Simulated p-values:
-           Direct     Indirect  Total    
-Pct0_14    0.00060912 0.0023572 0.0016371
-Pct_65     0.21033687 0.2235511 0.2195951
-Pct_Img    0.18456344 0.1961092 0.1924588
-Pct_brevet 0.26623026 0.2872432 0.2820981
-NivVieMed  0.03813552 0.0502896 0.0463724</code></pre>
+           Direct    Indirect Total    
+Pct0_14    0.0014083 0.004101 0.0030378
+Pct_65     0.1793959 0.198251 0.1931214
+Pct_Img    0.2082660 0.222092 0.2180210
+Pct_brevet 0.2792762 0.293892 0.2898635
+NivVieMed  0.0532122 0.062550 0.0592340</code></pre>
 </div>
 </div>
+<p>L’interprétation des effets directs se rapproche de celle des coefficients classiques. Ainsi, selon ce modèle, l’augmentation du niveau de vie médian de 1000€ dans un IRIS serait associée avec une diminution moyenne de la concentration de NO2 de 0.14 dans cet IRIR. L’effet total est de -0.82, indiquant qu’en moyenne, l’augmentation de 1000€ du niveau de vie médian dans un IRIS serait associé avec une diminution moyenne de 0.82 de la concentration de NO2 dans l’ensmble des IRIS. Au final, l’effet indirect est simplement la différence entre l’effet total et l’effet direct. Nous pouvons constater ici que les effets indirects sont plus importants que les effets directs.</p>
+</div>
+</div>
+<p><strong>Effets directs, indirects et totaux</strong></p>
 <p><strong>Dépendance spatiale du modèle SAR?</strong></p>
 <p>Ce modèle a-t-il corrigé le problème de dépendance spatiale du modèle de régression linéaire classique? Avec une valeur du <em>I</em> de Moran de -0,014 (<em>p</em>&nbsp;=&nbsp;0,654), les résidus ne sont plus spatialement autocorrélés (<a href="#fig-figCartoResSAR">figure&nbsp;<span>7.4</span></a>).</p>
 <div class="cell" data-layout-align="center">
@@ -897,7 +917,7 @@ data:  resid(Modele.SAR)
 weights: W.Rook  
 number of simulations + 1: 1000 
 
-statistic = -0.014281, observed rank = 330, p-value = 0.67
+statistic = -0.014281, observed rank = 342, p-value = 0.658
 alternative hypothesis: greater</code></pre>
 </div>
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Cartographie des résidus</span></span>
@@ -917,7 +937,7 @@ alternative hypothesis: greater</code></pre>
 </div>
 </section><section id="sec-07123" class="level4" data-number="7.1.2.3"><h4 data-number="7.1.2.3" class="anchored" data-anchor-id="sec-07123">
 <span class="header-section-number">7.1.2.3</span> Modèle SEM&nbsp;: autocorrélation spatiale sur le terme d’erreur</h4>
-<p>Dans le modèle SEM (<em>spatial error model</em>), l’intégration de l’autocorrélation spatiale est réalisée sur le terme d’erreur, ce qui pourrait se justifier par l’omission d’une variable dépendante spatialement structurée <span class="citation" data-cites="dube2014econometrie">(<a href="references.html#ref-dube2014econometrie" role="doc-biblioref">Dubé et Legros 2014, 126</a>)</span>. L’équation du modèle SEM s’écrit&nbsp;:</p>
+<p>Dans le modèle SEM (aussi appelé <em>SAR-ERROR</em>), l’intégration de l’autocorrélation spatiale est réalisée sur le terme d’erreur, ce qui pourrait se justifier par l’omission d’une variable dépendante spatialement structurée <span class="citation" data-cites="dube2014econometrie">(<a href="references.html#ref-dube2014econometrie" role="doc-biblioref">Dubé et Legros 2014, 126</a>)</span>. L’équation du modèle SEM s’écrit&nbsp;:</p>
 <p><span id="eq-SEM"><span class="math display">\[
 y = X\beta + u \textrm{, } u = \lambda Wu + \epsilon
 \tag{7.5}\]</span></span></p>
@@ -974,7 +994,7 @@ ML residual variance (sigma squared): 9.9971, (sigma: 3.1618)
 Nagelkerke pseudo-R-squared: 0.78662 
 Number of observations: 506 
 Number of parameters estimated: 8 
-AIC: NA (not available for weighted model), (AIC for lm: 3366.6)</code></pre>
+AIC: 2755.5, (AIC for lm: 3366.6)</code></pre>
 </div>
 </div>
 <p>Dans les résultats ci-dessus, la valeur de <em>lambda</em> est de 0,91 (LR&nbsp;=&nbsp;613, <em>p</em>&nbsp;&lt;&nbsp;0,001), traduisant une très forte autocorrélation spatiale sur le terme d’erreur.</p>
@@ -991,7 +1011,7 @@ data:  resid(Modele.SEM)
 weights: W.Rook  
 number of simulations + 1: 1000 
 
-statistic = -0.011827, observed rank = 376, p-value = 0.624
+statistic = -0.011827, observed rank = 372, p-value = 0.628
 alternative hypothesis: greater</code></pre>
 </div>
 </div>
@@ -1100,27 +1120,27 @@ Simulation results ( variance matrix):
 ========================================================
 Simulated standard errors
                Direct  Indirect     Total
-Pct0_14    0.04436664 0.3429775 0.3712289
-Pct_65     0.03563535 0.2781561 0.2997532
-Pct_Img    0.03406333 0.2857780 0.3072000
-Pct_brevet 0.02507632 0.2034744 0.2201756
-NivVieMed  0.06668701 0.5026500 0.5366589
+Pct0_14    0.04377532 0.3470563 0.3754101
+Pct_65     0.03519979 0.2857278 0.3080822
+Pct_Img    0.03217662 0.2906709 0.3102752
+Pct_brevet 0.02498028 0.2057623 0.2216921
+NivVieMed  0.07114942 0.5226310 0.5619360
 
 Simulated z-values:
                Direct   Indirect       Total
-Pct0_14    -2.8149071 -3.0430060 -3.14784365
-Pct_65     -0.6052243  0.1358010  0.05406614
-Pct_Img     1.9831879  3.3734555  3.35811660
-Pct_brevet -0.7750762 -2.2655063 -2.18193338
-NivVieMed  -2.3215332 -0.2174147 -0.49211821
+Pct0_14    -2.8189369 -2.9997133 -3.10185940
+Pct_65     -0.6033823  0.1005424  0.02430786
+Pct_Img     2.0799818  3.3066944  3.31346655
+Pct_brevet -0.6901594 -2.2534394 -2.16928412
+NivVieMed  -2.1242309 -0.2049905 -0.45961137
 
 Simulated p-values:
            Direct    Indirect   Total     
-Pct0_14    0.0048791 0.00234228 0.00164480
-Pct_65     0.5450300 0.89197861 0.95688247
-Pct_Img    0.0473464 0.00074231 0.00078476
-Pct_brevet 0.4382946 0.02348163 0.02911445
-NivVieMed  0.0202581 0.82788516 0.62263578</code></pre>
+Pct0_14    0.0048183 0.00270234 0.00192309
+Pct_65     0.5462544 0.91991374 0.98060704
+Pct_Img    0.0375272 0.00094404 0.00092147
+Pct_brevet 0.4900939 0.02423146 0.03006112
+NivVieMed  0.0336508 0.83757957 0.64579519</code></pre>
 </div>
 </div>
 <p><strong>Dépendance spatiale du modèle SDM?</strong></p>
@@ -1134,7 +1154,7 @@ data:  resid(Modele.DurbinSpatial)
 weights: W.Rook  
 number of simulations + 1: 1000 
 
-statistic = -0.0046127, observed rank = 464, p-value = 0.536
+statistic = -0.0046127, observed rank = 474, p-value = 0.526
 alternative hypothesis: greater</code></pre>
 </div>
 </div>
@@ -1184,18 +1204,18 @@ Residuals:
 
 Type: error 
 Coefficients: (asymptotic standard errors) 
-                 Estimate Std. Error z value  Pr(&gt;|z|)
-(Intercept)    37.0610133  6.5010177  5.7008 1.192e-08
-Pct0_14        -0.0819977  0.0416988 -1.9664   0.04925
-Pct_65         -0.0263294  0.0347137 -0.7585   0.44817
-Pct_Img         0.0046560  0.0310281  0.1501   0.88072
-Pct_brevet      0.0097849  0.0238839  0.4097   0.68203
-NivVieMed      -0.1678555  0.0680048 -2.4683   0.01358
-lag.Pct0_14    -0.1767469  0.1023451 -1.7270   0.08417
-lag.Pct_65      0.0105325  0.0891835  0.1181   0.90599
-lag.Pct_Img     0.0927851  0.0797036  1.1641   0.24437
-lag.Pct_brevet -0.0380482  0.0566883 -0.6712   0.50210
-lag.NivVieMed  -0.1025307  0.1724055 -0.5947   0.55204
+                Estimate Std. Error z value  Pr(&gt;|z|)
+(Intercept)    37.061010   6.501018  5.7008 1.192e-08
+Pct0_14        -0.081998   0.041699 -1.9664   0.04925
+Pct_65         -0.026329   0.034714 -0.7585   0.44817
+Pct_Img         0.004656   0.031028  0.1501   0.88072
+Pct_brevet      0.009785   0.023884  0.4097   0.68203
+NivVieMed      -0.167855   0.068005 -2.4683   0.01358
+lag.Pct0_14    -0.176747   0.102345 -1.7270   0.08417
+lag.Pct_65      0.010533   0.089183  0.1181   0.90599
+lag.Pct_Img     0.092785   0.079704  1.1641   0.24437
+lag.Pct_brevet -0.038048   0.056688 -0.6712   0.50211
+lag.NivVieMed  -0.102531   0.172405 -0.5947   0.55204
 
 Lambda: 0.8976, LR test value: 464.09, p-value: &lt; 2.22e-16
 Asymptotic standard error: 0.018242
@@ -1207,7 +1227,7 @@ ML residual variance (sigma squared): 10.046, (sigma: 3.1696)
 Nagelkerke pseudo-R-squared: 0.78871 
 Number of observations: 506 
 Number of parameters estimated: 13 
-AIC: NA (not available for weighted model), (AIC for lm: 3222.6)</code></pre>
+AIC: 2760.5, (AIC for lm: 3222.6)</code></pre>
 </div>
 </div>
 <p><strong>Effets directs, indirects et totaux</strong></p>
@@ -1217,45 +1237,45 @@ AIC: NA (not available for weighted model), (AIC for lm: 3222.6)</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>Impact measures (SDEM, glht):
                  Direct    Indirect       Total
-Pct0_14    -0.081997661 -0.17674688 -0.25874455
-Pct_65     -0.026329377  0.01053246 -0.01579692
-Pct_Img     0.004656049  0.09278514  0.09744119
-Pct_brevet  0.009784949 -0.03804816 -0.02826321
-NivVieMed  -0.167855503 -0.10253070 -0.27038620</code></pre>
+Pct0_14    -0.081997642 -0.17674683 -0.25874447
+Pct_65     -0.026329370  0.01053248 -0.01579689
+Pct_Img     0.004656039  0.09278511  0.09744115
+Pct_brevet  0.009784961 -0.03804813 -0.02826317
+NivVieMed  -0.167855498 -0.10253070 -0.27038620</code></pre>
 </div>
 <div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (coefficients, valeurs de z et de p)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">Modele.DurbinErreur</span>, listw <span class="op">=</span> <span class="va">W.Rook</span>, R <span class="op">=</span> <span class="fl">999</span><span class="op">)</span>, zstats <span class="op">=</span> <span class="cn">TRUE</span>, short <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Impact measures (SDEM, glht, n):
                  Direct    Indirect       Total
-Pct0_14    -0.081997661 -0.17674688 -0.25874455
-Pct_65     -0.026329377  0.01053246 -0.01579692
-Pct_Img     0.004656049  0.09278514  0.09744119
-Pct_brevet  0.009784949 -0.03804816 -0.02826321
-NivVieMed  -0.167855503 -0.10253070 -0.27038620
+Pct0_14    -0.081997642 -0.17674683 -0.25874447
+Pct_65     -0.026329370  0.01053248 -0.01579689
+Pct_Img     0.004656039  0.09278511  0.09744115
+Pct_brevet  0.009784961 -0.03804813 -0.02826317
+NivVieMed  -0.167855498 -0.10253070 -0.27038620
 ========================================================
 Standard errors:
                Direct   Indirect      Total
-Pct0_14    0.04169878 0.10234506 0.13146452
+Pct0_14    0.04169878 0.10234506 0.13146453
 Pct_65     0.03471367 0.08918350 0.11192948
 Pct_Img    0.03102807 0.07970364 0.09949722
 Pct_brevet 0.02388387 0.05668833 0.07344175
-NivVieMed  0.06800483 0.17240548 0.21172909
+NivVieMed  0.06800483 0.17240549 0.21172909
 ========================================================
 Z-values:
                Direct   Indirect      Total
-Pct0_14    -1.9664284 -1.7269703 -1.9681701
-Pct_65     -0.7584729  0.1180987 -0.1411328
-Pct_Img     0.1500592  1.1641268  0.9793358
-Pct_brevet  0.4096885 -0.6711815 -0.3848384
-NivVieMed  -2.4682881 -0.5947067 -1.2770386
+Pct0_14    -1.9664279 -1.7269698 -1.9681695
+Pct_65     -0.7584727  0.1180989 -0.1411325
+Pct_Img     0.1500589  1.1641264  0.9793354
+Pct_brevet  0.4096890 -0.6711810 -0.3848379
+NivVieMed  -2.4682880 -0.5947067 -1.2770385
 
 p-values:
            Direct   Indirect Total   
-Pct0_14    0.049249 0.084173 0.049048
+Pct0_14    0.049249 0.084173 0.049049
 Pct_65     0.448168 0.905989 0.887765
 Pct_Img    0.880718 0.244373 0.327414
-Pct_brevet 0.682034 0.502105 0.700357
+Pct_brevet 0.682034 0.502105 0.700358
 NivVieMed  0.013576 0.552040 0.201589</code></pre>
 </div>
 </div>
@@ -1271,7 +1291,7 @@ data:  resid(Modele.DurbinErreur)
 weights: W.Rook  
 number of simulations + 1: 1000 
 
-statistic = -0.010362, observed rank = 379, p-value = 0.621
+statistic = -0.010362, observed rank = 403, p-value = 0.597
 alternative hypothesis: greater</code></pre>
 </div>
 </div>
@@ -1288,21 +1308,22 @@ alternative hypothesis: greater</code></pre>
 </ol>
 <p>Dans les résultats ci-dessous, nous ne retenons pas le modèle SEM car la valeur de 0,740 pour le <code>RLMerr</code> n’est pas significative (<em>p</em>&nbsp;=&nbsp;0,3898). Par contre, les valeurs de <code>LMlag</code> et de <code>RLMlag</code> (555 et 123) sont significatives, ce qui justifie la sélection du modèle SAR.</p>
 <div class="cell">
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.LMtests.html">lm.LMtests</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">Modele.MCO</span>,</span>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">Modele.MCO</span>,</span>
 <span>                   listw <span class="op">=</span> <span class="va">W.Rook</span>,</span>
 <span>                   test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"LMlag"</span>,<span class="st">"LMerr"</span>,<span class="st">"RLMlag"</span>,<span class="st">"RLMerr"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>    Lagrange multiplier diagnostics for spatial dependence
+<pre><code>    Rao's score (a.k.a Lagrange multiplier) diagnostics for spatial
+    dependence
 data:  
 model: lm(formula = NO2 ~ Pct0_14 + Pct_65 + Pct_Img + Pct_brevet +
 NivVieMed, data = LyonIris)
-weights: W.Rook
+test weights: listw
  
-       statistic parameter p.value    
-LMlag  554.65778         1  &lt;2e-16 ***
-LMerr  432.83282         1  &lt;2e-16 ***
-RLMlag 122.56452         1  &lt;2e-16 ***
-RLMerr   0.73955         1  0.3898    
+         statistic parameter p.value    
+RSerr    432.83282         1  &lt;2e-16 ***
+RSlag    554.65778         1  &lt;2e-16 ***
+adjRSerr   0.73955         1  0.3898    
+adjRSlag 122.56452         1  &lt;2e-16 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
@@ -1385,10 +1406,10 @@ Modele.SEM              2  8 2755.5 -1369.7    2  4.9728  0.4192</code></pre>
 <pre><code>    Modele      AIC      BIC dl       MoranI MoranIp
 1      MCO 3366.626 3396.212  7  0.587312061   0.001
 2      SLX 3222.594 3273.313 12  0.604660275   0.001
-3      SAR 2748.314 2782.126  8 -0.014281059   0.657
-4      SEM 2755.474 2789.286  8 -0.011826630   0.638
-5 Durbin S 2732.212 2787.157 13 -0.004612686   0.519
-6 Durbin E 2760.501 2815.446 13 -0.010361614   0.617</code></pre>
+3      SAR 2748.314 2782.126  8 -0.014281059   0.654
+4      SEM 2755.474 2789.286  8 -0.011826605   0.619
+5 Durbin S 2732.212 2787.157 13 -0.004612686   0.544
+6 Durbin E 2760.501 2815.446 13 -0.010361653   0.619</code></pre>
 </div>
 </div>
 <p>Quelques lignes de code suffisent pour créer deux graphiques permettant de comparer visuellement les résultats des différents modèles (<a href="#fig-GraphComparaison">figure&nbsp;<span>7.5</span></a>). Les résultats démontrent que&nbsp;:</p>
@@ -1597,28 +1618,28 @@ Modele.GAM2 42.67520 2868.355</code></pre>
 </ol>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/raster">raster</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/terra/">terra</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/">terra</a></span><span class="op">)</span></span>
 <span><span class="co">## Étape 1 : création d'une grid pour la prédiction de 100 mètres de résolution spatiale</span></span>
 <span><span class="va">Xcoords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">$</span><span class="va">X</span><span class="op">-</span><span class="fl">100</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">$</span><span class="va">X</span><span class="op">+</span><span class="fl">100</span><span class="op">)</span>, by<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span>
 <span><span class="va">Ycoords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">$</span><span class="va">Y</span><span class="op">-</span><span class="fl">100</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">$</span><span class="va">Y</span><span class="op">+</span><span class="fl">100</span><span class="op">)</span>, by<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span>
 <span><span class="va">PredDF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html">expand.grid</a></span><span class="op">(</span><span class="va">Xcoords</span>,<span class="va">Ycoords</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">PredDF</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"X"</span>,<span class="st">"Y"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">PredDF</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"X"</span>,<span class="st">"Y"</span><span class="op">)</span></span>
 <span><span class="co">## Étape 2 : fixation de tous les autres paramètres à leur moyenne</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">Var</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"VegHautPrt"</span>,<span class="st">"Pct0_14"</span>,<span class="st">"Pct_65"</span>,<span class="st">"Pct_Img"</span>,<span class="st">"Pct_brevet"</span>, <span class="st">"NivVieMed"</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="va">PredDF</span><span class="op">[[</span><span class="va">Var</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/summarize-generics.html">mean</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">[[</span><span class="va">Var</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">PredDF</span><span class="op">[[</span><span class="va">Var</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/summarize-generics.html">mean</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">[[</span><span class="va">Var</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="co">## Étape 3 : calcul de la prédiction</span></span>
 <span><span class="va">PredDF</span><span class="op">$</span><span class="va">PM25</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">Modele.GAM2</span>,newdata<span class="op">=</span><span class="va">PredDF</span><span class="op">)</span></span>
 <span><span class="co">## Étape 4 : centrage de la prédiction (sans la constante)</span></span>
-<span><span class="va">PredDF</span><span class="op">$</span><span class="va">CenterPredPM25</span> <span class="op">&lt;-</span> <span class="va">PredDF</span><span class="op">$</span><span class="va">PM25</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/summarize-generics.html">mean</a></span><span class="op">(</span><span class="va">PredDF</span><span class="op">$</span><span class="va">PM25</span><span class="op">)</span></span>
+<span><span class="va">PredDF</span><span class="op">$</span><span class="va">CenterPredPM25</span> <span class="op">&lt;-</span> <span class="va">PredDF</span><span class="op">$</span><span class="va">PM25</span> <span class="op">-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/summarize-generics.html">mean</a></span><span class="op">(</span><span class="va">PredDF</span><span class="op">$</span><span class="va">PM25</span><span class="op">)</span></span>
 <span><span class="co">### Étape 5 : construction du raster</span></span>
 <span><span class="va">rasterGAM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/rasterFromXYZ.html">rasterFromXYZ</a></span><span class="op">(</span><span class="va">PredDF</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">"Y"</span>, <span class="st">"CenterPredPM25"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/crs.html">crs</a></span><span class="op">(</span><span class="va">rasterGAM</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/crs.html">crs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/methods/as.html">as</a></span><span class="op">(</span><span class="va">LyonIris</span>, <span class="st">"Spatial"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">rasterGAM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span><span class="va">rasterGAM</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/crs.html">crs</a></span><span class="op">(</span><span class="va">rasterGAM</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/crs.html">crs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/methods/as.html">as</a></span><span class="op">(</span><span class="va">LyonIris</span>, <span class="st">"Spatial"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">rasterGAM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span><span class="va">rasterGAM</span><span class="op">)</span></span>
 <span><span class="co">### Étape 6 : découpage et cartographie du raster</span></span>
-<span><span class="va">LyonIris.SpatVector</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/vect.html">vect</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span></span>
-<span><span class="va">rasterGAM</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/mask.html">mask</a></span><span class="op">(</span><span class="va">rasterGAM</span>, <span class="va">LyonIris.SpatVector</span><span class="op">)</span></span>
-<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">rasterGAM</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="va">LyonIris.SpatVector</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html">vect</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span></span>
+<span><span class="va">rasterGAM</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/mask.html">mask</a></span><span class="op">(</span><span class="va">rasterGAM</span>, <span class="va">LyonIris.SpatVector</span><span class="op">)</span></span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">rasterGAM</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-EffetLocalisation2" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="07-RegressionSpatiales_files/figure-html/fig-EffetLocalisation2-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
@@ -1646,7 +1667,7 @@ alternative hypothesis: greater</code></pre>
 </div>
 </section></section></section><section id="sec-073" class="level2" data-number="7.3"><h2 data-number="7.3" class="anchored" data-anchor-id="sec-073">
 <span class="header-section-number">7.3</span> Régression géographiquement pondérée</h2>
-<p>La régression géographiquement pondérée (<em>geographically weighted regression</em> - GWR, en anglais) a été proposée par Fotheringham <em>et al.</em> <span class="citation" data-cites="fotheringham2003geographically">(<a href="references.html#ref-fotheringham2003geographically" role="doc-biblioref">2003</a>)</span> pour modéliser une variable continue. Depuis, plusieurs extensions ont été proposées, notamment des GWR mixtes, des GWR logistique et Poisson. Dans le cadre de cette section, nous abordons uniquement sa forme classique, soit avec une variable dépendante continue.</p>
+<p>La régression géographiquement pondérée (<em>geographically weighted regression</em> - GWR, en anglais) a été proposée par Fotheringham <em>et al.</em> <span class="citation" data-cites="fotheringham2003geographically">(<a href="references.html#ref-fotheringham2003geographically" role="doc-biblioref">2003</a>)</span> pour modéliser une variable continue. Depuis, plusieurs extensions ont été proposées, notamment des GWR mixtes, des GWR logistiques ou Poisson. Dans le cadre de cette section, nous abordons uniquement sa forme classique (variable dépendante continue).</p>
 <section id="sec-0731" class="level3" data-number="7.3.1"><h3 data-number="7.3.1" class="anchored" data-anchor-id="sec-0731">
 <span class="header-section-number">7.3.1</span> Principe de base</h3>
 <p><strong>Pourquoi recourir à la GWR?</strong></p>
@@ -1750,13 +1771,13 @@ w_{ij} = [1-(d_{ij}/b)^2]^2 \text{ si } d_{ij}&lt; b \text{, sinon } w_{ij}=0
 <span><span class="co">## Affichage des résultats d'optimisation </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Sélection de la taille de la zone optimale (bandwidth)"</span>,</span>
 <span>    <span class="st">"\n avec le nombre de plus proches voisins :"</span>,</span>
-<span>    <span class="st">"\n  CV ="</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">bwaCV.voisins</span>,<span class="fl">4</span><span class="op">)</span>, <span class="st">"nombre de voisins ="</span>, </span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">bwaCV.voisins</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    <span class="st">"\n  AIC ="</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">bwaAIC.voisins</span>,<span class="fl">4</span><span class="op">)</span>, <span class="st">"nombre de voisins ="</span>, </span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">bwaAIC.voisins</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="st">"\n  CV ="</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html">round</a></span><span class="op">(</span><span class="va">bwaCV.voisins</span>,<span class="fl">4</span><span class="op">)</span>, <span class="st">"nombre de voisins ="</span>, </span>
+<span>    <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html">round</a></span><span class="op">(</span><span class="va">bwaCV.voisins</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="st">"\n  AIC ="</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html">round</a></span><span class="op">(</span><span class="va">bwaAIC.voisins</span>,<span class="fl">4</span><span class="op">)</span>, <span class="st">"nombre de voisins ="</span>, </span>
+<span>    <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html">round</a></span><span class="op">(</span><span class="va">bwaAIC.voisins</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    <span class="st">"\nSélection de la taille de la zone optimale (bandwidth) avec la distance :"</span>,</span>
-<span>    <span class="st">"\n  CV ="</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">bwnaCV.dist</span>, <span class="fl">0</span><span class="op">)</span>,  <span class="st">"mètres"</span>,</span>
-<span>    <span class="st">"\n  AIC ="</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">bwnaAIC.dist</span>, <span class="fl">0</span><span class="op">)</span>, <span class="st">"mètres"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>    <span class="st">"\n  CV ="</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html">round</a></span><span class="op">(</span><span class="va">bwnaCV.dist</span>, <span class="fl">0</span><span class="op">)</span>,  <span class="st">"mètres"</span>,</span>
+<span>    <span class="st">"\n  AIC ="</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html">round</a></span><span class="op">(</span><span class="va">bwnaAIC.dist</span>, <span class="fl">0</span><span class="op">)</span>, <span class="st">"mètres"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Sélection de la taille de la zone optimale (bandwidth) 
  avec le nombre de plus proches voisins : 
@@ -1886,7 +1907,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <div class="sourceCode" id="cb84"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Récupération du R carré local</span></span>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">GWR.R2</span> <span class="op">&lt;-</span> <span class="va">Modele.GWR</span><span class="op">$</span><span class="va">SDF</span><span class="op">$</span><span class="va">localR2</span></span>
 <span><span class="co">## Récupération des coefficients de régression et calcul des valeurs de t locales</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">Modele.GWR</span><span class="op">$</span><span class="va">SDF</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">Modele.GWR</span><span class="op">$</span><span class="va">SDF</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "sum.w"              "(Intercept)"        "Pct0_14"           
  [4] "Pct_65"             "Pct_Img"            "Pct_brevet"        
@@ -1911,7 +1932,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p><strong>Cartographie des R<sup>2</sup> locaux</strong></p>
 <p>Le code ci-dessous permet ensuite de cartographier les R<sup>2</sup> locaux de la GWR (<a href="#fig-GWRR2">figure&nbsp;<span>7.9</span></a>).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb87"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap">tmap</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb87"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap">tmap</a></span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.R2"</span>, </span>
@@ -2051,24 +2072,6 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <figure class="figure"><p><img src="07-RegressionSpatiales_files/figure-html/fig-GWRPlussign-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
 <figcaption class="figure-caption">Figure&nbsp;7.13: Variable indépendante la plus significative au seuil de 5&nbsp;%</figcaption></figure>
 </div>
-</div>
-</div>
-<div class="bloc_aller_loin">
-<div class="bloc_aller_loin-header">
-<div class="bloc_aller_loin-icon">
-
-</div>
-<p><strong>Extensions de la GWR classique</strong></p>
-</div>
-<div class="bloc_aller_loin-body">
-<p>À titre de rappel, la GWR classique permet de modéliser une variable dépendante continue. Plusieurs extensions ont été proposées, notamment&nbsp;:</p>
-<ul>
-<li><p>La GWR mixte qui permet de spécifier des variables indépendantes variant spatialement et d’autres étant fixes <span class="citation" data-cites="fotheringham2003geographically">(<a href="references.html#ref-fotheringham2003geographically" role="doc-biblioref">Fotheringham, Brunsdon et Charlton 2003</a>)</span>.</p></li>
-<li><p>Les GWR logistique (pour une variable dépendante binaire) et Poisson (pour une variable dépendante de comptage) <span class="citation" data-cites="fotheringham2003geographically">(<a href="references.html#ref-fotheringham2003geographically" role="doc-biblioref">Fotheringham, Brunsdon et Charlton 2003</a>)</span>.</p></li>
-<li><p>La régression géographiquement et temporellement pondérée (<em>Geographical and temporal weighted regression</em>&nbsp;–&nbsp;GTWR) <span class="citation" data-cites="fotheringham2015geographical">(<a href="references.html#ref-fotheringham2015geographical" role="doc-biblioref">Fotheringham, Crespo et Yao 2015</a>)</span>.</p></li>
-<li><p>La régression géographiquement pondérée multiéchelle (<em>Multiscale geographically weighted regression</em>&nbsp;–&nbsp;MGWR) <span class="citation" data-cites="fotheringham2017multiscale">(<a href="references.html#ref-fotheringham2017multiscale" role="doc-biblioref">Fotheringham, Yang et Kang 2017</a>)</span>.</p></li>
-<li><p>L’analyse en composantes principales géographiquement pondérée (<em>Geographically weighted principal components analysis</em>&nbsp;–&nbsp;GWR&nbsp;PCA) <span class="citation" data-cites="harris2011geographically">(<a href="references.html#ref-harris2011geographically" role="doc-biblioref">Harris, Brunsdon et Charlton 2011</a>)</span>.</p></li>
-</ul>
 </div>
 </div>
 </section></section></section><section id="sec-074" class="level2" data-number="7.4"><h2 data-number="7.4" class="anchored" data-anchor-id="sec-074">
@@ -2562,15 +2565,6 @@ Dubé, Jean et Diègo Legros. 2014. <em>Econom<span>é</span>trie spatiale appli
 </div>
 <div id="ref-fotheringham2003geographically" class="csl-entry" role="listitem">
 Fotheringham, A Stewart, Chris Brunsdon et Martin Charlton. 2003. <em>Geographically weighted regression: the analysis of spatially varying relationships</em>. John Wiley &amp; Sons.
-</div>
-<div id="ref-fotheringham2015geographical" class="csl-entry" role="listitem">
-Fotheringham, A Stewart, Ricardo Crespo et Jing Yao. 2015. <span>«&nbsp;Geographical and temporal weighted regression (GTWR).&nbsp;»</span> <em>Geographical Analysis</em> 47 (4). Wiley Online Library: 431‑452. <a href="https://doi.org/10.1111/gean.12071">https://doi.org/10.1111/gean.12071</a>.
-</div>
-<div id="ref-fotheringham2017multiscale" class="csl-entry" role="listitem">
-Fotheringham, A Stewart, Wenbai Yang et Wei Kang. 2017. <span>«&nbsp;Multiscale geographically weighted regression (MGWR).&nbsp;»</span> <em>Annals of the American Association of Geographers</em> 107 (6). Taylor &amp; Francis: 1247‑1265. <a href="https://doi.org/10.1080/24694452.2017.1352480">https://doi.org/10.1080/24694452.2017.1352480</a>.
-</div>
-<div id="ref-harris2011geographically" class="csl-entry" role="listitem">
-Harris, Paul, Chris Brunsdon et Martin Charlton. 2011. <span>«&nbsp;Geographically weighted principal components analysis.&nbsp;»</span> <em>International Journal of Geographical Information Science</em> 25 (10). Taylor &amp; Francis: 1717‑1736. <a href="https://doi.org/10.1080/13658816.2011.554838">https://doi.org/10.1080/13658816.2011.554838</a>.
 </div>
 <div id="ref-lesage2008introduction" class="csl-entry" role="listitem">
 LeSage, James P et R. Kelly Pace. 2008. <em>An introduction to spatial econometrics</em>. 123. CRC Press.
