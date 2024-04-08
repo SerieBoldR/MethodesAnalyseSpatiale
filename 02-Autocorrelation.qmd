@@ -680,10 +680,10 @@ InvDistances.5000m  <- ifelse(distances<=5000 & distances!=0, 1/distances, 0)
 InvDistances2.2500m <- ifelse(distances<=2500 & distances!=0, 1/distances^2, 0)
 InvDistances2.5000m <- ifelse(distances<=5000 & distances!=0, 1/distances^2, 0)
 ## Matrices de pondération spatiale standardisées en ligne
-W_InvDistances.2500 <- mat2listw(InvDistances.2500m, style="W", zero.policy = TRUE)
-W_InvDistances.5000 <- mat2listw(InvDistances.5000m, style="W", zero.policy = TRUE)
-W_InvDistances2.2500 <- mat2listw(InvDistances2.2500m, style="W", zero.policy = TRUE)
-W_InvDistances2.5000 <- mat2listw(InvDistances2.5000m, style="W", zero.policy = TRUE)
+W_InvDistances.2500 <- mat2listw(InvDistances.2500m, style="W")
+W_InvDistances.5000 <- mat2listw(InvDistances.5000m, style="W")
+W_InvDistances2.2500 <- mat2listw(InvDistances2.2500m, style="W")
+W_InvDistances2.5000 <- mat2listw(InvDistances2.5000m, style="W")
 ```
 
 Spécifier un seuil de distance peut toutefois être problématique. Par exemple, sur les 50 secteurs de recensement de la ville de Sherbrooke, 19 n'ont pas de voisins à 2500 mètres, indiqués par le résultat suivant :
@@ -974,10 +974,10 @@ InvDistances.2500m  <- ifelse(distances<=2500 & distances!=0, 1/distances, 0)
 InvDistances.5000m  <- ifelse(distances<=5000 & distances!=0, 1/distances, 0)
 InvDistances2.2500m <- ifelse(distances<=2500 & distances!=0, 1/distances^2, 0)
 InvDistances2.5000m <- ifelse(distances<=5000 & distances!=0, 1/distances^2, 0)
-W.InvDistances_2500 <- mat2listw(InvDistances.2500m, style="W", zero.policy = TRUE)
-W.InvDistances_5000 <- mat2listw(InvDistances.5000m, style="W", zero.policy = TRUE)
-W.InvDistances2_2500 <- mat2listw(InvDistances2.2500m, style="W", zero.policy = TRUE)
-W.InvDistances2_5000 <- mat2listw(InvDistances2.5000m, style="W", zero.policy = TRUE)
+W.InvDistances_2500 <- mat2listw(InvDistances.2500m, style="W")
+W.InvDistances_5000 <- mat2listw(InvDistances.5000m, style="W")
+W.InvDistances2_2500 <- mat2listw(InvDistances2.2500m, style="W")
+W.InvDistances2_5000 <- mat2listw(InvDistances2.5000m, style="W")
 ## Matrice de distance réduite standardisée
 k1 <- knn2nb(knearneigh(coords))
 plusprochevoisin.max <- max(unlist(nbdists(k1,coords)))
@@ -1259,11 +1259,10 @@ MoranData2 <- t(sapply(listeVars, function(e){
                    listw=W.Rook,
                    zero.policy=TRUE,
                    nsim=999)
-   result <- c(
-     round(Test$statistic,4),
-     Test$p.value
-   )
+   result <- c(round(Test$statistic,4),
+               Test$p.value)
 }))
+
 MoranData2 <- data.frame(MoranData2)
 names(MoranData2) <- c('MoranIs', 'Pvalues')
 MoranData2$Variable <- listeVars

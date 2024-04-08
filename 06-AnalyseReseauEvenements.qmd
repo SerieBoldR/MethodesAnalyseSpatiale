@@ -207,7 +207,7 @@ De nombreuses méthodes d'analyse de répartition ponctuelle ont été adaptées
 
 À la [section @sec-0342], nous avons décrit les méthodes d'analyse de densité dans une maille régulière : carte de chaleur ou estimation de la densité par noyau (*kernel density estimation* -- KDE). Pour un rappel, une KDE peut être utilisée pour tenter de reconstruire un processus spatial produisant des évènements. Le processus spatial en lui-même est impossible à mesurer, mais nous tentons de le reconstruire et de l'approximer en nous basant sur les évènements observés qui sont des réalisations du processus sous-jacent. Sur un réseau, la logique est exactement la même : un processus spatial qui est invisible conduit à la réalisation d'évènements le long des lignes d'un réseau géographique.
 
-### Estimation de la densité des points sur un réseau {#sec-0611}
+### Estimation de la densité des points sur un réseau {#sec-0621}
 
 L'estimation de la densité sur un réseau (*Network Kernel Density Estimation* -- NKDE) utilise une approche similaire à la KDE ([section @sec-0342]). L'idée générale est de répartir la masse des évènements le long des lignes du réseau autour de chaque évènement et d'additionner ensuite ces densités pour obtenir une estimation locale de l'intensité du processus spatial générant ces évènements. Comparativement à la KDE, les spécificités de la NKDE sont les suivantes :
 
@@ -217,7 +217,7 @@ L'estimation de la densité sur un réseau (*Network Kernel Density Estimation*�
 
 Comme pour la KDE, il faut déterminer la valeur du rayon d'influence (*bandwidth*) et choisir une fonction *kernel*.
 
-#### Trois formes de NKDE {#sec-06111}
+#### Trois formes de NKDE {#sec-06211}
 
 La NKDE peut prendre trois formes différentes traitant différemment la répartition de la masse aux intersections dans un réseau.
 
@@ -373,7 +373,7 @@ df1 <- data.frame(
   Av = c("Intuitive et facile à calculer", 
           "Respect de la masse totale et facile à calculer", 
           "Respect de la masse totale et intuitive"),
-  Des = c("La somme de la masse totale est inexact.", 
+  Des = c("La somme de la masse totale est inexacte.", 
           "L’espace discontinu est contre-intuitif", 
           "Couteux en termes de temps de calcul")
 )
@@ -398,7 +398,7 @@ Pour une lecture plus détaillée sur les trois NKDE, nous vous recommandons de 
 :::
 :::
 
-#### Correction de Diggle {#sec-06112}
+#### Correction de Diggle {#sec-06212}
 
 Très souvent, les données collectées pour un phénomène analysé sont limitées à une zone géographique (territoire d'étude) et les évènements se produisant en dehors de cette zone ne sont pas enregistrés. Ce biais de collecte entraîne une sous-estimation systématique de l'intensité estimée par les méthodes KDE et NKDE aux frontières de la zone d'étude. Pour limiter cette sous-estimation, il est préférable de collecter directement les données dans un périmètre plus large que la zone étudiée. Cependant, lorsque les données ont déjà été collectées, il est possible d'appliquer la correction de Diggle [-@diggle1985kernel] (@eq-DigglesCor).
 
@@ -413,7 +413,7 @@ $$ {#eq-DigglesCor}
 
 Concrètement, cette correction propose d'augmenter la masse des évènements localisés à proximité de la frontière de la zone d'étude. Ces évènements voient leur pondération multipliée par l'inverse de la proportion de leur masse comprise à l'intérieur de la zone d'étude. Ainsi, un point dont 100 % de la masse se trouve dans la zone d'étude garde le même poids (1/1 = 1); un point avec 75 % de sa masse dans la zone d'étude a son poids multiplié par 4/3 (1/0,75 = 4/3) et un point avec 50 % de sa masse dans la zone d'étude a son poids multiplié par deux (1/0,5 = 2).
 
-#### *Bandwidths* adaptatives {#sec-06113}
+#### *Bandwidths* adaptatives {#sec-06213}
 
 Jusqu'ici, nous avons présenté les méthodes d'estimation de la densité par *kernel* avec des *bandwidths* globales. Il existe une catégorie de *kernels* appelés adaptatifs qui utilisent, comme leur nom l'indique, des *bandwidths* s'adaptant localement.
 
@@ -421,7 +421,7 @@ L'idée générale est que chaque évènement peut avoir sa propre *bandwidth* l
 
 Deux approches sont le plus souvent utilisées pour créer des *bandwidths* locales : la méthode d'Abramson [-@abramson1982bandwidth] et la méthode des *k* plus proches voisins [@orava2011k].
 
-##### *Bandwidths* adaptatives par la méthode d'Abramson {#sec-061131}
+##### *Bandwidths* adaptatives par la méthode d'Abramson {#sec-062131}
 
 La méthode d'Abramson [-@abramson1982bandwidth] propose d'utiliser des *bandwidths* locales qui sont inversement proportionnelles à la racine carrée de l'intensité locale du processus spatial étudié. Cependant, puisque nous ne disposons pas d'une mesure de ce processus, nous devons en fournir une approximation à priori. Cette approximation est obtenue en sélectionnant une première *bandwidth* globale (appelée pilote) et l'estimation de la densité est effectuée. Une fois que la densité à priori est calculée à la localisation exacte de chaque évènement, il est ensuite possible de calculer une *bandwidth* locale pour chaque évènement avec l'@eq-AbramsonBW :
 
@@ -436,7 +436,7 @@ $$ {#eq-AbramsonBW}
 
 L'objectif est bien évidemment de sélectionner la *bandwidth* pilote $h_0$.
 
-##### *Bandwidths* adaptatives par la méthode des *k* plus proches voisins {#sec-061132}
+##### *Bandwidths* adaptatives par la méthode des *k* plus proches voisins {#sec-062132}
 
 Cette méthode est certainement plus facile à expliquer. Elle consiste à calculer, pour chaque évènement, la distance qui le sépare de son plus proche voisin de rang *k* (*k* étant un entier plus grand que 0). Dans des secteurs avec peu d'évènements, la distance au plus proche voisin de rang *k* sera plus grande. L'enjeu pour cette méthode est donc de déterminer *k*. La @fig-ESCNKDE2 illustre l'impact de ces méthodes sur les *bandwidths* locales en prenant le jeu de données fourni dans le *package* `spNetwork`, portant sur les accidents à vélo dans les quartiers centraux de Montréal.
 
@@ -506,7 +506,7 @@ map2 <- tm_shape(mtl_network) +
 tmap_arrange(map1, map2, nrow = 1)
 ```
 
-#### Sélection d'une *bandwidth* {#sec-06114}
+#### Sélection d'une *bandwidth* {#sec-06214}
 
 Comme signalé dans la [section @sec-03421], le choix de la *bandwidth* est crucial dans l'application d'une estimation de densité par *kernel*. Dans le cas de la NKDE, le nombre de méthodes est plus limité que pour la KDE, mais il est toujours possible d'utiliser l'approche par validation croisée des probabilités (*likelihood cross validation*). Plus exactement, cette méthode choisit une *bandwidth* de façon à minimiser l'impact qu'aurait le fait de retirer un évènement du jeu de donnée (*leave one out cross validation*). En effet, puisque chaque point est une réalisation d'un processus spatial, le fait de retirer un point des données ne devrait affecter que marginalement l'estimation locale de l'intensité du processus spatial. Il est possible de minimiser ce score en sélectionnant la bonne *bandwidth*. Il est possible de calculer ce score pour une *bandwidth* donnée avec l'@eq-LOOLCV :
 
@@ -831,7 +831,7 @@ tm_shape(lixels) +
   tm_layout(frame=FALSE)
 ```
 
-### Estimation de la densité spatio-temporelle sur un réseau {#sec-0621}
+### Estimation de la densité spatio-temporelle sur un réseau {#sec-0623}
 
 Comme nous avons pu le voir dans la [section @sec-0343], il est courant d'analyser des données d'évènements disposant à la fois d'une localisation dans l'espace et dans le temps. Il est alors possible de calculer une densité spatio-temporelle, soit de lisser les évènements à la fois dans la dimension spatiale et dans la dimension temporelle. Plus exactement, la densité d'un évènement *i* en un point *p* et un instant *t* correspond au produit de la densité spatiale et de la densité temporelle de *i*.
 
@@ -857,7 +857,7 @@ Comme pour le NKDE, il est possible de :
 
 -   Appliquer des correctifs aux frontières spatio-temporelles de la zone d'étude.
 
-#### Application dans R {#sec-06211}
+#### Application dans R {#sec-06231}
 
 Nous reprenons simplement l'exemple de la section sur la NKDE et voir comment l'étendre au contexte spatio-temporel. Pour cela, nous utiliserons principalement le *package* `spNetwork`.
 

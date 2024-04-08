@@ -247,11 +247,17 @@ summary(Modele.SLX)
 :::
 
 ::: bloc_attention-body
-La formulation d'un modèle SLX, implique deux types d'effets de la part des variables $X$ : les effets directs et indirects. En effet, si pour une obseration $i$, la valeur d'une caractéristique $X$ augmente, alors la valeur $y_i$ va changer en fonction du coefficient $\beta$. Il s'agit de l'effet direct. De plus, les valeurs des moyennes spatiales ($WX$) de voisins $j$ de $i$ vont aussi être amenées à augmenter, impactant alors les valeurs $y_j$ des voisins selon les coefficients $\theta$.
+La formulation d'un modèle SLX implique deux types d'effets pour les variables indépendantes ($X$) : 
 
-Prenons un exemple concret et admettons que nous construisions un modèle ayant pour objectif de prédire le prix des maisons sur un territoire à partir d'un ensemble de caractérisiques des maisons. Admettons que la taille du jardin associé à la maison fasse partie des variable $X$ et que nous ayons aussi intégré une version spatialement décalée de cette variable dans notre modèle. Dans ce cas précis, pour une maison $i$, admettons qu'un jardin plus grand augmente le prix de la maison $i$. Cette augmentation de la taille du jardin va aussi avoir un impact sur le prix des maisons voisines car leur propre prix est dépendant de la taille des jardins des maisons voisines. Ainsi, chaque maison $j$, voisine de $i$ verra son prix augmenter à cause de l'augmentation de la taille du jardin de la maison $i$.
+-   les **effets directs**, soit ceux des caractéristiques des entités spatiales. Ils correspondent aux coefficients $\beta$ des variables indépendantes ($X$). Autrement dit, pour une observation $i$, à chaque augmentation d'une unité d'une caractéristique $X$, la valeur de $y_i$ va varier (augmenter ou diminuer) en fonction du coefficient $\beta$.
 
-Pour capturer l'impact total sur le prix des maisons de l'aumgentation de la taille du jardin dans $i$, on va donc combiner son effet direct (augmentation du prix de la maison $i$) et son effet indirect (augmentation du prix des maisons $j$) pour obtenir son effet total.
+-   les **effets indirects**, soit ceux des caractéristiques des entités spatiales voisines ou proches définies selon la matrice de pondération spatiale. Ils correspondent aux coefficients $\theta$ des variables indépendantes spatialement décalées ($WX$). Autrement dit, les valeurs de $WX$ des entités spatiales proches ou voisines $j$ de $i$ vont aussi être amenées à varier, impactant alors les valeurs $y_j$ selon les coefficients $\theta$.
+
+
+Prenons l'exemple d'un modèle visant à prédire le prix de vente des maisons dans une ville en fonction de leurs caractéristiques des maisons, dont la superficie du jardin. Il est probable que plus la superficie du jardin de la maison $i$ augmente, plus le prix de vente augmente également (**effet direct**, coefficient $\beta$). Cette augmentation de la taille du jardin aura aussi un impact sur le prix des maisons voisines puisque leur prix est dépendant de la taille des jardins des maisons voisines. Ainsi, chaque maison $j$, voisine de $i$ verra son prix augmenter à cause de l'augmentation de la taille du jardin de la maison $i$ (**effet indirect**).
+
+
+Pour capturer l'impact total sur le prix des maisons d'une augmentation de la superficie du jardin de la maison $i$, il suffit de sommer son effet direct (augmentation du prix de la maison $i$) et son effet indirect (augmentation du prix des maisons $j$) pour obtenir son effet total.
 
 Le code suivant permet de calculer ces effets directs et indirects.
 
@@ -264,7 +270,8 @@ impacts(Modele.SLX)
 ## Effets directs, indirects et totaux (coefficients, valeurs de z et de p)
 summary(impacts(Modele.SLX))
 ```
-En regardat les valeurs de *p*, nous pouvons constater que dans ce modèle, seule la variable `Pct0_14` a un impact direct et indirect significatif au seuil 0.01. L'augmentation de un point de pourcentage de la population des 14 ans et moins est donc associé localement à une réduction de 0.2 de la concentration de NO2 annuelle. Chez les entités voisines, cette réduction est de 0.78 et l'effet total est donc une réduction de 0.98.
+
+À la lecture des valeurs de *p*, nous constatons que seule la variable `Pct0_14` a un impact direct et indirect significatif au seuil 0,01. L'augmentation d'un point de pourcentage de la population de moins de 15 ans est associé localement à une réduction de 0,20 de la concentration annuelle du dioxyde d'azote. Chez les entités voisines, cette réduction est de 0,78 et l'effet total est donc une réduction de 0,98.
 
 :::
 :::
@@ -341,20 +348,16 @@ Dans les résultats ci-dessus, la valeur de *rho* est de 0,88 (LR = 620, *p* 
 :::
 
 ::: bloc_attention-body
-Tout comme le modèle SLX vu ci-dessus, la formulation du modèle SAR-LAG implique des effets particuliers. En effet, reprenons l'exemple d'un modèle prédisant le prix de vente des maisons et admettons que nous utilisons cette fois-ci un modèle de type SAR-LAG.
+Tout comme le modèle SLX vu précédemment, la formulation du modèle SAR-LAG implique des effets particuliers. Reprenons l'exemple d'un modèle prédisant le prix de vente des maisons avec cette fois-ci un modèle de type SAR-LAG :
 
-1. L'augmentation de la taille du jardin de la maison $i$ va augmenter le prix de la maison $i$ ($y_i$).
-2. Cette augmentation de prix de la maison $i$ va avoir un impact sur les voisins de $i$, soit les maisons $j$ car le prix de ces maisons dépend du prix de la maison $i$ au travers du terme $Wy\rho$ du modèle. Si $\rho$ vaut par exemple 0.8, alors 80% de l'augmentation du prix de $i$ va se répercuter sur le prix des maisons $j$.
-3. De même, les voisines des maisons $j$, les maisons $k$ vont aussi être impactées par le changement de prix des maisons $j$ et ainsi de suite de voisin en voisins.
-4. Au final, la maison $i$ verra son propre prix augmenter encore plus car le prix de ces voisines aura augmenté par effet de rétro actions.
+1. L'augmentation de la superficie du jardin de la maison $i$ va faire augmenter le prix de la maison $i$ ($y_i$).
+2. Cette augmentation de prix de la maison $i$ aura un impact sur les voisins de $i$, soit les maisons $j$, car leur prix dépend du prix de la maison $i$ au travers du terme $Wy\rho$ du modèle. Par exemple, si $\rho$ vaut 0,8, alors 80% de l'augmentation du prix de $i$ va se répercuter sur le prix des maisons $j$.
+3. De même, les voisines des maisons $j$, les maisons $k$ vont aussi être impactées par le changement de prix des maisons $j$ et ainsi de suite de voisins en voisins.
+4. Au final, la maison $i$ verra son prix augmenter encore plus, car le prix de ses voisines aura augmenté par effet de rétroaction.
 
-Ce processus de propagation est appelé l'effet de déversement (*spillover*) en économétrie. 
+Ce processus de propagation est appelé l'effet d'entraînement ou de débordement (*spillover*) en économétrie. 
 
-L'effet original de l'augmentation de la taille du jardin sur la maison $i$, combiné à l'augmentation par rétro-action est appelé l'effet direct.
-
-L'effet cumulé de l'augmentation de la taille du jardin sur toutes les autres maisons ($\neq i$) est appelé l'effet indirect.
-
-La somme des effets indirects et des directs est appelé l'effet total.
+L'effet original de l'augmentation de la taille du jardin sur la maison $i$, combiné à l'augmentation par rétroaction, est appelé l'effet direct. L'effet cumulé de l'augmentation de la taille du jardin sur toutes les autres maisons ($\neq i$) est appelé l'effet indirect. La somme des effets indirects et des directs est appelée effets totaux.
 
 À nouveau, il est possible d'utiliser la fonction `impacts` pour calculer ces effets directs et indirects.
 
@@ -367,14 +370,11 @@ impacts(Modele.SAR, listw = W.Rook, R = 999)
 ## Effets directs, indirects et totaux (coefficients, valeurs de z et de p)
 summary(impacts(Modele.SAR, listw = W.Rook, R = 999), zstats = TRUE, short = TRUE)
 ```
-L'interprétation des effets directs se rapproche de celle des coefficients classiques. Ainsi, selon ce modèle, l'augmentation du niveau de vie médian de 1000€ dans un IRIS serait associée avec une diminution moyenne de la concentration de NO2 de 0.14 dans cet IRIR. L'effet total est de -0.82, indiquant qu'en moyenne, l'augmentation de 1000€ du niveau de vie médian dans un IRIS serait associé avec une diminution moyenne de 0.82 de la concentration de NO2 dans l'ensmble des IRIS. Au final, l'effet indirect est simplement la différence entre l'effet total et l'effet direct. Nous pouvons constater ici que les effets indirects sont plus importants que les effets directs.
+
+L'interprétation des effets directs se rapproche de celle des coefficients classiques. Ainsi, selon ce modèle, l'augmentation du niveau de vie médian de 1000 € dans un IRIS est associée avec une diminution moyenne de la concentration de dioxyde d'azote de 0,14 dans cet IRIS. L'effet total est de -0.82, indiquant qu'en moyenne, l'augmentation de 1000 € du niveau de vie médian dans un IRIS est associée avec une diminution moyenne de 0,82 de la concentration de dioxyde d'azote dans l'ensemble des IRIS. Au final, l'effet indirect est simplement la différence entre l'effet total et l'effet direct. Nous pouvons constater ici que les effets indirects sont plus importants que les effets directs.
 
 :::
 :::
-
-**Effets directs, indirects et totaux**
-
-
 
 **Dépendance spatiale du modèle SAR?**
 
@@ -404,7 +404,7 @@ tm_shape(LyonIris)+
 
 #### Modèle SEM : autocorrélation spatiale sur le terme d'erreur {#sec-07123}
 
-Dans le modèle SEM (aussi appelé *SAR-ERROR*), l'intégration de l'autocorrélation spatiale est réalisée sur le terme d'erreur, ce qui pourrait se justifier par l'omission d'une variable dépendante spatialement structurée [@dube2014econometrie, p. 126]. L'équation du modèle SEM s'écrit :
+Dans le modèle SEM (*Spatial Error Model*, appelé aussi *SAR-ERROR*), l'intégration de l'autocorrélation spatiale est réalisée sur le terme d'erreur, ce qui pourrait se justifier par l'omission d'une variable dépendante spatialement structurée [@dube2014econometrie, p. 126]. L'équation du modèle SEM s'écrit :
 
 $$
 y = X\beta + u \textrm{, } u = \lambda Wu + \epsilon
@@ -1259,6 +1259,30 @@ tm_shape(LyonIris)+ tm_borders(col="gray25", lwd=.5)+
                  title = "Variable la plus significative")+
           tm_layout(frame=FALSE)+ tm_scale_bar(breaks=c(0,5))
 ```
+
+::: bloc_aller_loin
+::: bloc_aller_loin-header
+::: bloc_aller_loin-icon
+:::
+
+**Extensions de la GWR classique**
+:::
+
+::: bloc_aller_loin-body
+À titre de rappel, la GWR classique permet de modéliser une variable dépendante continue. Plusieurs extensions ont été proposées, notamment :
+
+- La GWR mixte qui permet de spécifier des variables indépendantes variant spatialement et d'autres étant fixes [@fotheringham2003geographically].
+
+- Les GWR logistique (pour une variable dépendante binaire) et Poisson (pour une variable dépendante de comptage) [@fotheringham2003geographically].
+
+- La régression géographiquement et temporellement pondérée (*Geographical and temporal weighted regression* – GTWR) [@fotheringham2015geographical].
+
+- La régression géographiquement pondérée multiéchelle (*Multiscale geographically weighted regression* – MGWR) [@fotheringham2017multiscale].
+
+- L'analyse en composantes principales géographiquement pondérée (*Geographically weighted principal components analysis* – GWR PCA)  [@harris2011geographically].
+
+:::
+:::
 
 ## Quiz de révision du chapitre {#sec-074}
 

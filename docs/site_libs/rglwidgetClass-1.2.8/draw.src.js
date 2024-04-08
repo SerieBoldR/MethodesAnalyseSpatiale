@@ -954,12 +954,9 @@
         this.setnormMatrix2();
         this.setprmvMatrix();
       
-        j = iOrig % obj.shapefirst.length;
-        var first = obj.shapefirst[j];
-        
-        for (i=0; i < obj.shapelens[j]; i++)
+        for (i=0; i < obj.objects.length; i++)
           if (this.opaquePass)
-            result = result.concat(this.drawObjId(obj.objects[first + i], subscene.id, context.concat(j)));
+            result = result.concat(this.drawObjId(obj.objects[i], subscene.id, context.concat(j)));
           else
             this.drawObjId(obj.objects[i], subscene.id, context);
       }

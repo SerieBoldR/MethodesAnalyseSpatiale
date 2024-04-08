@@ -10,14 +10,14 @@
 rm(list = ls())
 
 # Ne oublier de changer l'auteur avant de lancer le program "PA" ou "JG"
-author <- "JG"
+author <- "PA"
 
 #________________________________________________________________________________
 # DEFINITION DES CHEMINS VERS LES DEUX DOSSIERS PRINCIPAUX
 if(author == "PA"){
-  email <- ""
+  email <- "philippe.apparicio@usherbrooke.ca"
   username <- "appariciop"
-  book_dir <- ''
+  book_dir <- 'C:/_____QUATRO2/QUARTO/AnalysesSpatialeDansR'
 }else{
   email <- "gelbjeremy22@gmail.com"
   username <- "JeremyGelb"
@@ -42,10 +42,10 @@ sizes <- sapply(all_files, file_size)
 pb_files <- sizes[sizes >= max_github_size]
 
 if(length(pb_files) > 0){
-  stop('You have files that are too big for github !')
+  stop('You have files that are too big for github!')
   print(names(pb_files))
 }else{
-  print('all the files have a good size for github !')
+  print('all the files have a good size for github!')
 }
 
 
@@ -66,21 +66,21 @@ sizes <- sapply(all_files, file_size)
 pb_files <- sizes[sizes >= max_github_size]
 
 if(length(pb_files) > 0){
-  stop('You have files that are too big for github !')
+  stop('You have files that are too big for github!')
   print(names(pb_files))
 }else{
-  print('all the files have a good size for github !')
+  print('all the files have a good size for github!')
 }
 
 #________________________________________________________________________________
 # Etape 5 git commit et push
 
-# attention, je recommande de faire cet étape manuellement avec le logiciel dekstop github !
+# attention, je recommande de faire cet étape manuellement avec le logiciel desktop github!
 
 #------------------------------------------
 # STAGE AND COMMIT ALL CHANGE IN GIT
 #------------------------------------------
-message <- paste0("Upload of the book the : ",Sys.Date(),", by : ",author)
+message <- paste0("Upload of the book the: ",Sys.Date(),", by: ",author)
 shell(paste0('cd "',book_dir,'" & git add -A & git commit -m "',message,'"'))
 
 #------------------------------------------

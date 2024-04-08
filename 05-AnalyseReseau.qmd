@@ -259,13 +259,14 @@ rsrc <- terra::sprc(rlist)
 MosaicSherbrooke <- mosaic(rsrc)
 MosaicSherbrooke
 
-# pour alléger le fichier final, nous allons arrondir les élévations au mètre
+# Pour réduire la taille du fichier d'évélation, nous arrondissons les valeurs au mètre
 MosaicSherbrooke <- round(MosaicSherbrooke)
 
 ## Exporter en GeoTIFF
 terra::writeRaster(MosaicSherbrooke, 
                   "data/chap05/_DataReseau/Elevation.tif",
-                  filetype = "GTiff", datatype = 'INT2U',
+                  filetype = "GTiff", 
+                  datatype = 'INT2U',
                   overwrite = TRUE)
 
 ## Suppression des GRIDS
@@ -1203,22 +1204,26 @@ Dans une autre étude portant sur l'accessibilité spatiale potentielle aux parc
 :::
 
 ::: bloc_aller_loin-body
-Les mesures appartenant à la famille des *Two Step Floating Catchement Area* permettent de mesurer l'accessibilité à des aménités tout en tenant compte de leur disponibilité compte tenu de la population vivant à proximité de ces aménités. Le calcul de ce type de mesure implique deux étapes comme leur nom le suggère. Si nous conservons ici l'exemple des parcs, la première étape consiste à calculer pour chaque parc le nombre de personne habitant à proximité du parc. 
+Les mesures appartenant à la famille des *Two Step Floating Catchement Area* (TSFCA) permettent d'évaluer l'accessibilité à des services en tenant comptant à la fois de l'offre (taille du service, par exemple le nombre de lits dans un hôpital) et de la demande (population résidant à la proximité des services). 
+
+Tel le nom l'indique, le calcul des mesures du TSFCA comprend deux étapes. Si nous reprenons l'exemple des parcs, la première étape consiste à calculer un ratio $R_j$ pour chaque parc, indiquant le nombre d'hectares de parcs pour 1000 personnes résidant dans un rayon de *n* mètres ou minutes du parc :
+
 
 $$
- R_{j} = \frac{S_j}{\sum^{n}_{i=1}{P_i \times W(d_{ji}) }}
+R_{j} = \frac{S_j}{\sum_{j \in \{ d_{ij} \leq d_0\} }{P_i \times W(d_{ij}) }}
 $$ {#eq-TSFCARj}
 
-Avec :
-* $j$ un parc
-* $S_j$ la capacité du parc $j$ (ici sa superficie)
-* $i$ une entité géographique (ici une aire de diffusion)
-* $d_{ij}$ la distance entre $j$ et $i$
-* $P_i$ la population au sein de $i$
-* $W$ une fonction de pondération permettant de contrôler le fait qu'un parc plus éloigné est moins attractif et contribue moins au score final d'accessibilité.
-* $R_j$ le nombre de personnes situées à proximité du parc $j$
+avec :
 
-Nous obtenons ainsi $R_j$, soit le ratio entre la capacité du parc et le total de la population ayant accès au parc. Il mesure donc le niveau de disponibilité du parc en hectare par habitant.
+-   $j$, un parc.
+-   $S_j$ la capacité du parc $j$ (ici, la superficie en hectares).
+-   $i$, une entité géographique (ici, une aire de diffusion).
+-   $d_{ij}$, la distance entre l'entité géographique $i$ et le parc $j$.
+-   $d_0$, le seuil de distance maximale (par exemple un kilomètre ou trente minutes).
+-   $P_i$, la population totale résidant dans $i$. Cette population est habituellement exprimée en milliers d'habitants, soit $P_i/1000$.
+-   $W$, une fonction de pondération permettant de contrôler le fait qu'un parc plus éloigné est moins attractif et contribue moins à la valeur finale de la mesure d'accessibilité.
+
+En résumé, $R_j$ est le ratio entre la superficie du parc et la population ayant accès au parc dans un rayon *n* mètres ou minutes ($d_0$).
 
 La deuxième étape consiste à calculer la somme pour chaque aire de diffusion $i$ de la disponibilité des parcs à proximité.
 
@@ -1226,20 +1231,18 @@ $$
  A_{i} = \sum^{m}_{j=1}{R_j \times W(d_{ji}) }
 $$ {#eq-TSFCAAi}
 
-Nous obtenons au final $A_i$, soit pour chaque aire de diffusion le nombre total d'hectare de parc disponible par habitant.
+Nous obtenons au final $A_i$, soit pour chaque aire de diffusion le nombre total d'hectares de parcs disponible pour 1000 habitants.
 
-Notez que la fonction $W$ joue un rôle très important dans la formulation du 2FCA. Elle peut prendre plusieurs formes, la plus simple étant une fonction binaire donnant un poid de 1 à des parcs situés en dessous d'une certaine distance. Par exemple, la fonction R ci-dessous donne un poids de 1 à des parcs situés à moins de 500m et 0 au delà.
+Notez que la fonction $W$ joue un rôle très important dans la formulation du 2SFCA. Elle peut prendre plusieurs formes, la plus simple étant une fonction binaire donnant un poids de 1 aux parcs situés en-dessous d'une certaine distance. Par exemple, la fonction R ci-dessous donne un poids de 1 à des parcs situés à moins de 500 mètres et 0 au-delà.
 
 ```{r}
 #| echo: true 
 #| message: true 
 #| eval: true
-
 w_binaire <- function(d){ifelse(d <= 500, 1, 0)}
-
 ```
 
-Le problème de cette formulation est qu'elle implique que l'accessibilité au parc est la même si l'on est situé à 25m du parc et 500m. Il a donc été proposé d'améliorer la méthode en ajoutant une fonction de pondération par pallier, c'est à dire accordant un poids différent selon des seuils de distances prédéfinis. Les fonctions R ci-dessous font ainsi varier le poids dans trois catégories de distance selon une pondération appelée *slow decay* et *fast decay* [@luo2009enhanced] et des palliers de 150m, 300m et 500m.
+Le problème de cette formulation est qu'elle implique que l'accessibilité au parc est la même que l'on habite à 25 ou 500 mètres du parc. Il a donc été proposé d'améliorer la méthode en ajoutant une fonction de pondération par palier qui accorde un poids différent selon des seuils de distances prédéfinis. Les fonctions R ci-dessous font ainsi varier le poids dans trois catégories de distance selon une pondération appelée *slow decay* et *fast decay* [@luo2009enhanced] et des paliers de 150, 300 et 500 mètres.
 
 ```{r}
 #| echo: true 
@@ -1265,18 +1268,17 @@ w_fast_decay <- function(d){
   )
   return(w)
 }
-
 ```
 
-Finalement, il a aussi été proposé d'utiliser des fonctions de pondération continues et décroissantes. Les fonctions R ci-dessous illustrent une fonction incluant un effet de pallier tel que proposé par McGrail [-@mcgrail2012spatial] et une fonction logistique décroissante.
+Finalement, il a aussi été proposé d'utiliser des fonctions de pondération continues et décroissantes. Les fonctions R ci-dessous illustrent une fonction incluant un effet de palier tel que proposé par McGrail [-@mcgrail2012spatial] et une fonction logistique décroissante.
 
 ```{r}
 #| echo: true 
 #| message: true 
 #| eval: true
 
-# pallier à 125m, maximum à 500m
-W_cont_pallier <- function(x){
+# palier à 125 mètres, maximum à 500 mètres
+W_cont_palier <- function(x){
   w <- ifelse(x < 125, 1,((500 - x) / (500 - 125))**1.5)
   w[x  > 500] <- 0
   return(w)
@@ -1289,9 +1291,7 @@ w_logit1 <- function(x){logit_fun(x, 250, 80)}
 w_logit2 <- function(x){logit_fun(x, 250, 40)}
 ```
 
-Concernant la fonction logistique, elle comporte deux paramètre, $\alpha$ et $\beta$. Le premier paramètre permet de contrôler la distance à laquelle la pondération atteindra la valeur de 0,5. Le second contrôle la vitesse de décroissance de la courbe.
-
-La figure ci-dessous permet d'illustrer les poids obtenus selon chacune de ces fonctions de pondération.
+Concernant la fonction logistique, elle comporte deux paramètre, $\alpha$ et $\beta$. Le premier paramètre permet de contrôler la distance à laquelle la pondération atteindra la valeur de 0,5. Le second contrôle la vitesse de décroissance de la courbe. La figure ci-dessous illustre les poids obtenus selon chacune de ces fonctions de pondération.
 
 ```{r}
 #| echo: true 
@@ -1309,7 +1309,7 @@ df <- data.frame(
   binaire = w_binaire(d),
   slow_decay = w_slow_decay(d),
   fast_decay = w_fast_decay(d),
-  pallier = W_cont_pallier(d),
+  palier = W_cont_palier(d),
   logistique1 = w_logit1(d),
   logistique2 = w_logit2(d)
 )
@@ -1327,7 +1327,7 @@ ggplot(df2) +
 
 ```
 
-Le choix d'une fonction de pondération doit avant tout reposer sur des considérations théoriques et représenter correctement la décroissance de l'attractivité d'une aménité en fonction de sa distance d'éloignement. Dans l'idéal, ces fonctions devraient être ajustées en fonction de données sur les habitudes de déplacement des individus.
+Le choix d'une fonction de pondération doit avant tout reposer sur des considérations théoriques et représenter correctement la décroissance de l'attractivité d'un service en fonction de la distance d'éloignement. Idéalement, ces fonctions devraient être ajustées en fonction de données sur les habitudes de déplacement des individus.
 :::
 :::
 
@@ -1485,7 +1485,7 @@ Supermarche.N30mins <- matriceOD.Marche %>%
   summarise(
     nb_30_min = n())
 
-# calcul de la distance moyenne aux trois supermarchés les plus proches
+# Distance moyenne aux trois supermarchés les plus proches
 Supermarche.3 <- matriceOD.Marche %>% 
   group_by(from_id) %>% 
   mutate(dist_rank = order(order(travel_time_p50, decreasing=FALSE))) %>%
@@ -1493,18 +1493,17 @@ Supermarche.3 <- matriceOD.Marche %>%
   summarise(nb = n(),
             sum_dist = sum(travel_time_p50))
 
-# Notez ici que nous pouvons avoir des origines pour lesquels
-# n'avons pas 3 supermarchés à moins de 240 minutes.
-# pour ces quelques cas, nous allons ajouter des temps de 240 minutes pour les 
-# origines avec des supermarchés manquants
+# Notez ici que nous pouvons avoir des origines pour lesquelles
+# n'avons pas trois supermarchés à moins de 240 minutes.
+# Pour ces quelques cas, nous ajoutons des temps de 240 minutes pour les 
+# origines avec des supermarchés manquants.
 Supermarche.3$sum_dist <- Supermarche.3$sum_dist + 240 * (3 - Supermarche.3$nb)
 Supermarche.3$mean_n3 <- Supermarche.3$sum_dist / 3
 Supermarche.3$nb <- NULL
 Supermarche.3$sum_dist <- NULL
 
-# nous pouvons a présent fusionner nos différent dataframe avec nos 
+# Nous pouvons à présent fusionner nos différent dataframes avec les 
 # indicateurs d'accessibilité
-
 Role <- Role %>% 
   left_join(Supermarche.PlusProche, by = c('mat18' = 'from_id')) %>%
   left_join(Supermarche.N30mins, by = c('mat18' = 'from_id')) %>%
@@ -1512,11 +1511,10 @@ Role <- Role %>%
   rename(
       SupPlusProcheMin = 'plus_proche',
       SupN30min = 'nb_30_min',
-      Moy3Sup = 'mean_n3',
+      Moy3Sup = 'mean_n3'
   )
 
-
-# Certaines observations n'ont pas de supermarchés à 30 minutes.
+# Certaines observations n'ont pas de supermarchés à 30 minutes
 # Nous mettons alors les valeurs à 0
 Role$SupN30min[is.na(Role$SupN30min)] <- 0
 ```
@@ -1591,8 +1589,9 @@ Carte1 <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
                     breaks = c(0,10,20,30,40,60,max.acc1),
                     palette="-YlOrRd",
                     size = .2, 
- 					legend.format = list(text.separator = "à"),
-                    title="Plus proche")+
+ 					          legend.format = list(text.separator = "à"),
+                    textNA = "Sans données",
+ 					          title="Plus proche")+
           tm_shape(arrondissements)+tm_borders(lwd = 2)+
           tm_layout(frame = FALSE, legend.outside = TRUE)
 # Carte pour le nombre de supermarchés à 30 minutes ou moins
@@ -1605,7 +1604,8 @@ Carte2 <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
                     breaks = c(0,1,2,3,4,5,max.acc2),
                     palette="YlOrRd",
                     size = .2, 
-					legend.format = list(text.separator = "à"),
+					          legend.format = list(text.separator = "à"),
+          					textNA = "Sans données",
                     title="Sup. à 30 min")+
           tm_shape(arrondissements)+tm_borders(lwd = 2)+
           tm_layout(frame = FALSE, legend.outside = TRUE)
@@ -1619,7 +1619,8 @@ Carte3 <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
                     breaks = c(5,10,20,30,40,60,max.acc3),
                     palette="-YlOrRd",
                     size = .2, 
-					legend.format = list(text.separator = "à"),
+          					legend.format = list(text.separator = "à"),
+          					textNA = "Sans données",
                     title="Moy. 3 plus proches")+
           tm_shape(arrondissements)+tm_borders(lwd = 2)+
           tm_layout(frame = FALSE, legend.outside = TRUE)
@@ -1648,13 +1649,13 @@ Dans ce second exemple applicatif dans R, nous élaborons un diagnostic de l'acc
 
 ## Unités d'évaluation foncière
 Patinoires <- st_read(dsn = "data/chap05/AutresDonnees/Patinoires.shp",
-                         quiet = TRUE)
+                      quiet = TRUE)
 ## Aires de diffusion
 AD <- st_read(dsn = "data/chap05/AutresDonnees/Commerces.gpkg",
-                        layer = "AD_Sherbrooke", quiet=TRUE)
+              layer = "AD_Sherbrooke", quiet=TRUE)
 ## Ilots de recensements
 Ilots <- st_read(dsn = "data/chap05/AutresDonnees/Commerces.gpkg",
-                        layer = "Ilots", quiet=TRUE)
+                 layer = "Ilots", quiet=TRUE)
 ## Changement de projection
 Patinoires <- st_transform(Patinoires, crs = 4326)
 AD <- st_transform(AD, crs = 4326)
@@ -1669,7 +1670,7 @@ Ilots <- st_transform(Ilots, crs = 4326)
 #| eval: true
 
 ## Jointure spatiale entre le Rôle et les AD
-Ilots <- st_join(Ilots, AD[,"ADIDU"], join = st_intersects)
+Ilots <- st_join(st_centroid(Ilots), AD[,"ADIDU"], join = st_intersects)
 Ilots <- Ilots[,c("id","pop2021","ADIDU")]
 ```
 
@@ -1730,7 +1731,6 @@ save(duree.marche, matriceODPatinoire.Marche,
 #| echo: true 
 #| message: true 
 #| eval: true
-
 ## Chargement du fichier Rdata
 load("data/chap05/Resultats/matriceODPatinoire.Rdata")
 cat("Temps de calcul pour la matrice :", round(duree.marche,2), "minutes")
@@ -1747,8 +1747,6 @@ Le code ci-dessous permet de calculer la distance à la patinoire la plus proche
 Patinoire.PlusProche <- matriceODPatinoire.Marche %>% 
   group_by(from_id) %>%
   summarise(PatinoirePlusProche = min(travel_time_p50))
-
-
 ## Fusion avec la couche des îlots
 Ilots <- left_join(Ilots, Patinoire.PlusProche, by=c("id" = 'from_id'))
 ```
@@ -1763,25 +1761,20 @@ Puis, nous calculons la version de la méthode du E2SFCA avec une fonction de gr
 source("code_complementaire/E2SFCA.R")
 ## Ajout des champs de population dans la matrice
 TempIlots <- st_drop_geometry(Ilots)
-
 matriceODPatinoire <- merge(matriceODPatinoire.Marche, 
                    TempIlots[,c("id","pop2021")],
                    by.x = "from_id", by.y="id")
-
 matriceODPatinoire$Wd <- 1
 names(matriceODPatinoire) <- c("from_id", "to_id", "Marche", "Wo", "Wd")
 head(matriceODPatinoire, n=2)
-
-# nous utilisons la pondération de gradiant continu du E2SFCA
+# Utilisation de la pondération de gradient continu du E2SFCA
 Wfun <- function(x){
   w <- ifelse(x < 5, 1,((30 - x) / (30 - 5))**1.5)
   w[x  > 30] <- 0
   return(w)
 }
-
-# on va calculer le résultat en milliers d'habitants
+# Calcul du résultat en milliers d'habitants
 matriceODPatinoire$Wo <- matriceODPatinoire$Wo / 1000
-
 MesureE2SFCA <- GTSFCA(dist_mat = matriceODPatinoire,
                         Wfun = Wfun,
                         IDorigine = "from_id",
@@ -1802,7 +1795,6 @@ Ilots$E2SFCA_G[is.na(Ilots$E2SFCA_G)] <- 0
 #| echo: true 
 #| message: true 
 #| eval: true
-
 ## Création d'un DataFrame temporaire sans la géométrie
 Ilots.Temp <- st_drop_geometry(Ilots)
 ## Moyenne pondérées pour la patinoire la plus proche
@@ -1863,7 +1855,8 @@ Carte1p <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
                     palette="-YlOrRd",
                     size = .2, 
                     legend.format = list(text.separator = "à"),
-					title="Plus proche (min)")+
+                    textNA = "Sans données",
+                    title="Plus proche (min)")+
           tm_shape(arrondissements)+tm_borders(lwd = 2)+
           tm_layout(frame = FALSE, legend.outside = TRUE)
 # Carte pour le 2ESFCA
@@ -1884,7 +1877,8 @@ Carte2p <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
           tm_shape(arrondissements)+tm_borders(lwd = 2)+
           tm_layout(frame = FALSE, legend.outside = TRUE)
 ## Figure avec les trois cartes
-tmap_arrange(Carte0p, Carte1p, Carte2p)
+tmap_arrange(Carte0p, Carte1p, Carte2p,
+             nrow=2, ncol=2)
 ## Arrêt de Java
 r5r::stop_r5(r5r_core)
 rJava::.jgc(R.gc = TRUE)

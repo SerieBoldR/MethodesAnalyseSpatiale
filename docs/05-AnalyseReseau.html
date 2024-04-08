@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.3.433">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Méthodes d’analyse spatiale : un grand bol d’R - 5&nbsp; Mesures d’accessibilité spatiale selon différents modes de transport</title>
 <style>
@@ -452,7 +452,7 @@ div.csl-indent {
 <p>Le fichier OSM téléchargé plus haut couvre la région de l’Estrie. À notre connaissance, il n’existe pas de solution pour découper un fichier <em>pbf</em> dans R. Par conséquent, nous récupérons les coordonnées minimales et maximales de l’enveloppe d’une zone tampon de 5000&nbsp;mètres autour de la couche de la ville de Sherbrooke. Puis, pour découper le fichier <em>pbf</em>, nous utilisons l’outil <a href="https://wiki.openstreetmap.org/wiki/Osmconvert"><strong>osmconvert64-0.8.8p.exe</strong></a>. Le code ci-dessous renvoie les quatre coordonnées de l’enveloppe.</p>
 <div class="cell">
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/mtennekes/tmap">tmap</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap">tmap</a></span><span class="op">)</span></span>
 <span><span class="co">## Importation du polygone pour la ville de Sherbrooke avec sf</span></span>
 <span><span class="va">Sherbrooke</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span>dsn <span class="op">=</span> <span class="st">"data/chap05/AutresDonnees/Sherbrooke.shp"</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">## Création d'une zone tampon de 5 km</span></span>
@@ -495,8 +495,8 @@ div.csl-indent {
 <p>Pour créer un fichier <em>GeoTIFF</em> pour l’élévation, nous utilisons les modèles numériques de terrain (MNT) du <a href="https://www.donneesquebec.ca/recherche/dataset/modeles-numeriques-d-altitude-a-l-echelle-de-1-20-000">ministère des Ressources naturelles et des Forêts</a>.</p>
 <p>Le fichier d’élévation ainsi construit est présenté à la <a href="#fig-figMNT">figure&nbsp;<span>5.7</span></a>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">MosaicSherbrooke</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span><span class="st">"data/chap05/_DataReseau/Elevation.tif"</span><span class="op">)</span></span>
-<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">MosaicSherbrooke</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">MosaicSherbrooke</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span><span class="st">"data/chap05/_DataReseau/Elevation.tif"</span><span class="op">)</span></span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">MosaicSherbrooke</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-figMNT" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="05-AnalyseReseau_files/figure-html/fig-figMNT-1.png" class="img-fluid figure-img" style="width:65.0%"></p>
@@ -561,7 +561,7 @@ div.csl-indent {
 <span><span class="fu">rJava</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rJava/man/jinit.html">.jinit</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">rJava</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rJava/man/jcall.html">.jcall</a></span><span class="op">(</span><span class="st">"java.lang.System"</span>, <span class="st">"S"</span>, <span class="st">"getProperty"</span>, <span class="st">"java.version"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "11"</code></pre>
+<pre><code>[1] "11.0.19"</code></pre>
 </div>
 </div>
 <p>Il est fortement conseillé d’augmenter la mémoire allouée au processus JAVA, surtout si vous souhaitez calculer des matrices origines-destinations de grande taille. Par exemple, la commande <code>options(java.parameters = "-Xmx2G")</code> permet d’augmenter la mémoire disponible pour JAVA à deux gigaoctets. Si votre ordinateur ne manque pas de mémoire vive (16, 32 ou 64&nbsp;gigaoctets), n’hésitez pas à augmenter ce paramètre (par exemple, <code>options(java.parameters = "-Xmx8G")</code>).</p>
@@ -709,7 +709,7 @@ Geodetic CRS:  WGS 84
             from_id from_lat  from_lon      to_id   to_lat    to_lon option
 1 Rue Wellington S. 45.38947 -71.88393 Rue Darche 45.38353 -71.89169      1
   departure_time total_duration total_distance segment    mode segment_duration
-1       08:24:02            8.1           1215       1 BICYCLE              8.1
+1       13:16:44            8.1           1215       1 BICYCLE              8.1
   wait distance route                       geometry
 1    0     1215       LINESTRING (-71.88396 45.38...</code></pre>
 </div>
@@ -723,7 +723,7 @@ Geodetic CRS:  WGS 84
      from_id from_lat  from_lon             to_id   to_lat    to_lon option
 1 Rue Darche 45.38353 -71.89169 Rue Wellington S. 45.38947 -71.88393      1
   departure_time total_duration total_distance segment    mode segment_duration
-1       08:24:02            6.5           1215       1 BICYCLE              6.5
+1       13:16:45            6.5           1215       1 BICYCLE              6.5
   wait distance route                       geometry
 1    0     1215       LINESTRING (-71.89191 45.38...</code></pre>
 </div>
@@ -769,7 +769,7 @@ Geodetic CRS:  WGS 84
   from_id from_lat  from_lon            to_id   to_lat    to_lon option
 1  Départ 45.42203 -71.88183 Campus principal 45.37802 -71.92953      1
   departure_time total_duration total_distance segment mode segment_duration
-1       08:24:02           21.7          11352       1  CAR             21.7
+1       13:16:45           21.7          11352       1  CAR             21.7
   wait distance route                       geometry
 1    0    11352       LINESTRING (-71.88129 45.42...</code></pre>
 </div>
@@ -783,7 +783,7 @@ Geodetic CRS:  WGS 84
            from_id from_lat  from_lon  to_id   to_lat    to_lon option
 1 Campus principal 45.37802 -71.92953 Départ 45.42203 -71.88183      1
   departure_time total_duration total_distance segment mode segment_duration
-1       08:24:02           18.8           9685       1  CAR             18.8
+1       13:16:45           18.8           9685       1  CAR             18.8
   wait distance route                       geometry
 1    0     9685       LINESTRING (-71.92952 45.37...</code></pre>
 </div>
@@ -1117,10 +1117,10 @@ Geodetic CRS:  WGS 84
 <span>     <span class="st">"\n Transport en commun : "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">duree.tc</span>,<span class="fl">2</span><span class="op">)</span>, <span class="st">"secondes"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Temps de calcul des matrices : 
- Voiture :  6.17 secondes 
- Marche :  0.29 secondes 
- Vélo :  1.75 secondes 
- Transport en commun :  0.35 secondes</code></pre>
+ Voiture :  19.75 secondes 
+ Marche :  0.52 secondes 
+ Vélo :  4.91 secondes 
+ Transport en commun :  0.52 secondes</code></pre>
 </div>
 </div>
 <p>Une fois les matrices obtenues, nous les enregistrons dans un fichier <code>Rdata</code>.</p>
@@ -1356,22 +1356,39 @@ Geodetic CRS:  WGS 84
 <p><strong>Le 2SFCA et ses fonctions de pondération</strong></p>
 </div>
 <div class="bloc_aller_loin-body">
-<p>Les mesures appartenant à la famille des <em>Two Step Floating Catchement Area</em> permettent de mesurer l’accessibilité à des aménités tout en tenant compte de leur disponibilité compte tenu de la population vivant à proximité de ces aménités. Le calcul de ce type de mesure implique deux étapes comme leur nom le suggère. Si nous conservons ici l’exemple des parcs, la première étape consiste à calculer pour chaque parc le nombre de personne habitant à proximité du parc.</p>
+<p>Les mesures appartenant à la famille des <em>Two Step Floating Catchement Area</em> (TSFCA) permettent d’évaluer l’accessibilité à des services en tenant comptant à la fois de l’offre (taille du service, par exemple le nombre de lits dans un hôpital) et de la demande (population résidant à la proximité des services).</p>
+<p>Tel le nom l’indique, le calcul des mesures du TSFCA comprend deux étapes. Si nous reprenons l’exemple des parcs, la première étape consiste à calculer un ratio <span class="math inline">\(R_j\)</span> pour chaque parc, indiquant le nombre d’hectares de parcs pour 1000&nbsp;personnes résidant dans un rayon de <em>n</em>&nbsp;mètres ou minutes du parc&nbsp;:</p>
 <p><span id="eq-TSFCARj"><span class="math display">\[
-R_{j} = \frac{S_j}{\sum^{n}_{i=1}{P_i \times W(d_{ji}) }}
+R_{j} = \frac{S_j}{\sum_{j \in \{ d_{ij} \leq d_0\} }{P_i \times W(d_{ij}) }}
 \tag{5.1}\]</span></span></p>
-<p>Avec&nbsp;: * <span class="math inline">\(j\)</span> un parc * <span class="math inline">\(S_j\)</span> la capacité du parc <span class="math inline">\(j\)</span> (ici sa superficie) * <span class="math inline">\(i\)</span> une entité géographique (ici une aire de diffusion) * <span class="math inline">\(d_{ij}\)</span> la distance entre <span class="math inline">\(j\)</span> et <span class="math inline">\(i\)</span> * <span class="math inline">\(P_i\)</span> la population au sein de <span class="math inline">\(i\)</span> * <span class="math inline">\(W\)</span> une fonction de pondération permettant de contrôler le fait qu’un parc plus éloigné est moins attractif et contribue moins au score final d’accessibilité. * <span class="math inline">\(R_j\)</span> le nombre de personnes situées à proximité du parc <span class="math inline">\(j\)</span></p>
-<p>Nous obtenons ainsi <span class="math inline">\(R_j\)</span>, soit le ratio entre la capacité du parc et le total de la population ayant accès au parc. Il mesure donc le niveau de disponibilité du parc en hectare par habitant.</p>
+<p>avec&nbsp;:</p>
+<ul>
+<li>
+<span class="math inline">\(j\)</span>, un parc.</li>
+<li>
+<span class="math inline">\(S_j\)</span> la capacité du parc <span class="math inline">\(j\)</span> (ici, la superficie en hectares).</li>
+<li>
+<span class="math inline">\(i\)</span>, une entité géographique (ici, une aire de diffusion).</li>
+<li>
+<span class="math inline">\(d_{ij}\)</span>, la distance entre l’entité géographique <span class="math inline">\(i\)</span> et le parc <span class="math inline">\(j\)</span>.</li>
+<li>
+<span class="math inline">\(d_0\)</span>, le seuil de distance maximale (par exemple un kilomètre ou trente minutes).</li>
+<li>
+<span class="math inline">\(P_i\)</span>, la population totale résidant dans <span class="math inline">\(i\)</span>. Cette population est habituellement exprimée en milliers d’habitants, soit <span class="math inline">\(P_i/1000\)</span>.</li>
+<li>
+<span class="math inline">\(W\)</span>, une fonction de pondération permettant de contrôler le fait qu’un parc plus éloigné est moins attractif et contribue moins à la valeur finale de la mesure d’accessibilité.</li>
+</ul>
+<p>En résumé, <span class="math inline">\(R_j\)</span> est le ratio entre la superficie du parc et la population ayant accès au parc dans un rayon <em>n</em>&nbsp;mètres ou minutes (<span class="math inline">\(d_0\)</span>).</p>
 <p>La deuxième étape consiste à calculer la somme pour chaque aire de diffusion <span class="math inline">\(i\)</span> de la disponibilité des parcs à proximité.</p>
 <p><span id="eq-TSFCAAi"><span class="math display">\[
 A_{i} = \sum^{m}_{j=1}{R_j \times W(d_{ji}) }
 \tag{5.2}\]</span></span></p>
-<p>Nous obtenons au final <span class="math inline">\(A_i\)</span>, soit pour chaque aire de diffusion le nombre total d’hectare de parc disponible par habitant.</p>
-<p>Notez que la fonction <span class="math inline">\(W\)</span> joue un rôle très important dans la formulation du 2FCA. Elle peut prendre plusieurs formes, la plus simple étant une fonction binaire donnant un poid de 1 à des parcs situés en dessous d’une certaine distance. Par exemple, la fonction R ci-dessous donne un poids de 1 à des parcs situés à moins de 500m et 0 au delà.</p>
+<p>Nous obtenons au final <span class="math inline">\(A_i\)</span>, soit pour chaque aire de diffusion le nombre total d’hectares de parcs disponible pour 1000&nbsp;habitants.</p>
+<p>Notez que la fonction <span class="math inline">\(W\)</span> joue un rôle très important dans la formulation du 2SFCA. Elle peut prendre plusieurs formes, la plus simple étant une fonction binaire donnant un poids de&nbsp;1 aux parcs situés en-dessous d’une certaine distance. Par exemple, la fonction R ci-dessous donne un poids de&nbsp;1 à des parcs situés à moins de 500&nbsp;mètres et 0 au-delà.</p>
 <div class="cell">
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">w_binaire</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">d</span> <span class="op">&lt;=</span> <span class="fl">500</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span><span class="op">}</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Le problème de cette formulation est qu’elle implique que l’accessibilité au parc est la même si l’on est situé à 25m du parc et 500m. Il a donc été proposé d’améliorer la méthode en ajoutant une fonction de pondération par pallier, c’est à dire accordant un poids différent selon des seuils de distances prédéfinis. Les fonctions R ci-dessous font ainsi varier le poids dans trois catégories de distance selon une pondération appelée <em>slow decay</em> et <em>fast decay</em> <span class="citation" data-cites="luo2009enhanced">(<a href="references.html#ref-luo2009enhanced" role="doc-biblioref">Luo et Qi 2009</a>)</span> et des palliers de 150m, 300m et 500m.</p>
+<p>Le problème de cette formulation est qu’elle implique que l’accessibilité au parc est la même que l’on habite à 25 ou 500&nbsp;mètres du parc. Il a donc été proposé d’améliorer la méthode en ajoutant une fonction de pondération par palier qui accorde un poids différent selon des seuils de distances prédéfinis. Les fonctions R ci-dessous font ainsi varier le poids dans trois catégories de distance selon une pondération appelée <em>slow decay</em> et <em>fast decay</em> <span class="citation" data-cites="luo2009enhanced">(<a href="references.html#ref-luo2009enhanced" role="doc-biblioref">Luo et Qi 2009</a>)</span> et des paliers de 150, 300 et 500&nbsp;mètres.</p>
 <div class="cell">
 <div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">w_slow_decay</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">w</span> <span class="op">&lt;-</span> <span class="fu">case_when</span><span class="op">(</span></span>
@@ -1393,10 +1410,10 @@ A_{i} = \sum^{m}_{j=1}{R_j \times W(d_{ji}) }
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span></span>
 <span><span class="op">}</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Finalement, il a aussi été proposé d’utiliser des fonctions de pondération continues et décroissantes. Les fonctions R ci-dessous illustrent une fonction incluant un effet de pallier tel que proposé par McGrail <span class="citation" data-cites="mcgrail2012spatial">(<a href="references.html#ref-mcgrail2012spatial" role="doc-biblioref">2012</a>)</span> et une fonction logistique décroissante.</p>
+<p>Finalement, il a aussi été proposé d’utiliser des fonctions de pondération continues et décroissantes. Les fonctions R ci-dessous illustrent une fonction incluant un effet de palier tel que proposé par McGrail <span class="citation" data-cites="mcgrail2012spatial">(<a href="references.html#ref-mcgrail2012spatial" role="doc-biblioref">2012</a>)</span> et une fonction logistique décroissante.</p>
 <div class="cell">
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># pallier à 125m, maximum à 500m</span></span>
-<span><span class="va">W_cont_pallier</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span></span>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># palier à 125 mètres, maximum à 500 mètres</span></span>
+<span><span class="va">W_cont_palier</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;</span> <span class="fl">125</span>, <span class="fl">1</span>,<span class="op">(</span><span class="op">(</span><span class="fl">500</span> <span class="op">-</span> <span class="va">x</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">500</span> <span class="op">-</span> <span class="fl">125</span><span class="op">)</span><span class="op">)</span><span class="op">**</span><span class="fl">1.5</span><span class="op">)</span></span>
 <span>  <span class="va">w</span><span class="op">[</span><span class="va">x</span>  <span class="op">&gt;</span> <span class="fl">500</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span></span>
@@ -1408,8 +1425,7 @@ A_{i} = \sum^{m}_{j=1}{R_j \times W(d_{ji}) }
 <span><span class="va">w_logit1</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu">logit_fun</span><span class="op">(</span><span class="va">x</span>, <span class="fl">250</span>, <span class="fl">80</span><span class="op">)</span><span class="op">}</span></span>
 <span><span class="va">w_logit2</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span><span class="fu">logit_fun</span><span class="op">(</span><span class="va">x</span>, <span class="fl">250</span>, <span class="fl">40</span><span class="op">)</span><span class="op">}</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Concernant la fonction logistique, elle comporte deux paramètre, <span class="math inline">\(\alpha\)</span> et <span class="math inline">\(\beta\)</span>. Le premier paramètre permet de contrôler la distance à laquelle la pondération atteindra la valeur de 0,5. Le second contrôle la vitesse de décroissance de la courbe.</p>
-<p>La figure ci-dessous permet d’illustrer les poids obtenus selon chacune de ces fonctions de pondération.</p>
+<p>Concernant la fonction logistique, elle comporte deux paramètre, <span class="math inline">\(\alpha\)</span> et <span class="math inline">\(\beta\)</span>. Le premier paramètre permet de contrôler la distance à laquelle la pondération atteindra la valeur de 0,5. Le second contrôle la vitesse de décroissance de la courbe. La figure ci-dessous illustre les poids obtenus selon chacune de ces fonctions de pondération.</p>
 <div class="cell">
 <div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
@@ -1436,7 +1452,7 @@ Attachement du package : 'dplyr'</code></pre>
 <span>  binaire <span class="op">=</span> <span class="fu">w_binaire</span><span class="op">(</span><span class="va">d</span><span class="op">)</span>,</span>
 <span>  slow_decay <span class="op">=</span> <span class="fu">w_slow_decay</span><span class="op">(</span><span class="va">d</span><span class="op">)</span>,</span>
 <span>  fast_decay <span class="op">=</span> <span class="fu">w_fast_decay</span><span class="op">(</span><span class="va">d</span><span class="op">)</span>,</span>
-<span>  pallier <span class="op">=</span> <span class="fu">W_cont_pallier</span><span class="op">(</span><span class="va">d</span><span class="op">)</span>,</span>
+<span>  palier <span class="op">=</span> <span class="fu">W_cont_palier</span><span class="op">(</span><span class="va">d</span><span class="op">)</span>,</span>
 <span>  logistique1 <span class="op">=</span> <span class="fu">w_logit1</span><span class="op">(</span><span class="va">d</span><span class="op">)</span>,</span>
 <span>  logistique2 <span class="op">=</span> <span class="fu">w_logit2</span><span class="op">(</span><span class="va">d</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
@@ -1455,7 +1471,7 @@ Attachement du package : 'dplyr'</code></pre>
 <p><img src="05-AnalyseReseau_files/figure-html/unnamed-chunk-35-1.png" class="img-fluid" width="672"></p>
 </div>
 </div>
-<p>Le choix d’une fonction de pondération doit avant tout reposer sur des considérations théoriques et représenter correctement la décroissance de l’attractivité d’une aménité en fonction de sa distance d’éloignement. Dans l’idéal, ces fonctions devraient être ajustées en fonction de données sur les habitudes de déplacement des individus.</p>
+<p>Le choix d’une fonction de pondération doit avant tout reposer sur des considérations théoriques et représenter correctement la décroissance de l’attractivité d’un service en fonction de la distance d’éloignement. Idéalement, ces fonctions devraient être ajustées en fonction de données sur les habitudes de déplacement des individus.</p>
 </div>
 </div>
 </section><section id="sec-05324" class="level4" data-number="5.3.2.4"><h4 data-number="5.3.2.4" class="anchored" data-anchor-id="sec-05324">
@@ -1581,7 +1597,7 @@ Attachement du package : 'dplyr'</code></pre>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
 <span>    nb_30_min <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># calcul de la distance moyenne aux trois supermarchés les plus proches</span></span>
+<span><span class="co"># Distance moyenne aux trois supermarchés les plus proches</span></span>
 <span><span class="va">Supermarche.3</span> <span class="op">&lt;-</span> <span class="va">matriceOD.Marche</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">from_id</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate.html">mutate</a></span><span class="op">(</span>dist_rank <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/order.html">order</a></span><span class="op">(</span><span class="va">travel_time_p50</span>, decreasing<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
@@ -1589,18 +1605,17 @@ Attachement du package : 'dplyr'</code></pre>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>nb <span class="op">=</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/context.html">n</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>            sum_dist <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/sum.html">sum</a></span><span class="op">(</span><span class="va">travel_time_p50</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># Notez ici que nous pouvons avoir des origines pour lesquels</span></span>
-<span><span class="co"># n'avons pas 3 supermarchés à moins de 240 minutes.</span></span>
-<span><span class="co"># pour ces quelques cas, nous allons ajouter des temps de 240 minutes pour les </span></span>
-<span><span class="co"># origines avec des supermarchés manquants</span></span>
+<span><span class="co"># Notez ici que nous pouvons avoir des origines pour lesquelles</span></span>
+<span><span class="co"># n'avons pas trois supermarchés à moins de 240 minutes.</span></span>
+<span><span class="co"># Pour ces quelques cas, nous ajoutons des temps de 240 minutes pour les </span></span>
+<span><span class="co"># origines avec des supermarchés manquants.</span></span>
 <span><span class="va">Supermarche.3</span><span class="op">$</span><span class="va">sum_dist</span> <span class="op">&lt;-</span> <span class="va">Supermarche.3</span><span class="op">$</span><span class="va">sum_dist</span> <span class="op">+</span> <span class="fl">240</span> <span class="op">*</span> <span class="op">(</span><span class="fl">3</span> <span class="op">-</span> <span class="va">Supermarche.3</span><span class="op">$</span><span class="va">nb</span><span class="op">)</span></span>
 <span><span class="va">Supermarche.3</span><span class="op">$</span><span class="va">mean_n3</span> <span class="op">&lt;-</span> <span class="va">Supermarche.3</span><span class="op">$</span><span class="va">sum_dist</span> <span class="op">/</span> <span class="fl">3</span></span>
 <span><span class="va">Supermarche.3</span><span class="op">$</span><span class="va">nb</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
 <span><span class="va">Supermarche.3</span><span class="op">$</span><span class="va">sum_dist</span> <span class="op">&lt;-</span> <span class="cn">NULL</span></span>
 <span></span>
-<span><span class="co"># nous pouvons a présent fusionner nos différent dataframe avec nos </span></span>
+<span><span class="co"># Nous pouvons à présent fusionner nos différent dataframes avec les </span></span>
 <span><span class="co"># indicateurs d'accessibilité</span></span>
-<span></span>
 <span><span class="va">Role</span> <span class="op">&lt;-</span> <span class="va">Role</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">Supermarche.PlusProche</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'mat18'</span> <span class="op">=</span> <span class="st">'from_id'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">Supermarche.N30mins</span>, by <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">'mat18'</span> <span class="op">=</span> <span class="st">'from_id'</span><span class="op">)</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
@@ -1608,11 +1623,10 @@ Attachement du package : 'dplyr'</code></pre>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/rename.html">rename</a></span><span class="op">(</span></span>
 <span>      SupPlusProcheMin <span class="op">=</span> <span class="st">'plus_proche'</span>,</span>
 <span>      SupN30min <span class="op">=</span> <span class="st">'nb_30_min'</span>,</span>
-<span>      Moy3Sup <span class="op">=</span> <span class="st">'mean_n3'</span>,</span>
+<span>      Moy3Sup <span class="op">=</span> <span class="st">'mean_n3'</span></span>
 <span>  <span class="op">)</span></span>
 <span></span>
-<span></span>
-<span><span class="co"># Certaines observations n'ont pas de supermarchés à 30 minutes.</span></span>
+<span><span class="co"># Certaines observations n'ont pas de supermarchés à 30 minutes</span></span>
 <span><span class="co"># Nous mettons alors les valeurs à 0</span></span>
 <span><span class="va">Role</span><span class="op">$</span><span class="va">SupN30min</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">Role</span><span class="op">$</span><span class="va">SupN30min</span><span class="op">)</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1674,8 +1688,9 @@ Attachement du package : 'dplyr'</code></pre>
 <span>                    breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">10</span>,<span class="fl">20</span>,<span class="fl">30</span>,<span class="fl">40</span>,<span class="fl">60</span>,<span class="va">max.acc1</span><span class="op">)</span>,</span>
 <span>                    palette<span class="op">=</span><span class="st">"-YlOrRd"</span>,</span>
 <span>                    size <span class="op">=</span> <span class="fl">.2</span>, </span>
-<span>                    legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
-<span>                    title<span class="op">=</span><span class="st">"Plus proche"</span><span class="op">)</span><span class="op">+</span></span>
+<span>                              legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
+<span>                    textNA <span class="op">=</span> <span class="st">"Sans données"</span>,</span>
+<span>                              title<span class="op">=</span><span class="st">"Plus proche"</span><span class="op">)</span><span class="op">+</span></span>
 <span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">arrondissements</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">+</span></span>
 <span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co"># Carte pour le nombre de supermarchés à 30 minutes ou moins</span></span>
@@ -1688,7 +1703,8 @@ Attachement du package : 'dplyr'</code></pre>
 <span>                    breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">1</span>,<span class="fl">2</span>,<span class="fl">3</span>,<span class="fl">4</span>,<span class="fl">5</span>,<span class="va">max.acc2</span><span class="op">)</span>,</span>
 <span>                    palette<span class="op">=</span><span class="st">"YlOrRd"</span>,</span>
 <span>                    size <span class="op">=</span> <span class="fl">.2</span>, </span>
-<span>                    legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
+<span>                              legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
+<span>                            textNA <span class="op">=</span> <span class="st">"Sans données"</span>,</span>
 <span>                    title<span class="op">=</span><span class="st">"Sup. à 30 min"</span><span class="op">)</span><span class="op">+</span></span>
 <span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">arrondissements</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">+</span></span>
 <span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -1702,7 +1718,8 @@ Attachement du package : 'dplyr'</code></pre>
 <span>                    breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">5</span>,<span class="fl">10</span>,<span class="fl">20</span>,<span class="fl">30</span>,<span class="fl">40</span>,<span class="fl">60</span>,<span class="va">max.acc3</span><span class="op">)</span>,</span>
 <span>                    palette<span class="op">=</span><span class="st">"-YlOrRd"</span>,</span>
 <span>                    size <span class="op">=</span> <span class="fl">.2</span>, </span>
-<span>                    legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
+<span>                            legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
+<span>                            textNA <span class="op">=</span> <span class="st">"Sans données"</span>,</span>
 <span>                    title<span class="op">=</span><span class="st">"Moy. 3 plus proches"</span><span class="op">)</span><span class="op">+</span></span>
 <span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">arrondissements</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">+</span></span>
 <span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -1728,13 +1745,13 @@ Attachement du package : 'dplyr'</code></pre>
 <div class="cell">
 <div class="sourceCode" id="cb62"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Unités d'évaluation foncière</span></span>
 <span><span class="va">Patinoires</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span>dsn <span class="op">=</span> <span class="st">"data/chap05/AutresDonnees/Patinoires.shp"</span>,</span>
-<span>                         quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span>                      quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">## Aires de diffusion</span></span>
 <span><span class="va">AD</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span>dsn <span class="op">=</span> <span class="st">"data/chap05/AutresDonnees/Commerces.gpkg"</span>,</span>
-<span>                        layer <span class="op">=</span> <span class="st">"AD_Sherbrooke"</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span>              layer <span class="op">=</span> <span class="st">"AD_Sherbrooke"</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">## Ilots de recensements</span></span>
 <span><span class="va">Ilots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span>dsn <span class="op">=</span> <span class="st">"data/chap05/AutresDonnees/Commerces.gpkg"</span>,</span>
-<span>                        layer <span class="op">=</span> <span class="st">"Ilots"</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
+<span>                 layer <span class="op">=</span> <span class="st">"Ilots"</span>, quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">## Changement de projection</span></span>
 <span><span class="va">Patinoires</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">Patinoires</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
 <span><span class="va">AD</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_transform.html">st_transform</a></span><span class="op">(</span><span class="va">AD</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
@@ -1743,7 +1760,7 @@ Attachement du package : 'dplyr'</code></pre>
 <p><strong>Étape&nbsp;2.</strong> Réalisation d’une jointure spatiale pour attribuer à chaque îlot l’identifiant de l’aire de diffusion (champ <code>ADIDU</code>) dans laquelle il est compris.</p>
 <div class="cell">
 <div class="sourceCode" id="cb63"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Jointure spatiale entre le Rôle et les AD</span></span>
-<span><span class="va">Ilots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span><span class="va">Ilots</span>, <span class="va">AD</span><span class="op">[</span>,<span class="st">"ADIDU"</span><span class="op">]</span>, join <span class="op">=</span> <span class="va">st_intersects</span><span class="op">)</span></span>
+<span><span class="va">Ilots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_centroid</a></span><span class="op">(</span><span class="va">Ilots</span><span class="op">)</span>, <span class="va">AD</span><span class="op">[</span>,<span class="st">"ADIDU"</span><span class="op">]</span>, join <span class="op">=</span> <span class="va">st_intersects</span><span class="op">)</span></span>
 <span><span class="va">Ilots</span> <span class="op">&lt;-</span> <span class="va">Ilots</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"id"</span>,<span class="st">"pop2021"</span>,<span class="st">"ADIDU"</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>Étape&nbsp;3.</strong> Création des points d’origine et de destination.</p>
@@ -1792,7 +1809,7 @@ Attachement du package : 'dplyr'</code></pre>
 <span><span class="fu"><a href="https://rdrr.io/r/base/load.html">load</a></span><span class="op">(</span><span class="st">"data/chap05/Resultats/matriceODPatinoire.Rdata"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Temps de calcul pour la matrice :"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">duree.marche</span>,<span class="fl">2</span><span class="op">)</span>, <span class="st">"minutes"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Temps de calcul pour la matrice : 0.26 minutes</code></pre>
+<pre><code>Temps de calcul pour la matrice : 0.37 minutes</code></pre>
 </div>
 </div>
 <p>Le code ci-dessous permet de calculer la distance à la patinoire la plus proche pour les aires de diffusion.</p>
@@ -1801,8 +1818,6 @@ Attachement du package : 'dplyr'</code></pre>
 <span><span class="va">Patinoire.PlusProche</span> <span class="op">&lt;-</span> <span class="va">matriceODPatinoire.Marche</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">from_id</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>PatinoirePlusProche <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">travel_time_p50</span><span class="op">)</span><span class="op">)</span></span>
-<span></span>
-<span></span>
 <span><span class="co">## Fusion avec la couche des îlots</span></span>
 <span><span class="va">Ilots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://dplyr.tidyverse.org/reference/mutate-joins.html">left_join</a></span><span class="op">(</span><span class="va">Ilots</span>, <span class="va">Patinoire.PlusProche</span>, by<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"id"</span> <span class="op">=</span> <span class="st">'from_id'</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1811,31 +1826,25 @@ Attachement du package : 'dplyr'</code></pre>
 <div class="sourceCode" id="cb69"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"code_complementaire/E2SFCA.R"</span><span class="op">)</span></span>
 <span><span class="co">## Ajout des champs de population dans la matrice</span></span>
 <span><span class="va">TempIlots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">Ilots</span><span class="op">)</span></span>
-<span></span>
 <span><span class="va">matriceODPatinoire</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/merge.html">merge</a></span><span class="op">(</span><span class="va">matriceODPatinoire.Marche</span>, </span>
 <span>                   <span class="va">TempIlots</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"id"</span>,<span class="st">"pop2021"</span><span class="op">)</span><span class="op">]</span>,</span>
 <span>                   by.x <span class="op">=</span> <span class="st">"from_id"</span>, by.y<span class="op">=</span><span class="st">"id"</span><span class="op">)</span></span>
-<span></span>
 <span><span class="va">matriceODPatinoire</span><span class="op">$</span><span class="va">Wd</span> <span class="op">&lt;-</span> <span class="fl">1</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">matriceODPatinoire</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"from_id"</span>, <span class="st">"to_id"</span>, <span class="st">"Marche"</span>, <span class="st">"Wo"</span>, <span class="st">"Wd"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html">head</a></span><span class="op">(</span><span class="va">matriceODPatinoire</span>, n<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Key: &lt;from_id&gt;
-       from_id  to_id Marche    Wo    Wd
-        &lt;char&gt; &lt;char&gt;  &lt;int&gt; &lt;num&gt; &lt;num&gt;
-1: 24430011001      1     90   180     1
-2: 24430011001      2    159   180     1</code></pre>
+<pre><code>       from_id to_id Marche  Wo Wd
+1: 24430011001     1     90 180  1
+2: 24430011001     2    159 180  1</code></pre>
 </div>
-<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># nous utilisons la pondération de gradiant continu du E2SFCA</span></span>
+<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Utilisation de la pondération de gradient continu du E2SFCA</span></span>
 <span><span class="va">Wfun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;</span> <span class="fl">5</span>, <span class="fl">1</span>,<span class="op">(</span><span class="op">(</span><span class="fl">30</span> <span class="op">-</span> <span class="va">x</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">30</span> <span class="op">-</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">**</span><span class="fl">1.5</span><span class="op">)</span></span>
 <span>  <span class="va">w</span><span class="op">[</span><span class="va">x</span>  <span class="op">&gt;</span> <span class="fl">30</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
 <span>  <span class="kw"><a href="https://rdrr.io/r/base/function.html">return</a></span><span class="op">(</span><span class="va">w</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
-<span></span>
-<span><span class="co"># on va calculer le résultat en milliers d'habitants</span></span>
+<span><span class="co"># Calcul du résultat en milliers d'habitants</span></span>
 <span><span class="va">matriceODPatinoire</span><span class="op">$</span><span class="va">Wo</span> <span class="op">&lt;-</span> <span class="va">matriceODPatinoire</span><span class="op">$</span><span class="va">Wo</span> <span class="op">/</span> <span class="fl">1000</span></span>
-<span></span>
 <span><span class="va">MesureE2SFCA</span> <span class="op">&lt;-</span> <span class="fu">GTSFCA</span><span class="op">(</span>dist_mat <span class="op">=</span> <span class="va">matriceODPatinoire</span>,</span>
 <span>                        Wfun <span class="op">=</span> <span class="va">Wfun</span>,</span>
 <span>                        IDorigine <span class="op">=</span> <span class="st">"from_id"</span>,</span>
@@ -1904,6 +1913,7 @@ Attachement du package : 'dplyr'</code></pre>
 <span>                    palette<span class="op">=</span><span class="st">"-YlOrRd"</span>,</span>
 <span>                    size <span class="op">=</span> <span class="fl">.2</span>, </span>
 <span>                    legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
+<span>                    textNA <span class="op">=</span> <span class="st">"Sans données"</span>,</span>
 <span>                    title<span class="op">=</span><span class="st">"Plus proche (min)"</span><span class="op">)</span><span class="op">+</span></span>
 <span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">arrondissements</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">+</span></span>
 <span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
@@ -1925,7 +1935,8 @@ Attachement du package : 'dplyr'</code></pre>
 <span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">arrondissements</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span><span class="op">+</span></span>
 <span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">## Figure avec les trois cartes</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte0p</span>, <span class="va">Carte1p</span>, <span class="va">Carte2p</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte0p</span>, <span class="va">Carte1p</span>, <span class="va">Carte2p</span>,</span>
+<span>             nrow<span class="op">=</span><span class="fl">2</span>, ncol<span class="op">=</span><span class="fl">2</span><span class="op">)</span></span>
 <span><span class="co">## Arrêt de Java</span></span>
 <span><span class="fu">r5r</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/r5r/man/stop_r5.html">stop_r5</a></span><span class="op">(</span><span class="va">r5r_core</span><span class="op">)</span></span>
 <span><span class="fu">rJava</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rJava/man/jgc.html">.jgc</a></span><span class="op">(</span>R.gc <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -2611,13 +2622,13 @@ Jepson, Victoria, Philippe Apparicio et Thi-Thanh-Hien Pham. 2022. <span>«&nbsp
 Khan, Abdullah A. 1992. <span>«&nbsp;An integrated approach to measuring potential spatial access to health care services.&nbsp;»</span> <em>Socio-economic planning sciences</em> 26 (4): 275‑287. <a href="https://doi.org/10.1016/0038-0121(92)90004-O">https://doi.org/10.1016/0038-0121(92)90004-O</a>.
 </div>
 <div id="ref-luo2009enhanced" class="csl-entry" role="listitem">
-Luo, Wei et Yi Qi. 2009. <span>«&nbsp;An enhanced two-step floating catchment area (E2SFCA) method for measuring spatial accessibility to primary care physicians.&nbsp;»</span> <em>Health &amp; place</em> 15 (4). Elsevier: 1100‑1107.
+Luo, Wei et Yi Qi. 2009. <span>«&nbsp;An enhanced two-step floating catchment area (E2SFCA) method for measuring spatial accessibility to primary care physicians.&nbsp;»</span> <em>Health &amp; Place</em> 15 (4). Elsevier: 1100‑1107. <a href="https://doi.org/10.1016/j.healthplace.2009.06.002">https://doi.org/10.1016/j.healthplace.2009.06.002</a>.
 </div>
 <div id="ref-luo2003measures" class="csl-entry" role="listitem">
 Luo, Wei et Fahui Wang. 2003. <span>«&nbsp;Measures of spatial accessibility to health care in a GIS environment: synthesis and a case study in the Chicago region.&nbsp;»</span> <em>Environment and planning B: planning and design</em> 30 (6): 865‑884. <a href="https://doi.org/10.1068/b29120">https://doi.org/10.1068/b29120</a>.
 </div>
 <div id="ref-mcgrail2012spatial" class="csl-entry" role="listitem">
-McGrail, Matthew R. 2012. <span>«&nbsp;Spatial accessibility of primary health care utilising the two step floating catchment area method: an assessment of recent improvements.&nbsp;»</span> <em>International journal of health geographics</em> 11. Springer: 1‑12.
+McGrail, Matthew R. 2012. <span>«&nbsp;Spatial accessibility of primary health care utilising the two step floating catchment area method: an assessment of recent improvements.&nbsp;»</span> <em>International Journal of Health Geographics</em> 11. Springer: 1‑12. <a href="https://doi.org/10.1186/1476-072X-11-50">https://doi.org/10.1186/1476-072X-11-50</a>.
 </div>
 <div id="ref-mcgrail2009measuring" class="csl-entry" role="listitem">
 McGrail, Matthew R et John S Humphreys. 2009. <span>«&nbsp;Measuring spatial accessibility to primary care in rural areas: Improving the effectiveness of the two-step floating catchment area method.&nbsp;»</span> <em>Applied geography</em> 29 (4): 533‑541. <a href="https://doi.org/10.1016/j.apgeog.2008.12.003">https://doi.org/10.1016/j.apgeog.2008.12.003</a>.

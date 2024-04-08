@@ -174,9 +174,9 @@ Il comprend un court exercice de révision à la fin de chaque chapitre.
 
 ## Comment utiliser les données du livre pour reproduire les exemples? {#sect003 .unnumbered}
 
-Ce livre comprend des exemples détaillés et appliqués dans R pour chacune des méthodes abordées. Ces exemples se basent sur des jeux de données structurés et mis à disposition avec le livre. Ils sont disponibles sur le *repo github* dans le sous-dossier `data`, à l'adresse <https://github.com/LAEQ/NotesCoursAnalyseSpatialeR/tree/master/data>.
+Ce livre comprend des exemples détaillés et appliqués dans R pour chacune des méthodes abordées. Ces exemples se basent sur des jeux de données structurés et mis à disposition avec le livre. Ils sont disponibles sur le *repo github* dans le sous-dossier `data`, à l'adresse <https://github.com/SerieBoldR/MethodesAnalyseSpatiale/tree/main/data>.
 
-Une autre option est de télécharger le *repo* complet du livre directement sur *github* (<https://github.com/LAEQ/NotesCoursAnalyseSpatialeR>) en cliquant sur le bouton `Code`, puis le bouton `Download ZIP` (@fig-downloaffromgit). Les données se trouvent alors dans le sous-dossier nommé `data`.
+Une autre option est de télécharger le *repo* complet du livre directement sur *github* (<https://github.com/SerieBoldR/MethodesAnalyseSpatiale>) en cliquant sur le bouton `Code`, puis le bouton `Download ZIP` (@fig-downloaffromgit). Les données se trouvent alors dans le sous-dossier nommé `data`.
 
 ![Téléchargement de l'intégralité du livre](images/introduction/download_github.png){#fig-downloaffromgit width="40%" fig-align="center"}
 
@@ -235,7 +235,7 @@ Nous remercions chaleureusement les personnes étudiantes du cours **GMQ405 - Mo
 
 Nous remercions aussi les membres du comité de révision pour leurs commentaires et suggestions très constructifs. Ce comité est composé de quatre personnes étudiantes du [Département de géomatique appliquée](https://www.usherbrooke.ca/geomatique/) de l'[Université de Sherbrooke](https://www.usherbrooke.ca/) :
 
--   Loek Pascaud et Gaël Machemin, étudiants à la [maîtrise en géomatique appliquée et télédétection (type recherche)](https://www.usherbrooke.ca/geomatique/etudes/programmes/2e-cycle/maitrise-en-geomatique-appliquee-et-teledetection-type-recherche).
+-   Gaël Machemin et Loek Pascaud, étudiants à la [maîtrise en géomatique appliquée et télédétection (type recherche)](https://www.usherbrooke.ca/geomatique/etudes/programmes/2e-cycle/maitrise-en-geomatique-appliquee-et-teledetection-type-recherche).
 
 -   Rosemarie Légaré, étudiante au [baccalauréat en géomatique appliquée à l'environnement](https://www.usherbrooke.ca/admission/programme/271/baccalaureat-en-geomatiqueappliquee-a-lenvironnement/).
 
