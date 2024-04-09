@@ -202,7 +202,7 @@ Notez qu'il est possible d'obtenir le même résultat avec l'application [**Osmo
 Pour créer un fichier *GeoTIFF* pour l'élévation, nous utilisons les modèles numériques de terrain (MNT) du [ministère des Ressources naturelles et des Forêts](https://www.donneesquebec.ca/recherche/dataset/modeles-numeriques-d-altitude-a-l-echelle-de-1-20-000).
 
 ```{r}
-#| echo: false
+#| echo: true
 #| message: true 
 #| eval: false 
 
@@ -259,7 +259,7 @@ rsrc <- terra::sprc(rlist)
 MosaicSherbrooke <- mosaic(rsrc)
 MosaicSherbrooke
 
-# Pour réduire la taille du fichier d'évélation, nous arrondissons les valeurs au mètre
+# Pour réduire la taille du fichier d’élévation, nous arrondissons les valeurs au mètre
 MosaicSherbrooke <- round(MosaicSherbrooke)
 
 ## Exporter en GeoTIFF
