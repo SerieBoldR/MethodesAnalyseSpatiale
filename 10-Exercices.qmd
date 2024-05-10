@@ -767,7 +767,8 @@ tm_scale_bar(c(0,1,2), position = 'left')+
 
 ## Évaluation des bandwidths de 100 à 1200 avec un saut de 50
 eval_bandwidth <- bw_cv_likelihood_calc.mc(
-  bws = seq(100,1200,50),
+  bw_range = c(100,1200),
+  bw_step = 50,
   lines = ReseauRues, 
   events = Collisions,
   w = rep(1, nrow(Collisions)),

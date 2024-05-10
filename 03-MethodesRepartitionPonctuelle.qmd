@@ -97,7 +97,7 @@ Marius Thériault (géographe et professeur émérite à l'Université Laval) a 
 
 ### Paramètres de tendance centrale d'un semis de points {#sec-0311}
 
-Les deux principaux paramètres de tendance centrale d'un semis de points sont le centre moyen et le point central qui peuvent être on non pondérés.
+Les deux principaux paramètres de tendance centrale d'un semis de points sont le centre moyen et le point central qui peuvent être ou non pondérés.
 
 #### Centre moyen {#sec-03111}
 

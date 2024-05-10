@@ -311,7 +311,7 @@ Pour plus d'information, consultez cette [vignette](https://cran.r-project.org/w
 Le fichier GTFS pour la Société de Transport de Sherbrooke est disponible à l'adresse suivante : <https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip>. Pour le télécharger, nous utilisons la fonction `download.file`.
 
 ```{r}
-#| echo: false
+#| echo: true
 #| message: true 
 #| eval: false 
 url <- "https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip"
@@ -494,7 +494,7 @@ velo.2
 Pour visualiser les trajets, nous utilisons le *package* `tmap` en mode `view`. Notez qu'un clic sur le trajet fait apparaître une fenêtre surgissante.
 
 ```{r}
-#| echo: false
+#| echo: true
 #| message: true 
 #| eval: false 
 library(tmap)
@@ -873,7 +873,7 @@ Par la suite, nous calculons les différentes matrices OD :
 
 -   **`matriceOD.Velo`** avec `mode = "BICYCLE"`, `bike_speed = 15` et `max_trip_duration = 60`. La durée du trajet est limitée à 60 minutes avec une vitesse moyenne de 15 km/h.
 
--   **`matriceOD.Auto`** avec `mode = "c("WALK", "TRANSIT")"`, `walk_speed = 4.5`, `max_walk_time = 30`, `max_trip_duration = 120` et `departure_datetime = dateheure.soir`. La durée du trajet est limitée à 60 minutes avec une vitesse moyenne de marche de 4,5 km/h et une durée maximale de 30 minutes pour chaque segment à la marche. L'heure de départ a été fixée comme suit : `dateheure.soir  <- as.POSIXct("04-05-2023 18:00:00", format = "%d-%m-%Y %H:%M:%S")`.
+-   **`matriceOD.TC`** avec `mode = "c("WALK", "TRANSIT")"`, `walk_speed = 4.5`, `max_walk_time = 30`, `max_trip_duration = 120` et `departure_datetime = dateheure.soir`. La durée du trajet est limitée à 60 minutes avec une vitesse moyenne de marche de 4,5 km/h et une durée maximale de 30 minutes pour chaque segment à la marche. L'heure de départ a été fixée comme suit : `dateheure.soir  <- as.POSIXct("04-05-2023 18:00:00", format = "%d-%m-%Y %H:%M:%S")`.
 
 ```{r}
 #| echo: true 

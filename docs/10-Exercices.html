@@ -1015,7 +1015,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span></span>
 <span><span class="co">## Évaluation des bandwidths de 100 à 1200 avec un saut de 50</span></span>
 <span><span class="va">eval_bandwidth</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://jeremygelb.github.io/spNetwork/reference/bw_cv_likelihood_calc.mc.html">bw_cv_likelihood_calc.mc</a></span><span class="op">(</span></span>
-<span>  bws <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">1200</span>,<span class="fl">50</span><span class="op">)</span>,</span>
+<span>  bw_range <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">100</span>,<span class="fl">1200</span><span class="op">)</span>,</span>
+<span>  bw_step <span class="op">=</span> <span class="fl">50</span>,</span>
 <span>  lines <span class="op">=</span> <span class="va">ReseauRues</span>, </span>
 <span>  events <span class="op">=</span> <span class="va">Collisions</span>,</span>
 <span>  w <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/rep.html">rep</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fu"><a href="https://rdrr.io/pkg/terra/man/dimensions.html">nrow</a></span><span class="op">(</span><span class="va">Collisions</span><span class="op">)</span><span class="op">)</span>,</span>

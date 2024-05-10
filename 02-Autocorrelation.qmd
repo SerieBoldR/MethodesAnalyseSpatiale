@@ -1454,7 +1454,7 @@ Aussi, le calcul des valeurs de Z repose sur deux cas de figure :
 
 2.  **Échantillon indépendant** (*free Sampling*). Pour chaque entité spatiale, la probabilité d'avoir une catégorie est indépendante du nombre d'observations. En d'autres termes, il n'y a pas un nombre défini d'observations pour chaque catégorie (W ou B) qui sont réparties entre les entités spatiales (échantillon indépendant).
 
-Bien distinguer ces deux configurations est essentiel, car elles affectent directement les valeurs des variances et par ricochet celles de Z et de *p* (voir les tableaux @tbl-TableauJC2 et @tbl-TableauJC). Avec un test basé sur un échantillon indépendant pour la situation A, nous concluons que les valeurs de 1 et de 0 (BB et WW) ne sont pas distribuées aléatoirement puisque *p* \< 0,05, ce qui traduit une autocorrélation spatiale. Par contre, pour la situation B, toutes les valeurs de *p* sont supérieures à 0,05, ce qui ne nous permet pas de rejeter l'hypothèse nulle d'une distribution aléatoire selon la loi binomiale.
+Bien distinguer ces deux configurations est essentiel, car elles affectent directement les valeurs des variances et par ricochet celles de Z et de *p* (voir les tableaux [-@tbl-TableauJC2] et [-@tbl-TableauJC]). Avec un test basé sur un échantillon indépendant pour la situation A, nous concluons que les valeurs de 1 et de 0 (BB et WW) ne sont pas distribuées aléatoirement puisque *p* \< 0,05, ce qui traduit une autocorrélation spatiale. Par contre, pour la situation B, toutes les valeurs de *p* sont supérieures à 0,05, ce qui ne nous permet pas de rejeter l'hypothèse nulle d'une distribution aléatoire selon la loi binomiale.
 
 ```{r}
 #| label: tbl-TableauJC2

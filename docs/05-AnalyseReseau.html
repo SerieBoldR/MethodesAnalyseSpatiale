@@ -590,10 +590,15 @@ div.csl-indent {
 </section><section id="sec-05214" class="level4" data-number="5.2.1.3"><h4 data-number="5.2.1.3" class="anchored" data-anchor-id="sec-05214">
 <span class="header-section-number">5.2.1.3</span> Extraction et validation d’un fichier GTFS</h4>
 <p>Le fichier GTFS pour la Société de Transport de Sherbrooke est disponible à l’adresse suivante&nbsp;: <a href="https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip" class="uri">https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip</a>. Pour le télécharger, nous utilisons la fonction <code>download.file</code>.</p>
+<div class="cell">
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">url</span> <span class="op">&lt;-</span> <span class="st">"https://gtfs.sts.qc.ca:8443/gtfs/client/GTFS_clients.zip"</span></span>
+<span><span class="va">destfile</span> <span class="op">&lt;-</span> <span class="st">"data/chap05/_DataReseau/GTFS_clients.zip"</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/download.file.html">download.file</a></span><span class="op">(</span><span class="va">url</span>, <span class="va">destfile</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <p>Pour s’assurer du bon fonctionnement d’un GTFS dans <code>r5r</code>, il faut préalablement valider la structure du fichier. Dans un premier temps, vous pouvez valider la structure générale de votre GTFS en utilisant l’outil en ligne <a href="https://gtfs-validator.mobilitydata.org/">gtfs-validator</a> proposé par l’organisation <em>MobilityData</em>. Dans un second temps, il convient de s’assurer que les types de lignes utilisés font partie des types standards définis par <a href="https://developers.google.com/transit/gtfs/reference?hl=fr#routestxt">Google</a>, soit avec l’un des numéros suivants&nbsp;: 0, 1, 2, 3, 4, 5, 6, 7, 11, 12. Si votre GTFS contient des lignes de transport en commun provenant par exemple des <a href="https://developers.google.com/transit/gtfs/reference/extended-route-types?hl=fr">types étendus</a>, <code>r5r</code> renverra une erreur.</p>
 <p>Nous vous proposons ci-dessous une fonction qui remplace les types problématiques dans un GTFS. Le plus simple est de les remplacer par un type <em>bus</em> (3), ce qui n’affectera pas les trajets estimés.</p>
 <div class="cell">
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfstools/">gtfstools</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ipeagit.github.io/gtfstools/">gtfstools</a></span><span class="op">)</span></span>
 <span><span class="co">## Fonction</span></span>
 <span><span class="va">clean_gtfs_types</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">gtfs_file</span>, <span class="va">replace_by</span> <span class="op">=</span> <span class="fl">3</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="co"># Lecture du GTFS</span></span>
@@ -628,7 +633,7 @@ div.csl-indent {
 <div class="bloc_attention-body">
 <p>Le <em>package</em> <code>R5R</code> utilise la version 11 de la JDK de Java (<em>Java Development Kit</em>). Vous devez préalablement la <a href="https://www.oracle.com/ca-en/java/technologies/javase/jdk11-archive-downloads.html">télécharger</a> et l’installer sur votre ordinateur. Les deux lignes de code ci-dessous permettent de vérifier si elle est bien installée sur votre ordinateur.</p>
 <div class="cell">
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Vérification que la JDK version 11 est bien installée</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Vérification que la JDK version 11 est bien installée</span></span>
 <span><span class="fu">rJava</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rJava/man/jinit.html">.jinit</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">rJava</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rJava/man/jcall.html">.jcall</a></span><span class="op">(</span><span class="st">"java.lang.System"</span>, <span class="st">"S"</span>, <span class="st">"getProperty"</span>, <span class="st">"java.version"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -651,7 +656,7 @@ div.csl-indent {
 <li><p><code>overwrite = FALSE</code> pour ne pas écraser le réseau s’il est déjà construit. La construction d’un réseau peut être très longue dépendamment de la taille des trois fichiers (OSM, GTFS, élévation). Par conséquent, n’oubliez pas de spécifier cette option si votre réseau a déjà été construit.</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ipeaGIT/r5r">r5r</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ipeaGIT/r5r">r5r</a></span><span class="op">)</span></span>
 <span><span class="co">## Allocation de la mémoire pour Java</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/options.html">options</a></span><span class="op">(</span>java.parameters <span class="op">=</span> <span class="st">"-Xmx2G"</span><span class="op">)</span></span>
 <span><span class="co">## Construction du réseau R5R</span></span>
@@ -661,7 +666,7 @@ div.csl-indent {
 </div>
 <p>La fonction <code>setup_r5</code> a créé deux nouveaux fichiers (<em>network.dat</em> et <em>network_settings.json</em>) qui sont utilisés par le <em>package</em> <code>r5r</code> pour les analyses de réseau.</p>
 <div class="cell">
-<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Liste des fichiers dans le dossier </span></span>
+<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Liste des fichiers dans le dossier </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/list.files.html">list.files</a></span><span class="op">(</span><span class="st">"data/chap05/_DataReseau/"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "Elevation.tif"                          
@@ -744,7 +749,7 @@ div.csl-indent {
 <li><p>Le point <code>Pt.D</code> situé à l’intersection des rues Darche et Dorval (45,38353; -71,89169).</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Création d'une couche sf avec les deux points</span></span>
+<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Création d'une couche sf avec les deux points</span></span>
 <span><span class="va">Pts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Rue Wellington S."</span>, <span class="st">"Rue Darche"</span><span class="op">)</span>,</span>
 <span>                         lat <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span> <span class="fl">45.38947</span>,  <span class="fl">45.38353</span><span class="op">)</span>,</span>
 <span>                         lon <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="fl">71.88393</span>, <span class="op">-</span><span class="fl">71.89169</span><span class="op">)</span></span>
@@ -755,7 +760,7 @@ div.csl-indent {
 </div>
 <p>Avec la fonction <code>detailed_itineraries</code>, les durées sont estimées à respectivement six et huit minutes (<a href="#fig-TrajetsVelo">figure&nbsp;<span>5.8</span></a>). Bien que le chemin emprunté soit le même, cet écart s’explique par la Côte de l’Acadie, soit l’un des tronçons de rue les plus pentus de la ville de Sherbrooke.</p>
 <div class="cell">
-<div class="sourceCode" id="cb16"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Trajets en vélo</span></span>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Trajets en vélo</span></span>
 <span><span class="va">velo.1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/r5r/man/detailed_itineraries.html">detailed_itineraries</a></span><span class="op">(</span>r5r_core <span class="op">=</span> <span class="va">r5r_core</span>,</span>
 <span>                               origins <span class="op">=</span> <span class="va">Pt.W</span>,</span>
 <span>                               destinations <span class="op">=</span> <span class="va">Pt.D</span>,</span>
@@ -780,11 +785,11 @@ Geodetic CRS:  WGS 84
             from_id from_lat  from_lon      to_id   to_lat    to_lon option
 1 Rue Wellington S. 45.38947 -71.88393 Rue Darche 45.38353 -71.89169      1
   departure_time total_duration total_distance segment    mode segment_duration
-1       12:42:07            8.1           1215       1 BICYCLE              8.1
+1       18:13:05            8.1           1215       1 BICYCLE              8.1
   wait distance route                       geometry
 1    0     1215       LINESTRING (-71.88396 45.38...</code></pre>
 </div>
-<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">velo.2</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">velo.2</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 1 feature and 16 fields
 Geometry type: LINESTRING
@@ -794,12 +799,28 @@ Geodetic CRS:  WGS 84
      from_id from_lat  from_lon             to_id   to_lat    to_lon option
 1 Rue Darche 45.38353 -71.89169 Rue Wellington S. 45.38947 -71.88393      1
   departure_time total_duration total_distance segment    mode segment_duration
-1       12:42:08            6.5           1215       1 BICYCLE              6.5
+1       18:13:06            6.5           1215       1 BICYCLE              6.5
   wait distance route                       geometry
 1    0     1215       LINESTRING (-71.89191 45.38...</code></pre>
 </div>
 </div>
 <p>Pour visualiser les trajets, nous utilisons le <em>package</em> <code>tmap</code> en mode <code>view</code>. Notez qu’un clic sur le trajet fait apparaître une fenêtre surgissante.</p>
+<div class="cell">
+<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap">tmap</a></span><span class="op">)</span></span>
+<span><span class="co"># Cartographie des trajets avec tmap</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_mode.html">tmap_mode</a></span><span class="op">(</span><span class="st">"view"</span><span class="op">)</span></span>
+<span><span class="va">Carte1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">velo.1</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">2</span>, </span>
+<span>           popup.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"mode"</span>, <span class="st">"from_id"</span>, <span class="st">"to_id"</span>, <span class="st">"segment_duration"</span>, <span class="st">"distance"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">Pt.W</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"green"</span>, size <span class="op">=</span> <span class="fl">.15</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">Pt.D</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">.15</span><span class="op">)</span></span>
+<span><span class="va">Carte2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">velo.2</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">2</span>,</span>
+<span>           popup.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"mode"</span>, <span class="st">"from_id"</span>, <span class="st">"to_id"</span>, <span class="st">"segment_duration"</span>, <span class="st">"distance"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">Pt.D</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"green"</span>, size <span class="op">=</span> <span class="fl">.15</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">Pt.W</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"red"</span>, size <span class="op">=</span> <span class="fl">.15</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte1</span>, <span class="va">Carte2</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 <div id="fig-TrajetsVelo" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="images/Chap05/TrajetsVelo.png" class="img-fluid figure-img" style="width:100.0%"></p>
 <figcaption class="figure-caption">Figure&nbsp;5.8: Trajets à vélo entre les deux destinations</figcaption></figure>
@@ -813,7 +834,7 @@ Geodetic CRS:  WGS 84
 <span class="header-section-number">5.2.3.2</span> Calcul d’itinéraires en automobile</h4>
 <p>Nous calculons ici l’itinéraire entre le campus principal de l’<a href="https://www.usherbrooke.ca/">Université de Sherbrooke</a> et une localisation (45,4220308; -71,881828). Nous fixons alors <code>mode = "CAR"</code> pour la fonction <code>detailed_itineraries</code>. Les trajets sont respectivement estimés à 21,7 et 18,8&nbsp;minutes à destination et au départ du campus principal.</p>
 <div class="cell">
-<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">UDeS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"Campus principal"</span>, lon <span class="op">=</span> <span class="op">-</span><span class="fl">71.929526</span>, lat <span class="op">=</span> <span class="fl">45.378017</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">UDeS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"Campus principal"</span>, lon <span class="op">=</span> <span class="op">-</span><span class="fl">71.929526</span>, lat <span class="op">=</span> <span class="fl">45.378017</span><span class="op">)</span></span>
 <span><span class="va">UDeS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">UDeS</span>, coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"lon"</span>,<span class="st">"lat"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
 <span><span class="va">Point</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"Départ"</span>, lon <span class="op">=</span> <span class="op">-</span><span class="fl">71.881828</span>, lat <span class="op">=</span> <span class="fl">45.4220308</span><span class="op">)</span></span>
 <span><span class="va">Point</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">Point</span>, coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"lon"</span>,<span class="st">"lat"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
@@ -840,11 +861,11 @@ Geodetic CRS:  WGS 84
   from_id from_lat  from_lon            to_id   to_lat    to_lon option
 1  Départ 45.42203 -71.88183 Campus principal 45.37802 -71.92953      1
   departure_time total_duration total_distance segment mode segment_duration
-1       12:42:08           21.7          11352       1  CAR             21.7
+1       18:13:06           21.7          11352       1  CAR             21.7
   wait distance route                       geometry
 1    0    11352       LINESTRING (-71.88129 45.42...</code></pre>
 </div>
-<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Auto.Retour</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Auto.Retour</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 1 feature and 16 fields
 Geometry type: LINESTRING
@@ -854,14 +875,14 @@ Geodetic CRS:  WGS 84
            from_id from_lat  from_lon  to_id   to_lat    to_lon option
 1 Campus principal 45.37802 -71.92953 Départ 45.42203 -71.88183      1
   departure_time total_duration total_distance segment mode segment_duration
-1       12:42:08           18.8           9685       1  CAR             18.8
+1       18:13:06           18.8           9685       1  CAR             18.8
   wait distance route                       geometry
 1    0     9685       LINESTRING (-71.92952 45.37...</code></pre>
 </div>
 </div>
 <p>Bien entendu, les deux trajets sont différents en raison des sens de circulation (<a href="#fig-TrajetsAuto">figure&nbsp;<span>5.10</span></a>).</p>
 <div class="cell">
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Cartographie des trajets avec tmap</span></span>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Cartographie des trajets avec tmap</span></span>
 <span><span class="va">Carte1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">Auto.Aller</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"black"</span>, lwd <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>           popup.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"mode"</span>, <span class="st">"from_id"</span>, <span class="st">"to_id"</span>, <span class="st">"segment_duration"</span>, <span class="st">"distance"</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
@@ -889,7 +910,7 @@ Geodetic CRS:  WGS 84
 </ul>
 <p>Dans le code ci-dessous, nous fixons les heures de départ et d’arrivée à 8&nbsp;h et à 18&nbsp;h pour le 28 février 2024 et un temps de marche maximal de 20&nbsp;minutes.</p>
 <div class="cell">
-<div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">### Définition de la journée et de l'heure de départ</span></span>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">### Définition de la journée et de l'heure de départ</span></span>
 <span><span class="va">dateheure.matin</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/as.POSIXlt.html">as.POSIXct</a></span><span class="op">(</span><span class="st">"28-02-2024 08:05:00"</span>,</span>
 <span>                              format <span class="op">=</span> <span class="st">"%d-%m-%Y %H:%M:%S"</span><span class="op">)</span></span>
 <span></span>
@@ -907,7 +928,7 @@ Geodetic CRS:  WGS 84
 <li><p><code>max_walk_time = minutes_marches_max</code> pour un temps maximal de marche de 20&nbsp;minutes.</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">TC.Aller</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/r5r/man/detailed_itineraries.html">detailed_itineraries</a></span><span class="op">(</span>r5r_core <span class="op">=</span> <span class="va">r5r_core</span>,</span>
+<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">TC.Aller</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/r5r/man/detailed_itineraries.html">detailed_itineraries</a></span><span class="op">(</span>r5r_core <span class="op">=</span> <span class="va">r5r_core</span>,</span>
 <span>                                   origins <span class="op">=</span> <span class="va">Point</span>,</span>
 <span>                                   destinations <span class="op">=</span> <span class="va">UDeS</span>,</span>
 <span>                                   mode <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"WALK"</span>, <span class="st">"TRANSIT"</span><span class="op">)</span>,</span>
@@ -933,7 +954,7 @@ Geodetic CRS:  WGS 84
 <li><p>Un troisième de 1,8&nbsp;minutes et 127&nbsp;mètres à pied.</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">TC.Aller</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">TC.Aller</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 0 features and 16 fields
 Bounding box:  xmin: NA ymin: NA xmax: NA ymax: NA
@@ -953,7 +974,7 @@ Geodetic CRS:  WGS 84
 <li><p>Un troisième de 18,4&nbsp;minutes et 1,183&nbsp;km à pied.</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">TC.Retour</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">TC.Retour</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Simple feature collection with 0 features and 16 fields
 Bounding box:  xmin: NA ymin: NA xmax: NA ymax: NA
@@ -968,7 +989,7 @@ Geodetic CRS:  WGS 84
 </div>
 <p>Les deux trajets en transport en commun sont représentés à la <a href="#fig-TrajetsTC">figure&nbsp;<span>5.11</span></a>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_mode.html">tmap_mode</a></span><span class="op">(</span><span class="st">"view"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_mode.html">tmap_mode</a></span><span class="op">(</span><span class="st">"view"</span><span class="op">)</span></span>
 <span><span class="va">Carte1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/subset.html">subset</a></span><span class="op">(</span><span class="va">TC.Aller</span>, <span class="va">option</span> <span class="op">==</span> <span class="fl">1</span><span class="op">)</span><span class="op">)</span><span class="op">+</span></span>
 <span>            <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_lines.html">tm_lines</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"mode"</span>, lwd <span class="op">=</span> <span class="fl">3</span>,</span>
 <span>                     popup.vars <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"mode"</span>, <span class="st">"from_id"</span>, <span class="st">"to_id"</span>, </span>
@@ -1009,7 +1030,7 @@ Geodetic CRS:  WGS 84
 <li><p>Deux isochrone de 20 et 40&nbsp;minutes en transport en commun le 28&nbsp;février&nbsp;2024 à 18&nbsp;h avec un durée maximale de marche de 15&nbsp;minutes.</p></li>
 </ol>
 <div class="cell">
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Point pour l'université de Sherbrooke</span></span>
+<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Point pour l'université de Sherbrooke</span></span>
 <span><span class="va">UDeS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/data.frame.html">data.frame</a></span><span class="op">(</span>id <span class="op">=</span> <span class="st">"Campus principal"</span>, lon <span class="op">=</span> <span class="op">-</span><span class="fl">71.929526</span>, lat <span class="op">=</span> <span class="fl">45.378017</span><span class="op">)</span></span>
 <span><span class="va">UDeS</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_as_sf.html">st_as_sf</a></span><span class="op">(</span><span class="va">UDeS</span>, coords <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"lon"</span>,<span class="st">"lat"</span><span class="op">)</span>, crs <span class="op">=</span> <span class="fl">4326</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_mode.html">tmap_mode</a></span><span class="op">(</span><span class="st">"view"</span><span class="op">)</span></span>
@@ -1098,7 +1119,7 @@ Geodetic CRS:  WGS 84
 <span class="header-section-number">5.2.5</span> Calcul de matrices OD selon différents modes de transport</h3>
 <p>Pour calculer des matrices origines-destinations selon différents modes de transport, nous utilisons la fonction <code>travel_time_matrix</code> dont les paramètres sont quasi les mêmes que la <code>detailed_itineraries</code> (<a href="#sec-0523">section&nbsp;<span>5.2.3</span></a>). Dans le code ci-dessous, nous importons 284&nbsp;adresses tirées aléatoirement et les supermarchés présents sur le territoire de la ville de Sherbrooke.</p>
 <div class="cell">
-<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Importation des couches</span></span>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Importation des couches</span></span>
 <span><span class="va">Adresses</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span>dsn <span class="op">=</span> <span class="st">"data/Chap05/AutresDonnees/Commerces.gpkg"</span>,</span>
 <span>                        layer <span class="op">=</span> <span class="st">"AdressesAleatoires"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="va">supermarches</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span>dsn <span class="op">=</span> <span class="st">"data/Chap05/AutresDonnees/Commerces.gpkg"</span>,</span>
@@ -1115,7 +1136,7 @@ Geodetic CRS:  WGS 84
  Destinations (D) : 27 supermarchés 
  Distances OD à calculer =  4968</code></pre>
 </div>
-<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Origines et destinations</span></span>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Origines et destinations</span></span>
 <span><span class="va">Origines</span> <span class="op">&lt;-</span> <span class="va">Adresses</span></span>
 <span><span class="va">Origines</span><span class="op">$</span><span class="va">id</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">Adresses</span><span class="op">$</span><span class="va">id</span><span class="op">)</span></span>
 <span><span class="va">Origines</span><span class="op">$</span><span class="va">lat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">Adresses</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span></span>
@@ -1131,10 +1152,10 @@ Geodetic CRS:  WGS 84
 <li><p><strong><code>matriceOD.Auto</code></strong> avec <code>mode = "CAR"</code>.</p></li>
 <li><p><strong><code>matriceOD.Marche</code></strong> avec <code>mode = "WALK"</code>, <code>walk_speed = 4.5</code> et <code>max_trip_duration = 60</code>. La durée du trajet est limitée à 60&nbsp;minutes avec une vitesse moyenne de 4,5&nbsp;km/h.</p></li>
 <li><p><strong><code>matriceOD.Velo</code></strong> avec <code>mode = "BICYCLE"</code>, <code>bike_speed = 15</code> et <code>max_trip_duration = 60</code>. La durée du trajet est limitée à 60&nbsp;minutes avec une vitesse moyenne de 15&nbsp;km/h.</p></li>
-<li><p><strong><code>matriceOD.Auto</code></strong> avec <code>mode = "c("WALK", "TRANSIT")"</code>, <code>walk_speed = 4.5</code>, <code>max_walk_time = 30</code>, <code>max_trip_duration = 120</code> et <code>departure_datetime = dateheure.soir</code>. La durée du trajet est limitée à 60&nbsp;minutes avec une vitesse moyenne de marche de 4,5&nbsp;km/h et une durée maximale de 30&nbsp;minutes pour chaque segment à la marche. L’heure de départ a été fixée comme suit&nbsp;: <code>dateheure.soir  &lt;- as.POSIXct("04-05-2023 18:00:00", format = "%d-%m-%Y %H:%M:%S")</code>.</p></li>
+<li><p><strong><code>matriceOD.TC</code></strong> avec <code>mode = "c("WALK", "TRANSIT")"</code>, <code>walk_speed = 4.5</code>, <code>max_walk_time = 30</code>, <code>max_trip_duration = 120</code> et <code>departure_datetime = dateheure.soir</code>. La durée du trajet est limitée à 60&nbsp;minutes avec une vitesse moyenne de marche de 4,5&nbsp;km/h et une durée maximale de 30&nbsp;minutes pour chaque segment à la marche. L’heure de départ a été fixée comme suit&nbsp;: <code>dateheure.soir  &lt;- as.POSIXct("04-05-2023 18:00:00", format = "%d-%m-%Y %H:%M:%S")</code>.</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Matrice OD en voiture</span></span>
+<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Matrice OD en voiture</span></span>
 <span><span class="va">t1</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">matriceOD.Auto</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/r5r/man/travel_time_matrix.html">travel_time_matrix</a></span><span class="op">(</span>r5r_core <span class="op">=</span> <span class="va">r5r_core</span>,</span>
 <span>                                     origins <span class="op">=</span> <span class="va">Origines</span>,</span>
@@ -1181,22 +1202,22 @@ Geodetic CRS:  WGS 84
 </div>
 <p>Les temps de calcul des différentes matrices sont reportés ci-dessous.</p>
 <div class="cell">
-<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Temps de calcul des matrices :"</span>, </span>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Temps de calcul des matrices :"</span>, </span>
 <span>     <span class="st">"\n Voiture : "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">duree.auto</span>,<span class="fl">2</span><span class="op">)</span>, <span class="st">"secondes"</span>,</span>
 <span>     <span class="st">"\n Marche : "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">duree.marche</span>,<span class="fl">2</span><span class="op">)</span>, <span class="st">"secondes"</span>,</span>
 <span>     <span class="st">"\n Vélo : "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">duree.velo</span>,<span class="fl">2</span><span class="op">)</span>, <span class="st">"secondes"</span>,</span>
 <span>     <span class="st">"\n Transport en commun : "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">duree.tc</span>,<span class="fl">2</span><span class="op">)</span>, <span class="st">"secondes"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Temps de calcul des matrices : 
- Voiture :  10.61 secondes 
- Marche :  0.29 secondes 
- Vélo :  2.98 secondes 
- Transport en commun :  0.38 secondes</code></pre>
+ Voiture :  9.56 secondes 
+ Marche :  0.36 secondes 
+ Vélo :  2.89 secondes 
+ Transport en commun :  0.37 secondes</code></pre>
 </div>
 </div>
 <p>Une fois les matrices obtenues, nous les enregistrons dans un fichier <code>Rdata</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/save.html">save</a></span><span class="op">(</span><span class="va">matriceOD.Auto</span>, <span class="va">matriceOD.Marche</span>, </span>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/save.html">save</a></span><span class="op">(</span><span class="va">matriceOD.Auto</span>, <span class="va">matriceOD.Marche</span>, </span>
 <span>     <span class="va">matriceOD.Velo</span>, <span class="va">matriceOD.TC</span>,</span>
 <span>     file<span class="op">=</span><span class="st">"data/chap05/Resultats/MatricesOD.Rdata"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
@@ -1210,14 +1231,14 @@ Geodetic CRS:  WGS 84
 <div class="bloc_attention-body">
 <p>Une fois les calculs avec <code>R5R</code> terminés, il convient de détruire l’objet <code>r5r_core</code> et d’arrêter le processus JAVA avec les deux lignes de code ci-dessous.</p>
 <div class="cell">
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">r5r</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/r5r/man/stop_r5.html">stop_r5</a></span><span class="op">(</span><span class="va">r5r_core</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu">r5r</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/r5r/man/stop_r5.html">stop_r5</a></span><span class="op">(</span><span class="va">r5r_core</span><span class="op">)</span></span>
 <span><span class="fu">rJava</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rJava/man/jgc.html">.jgc</a></span><span class="op">(</span>R.gc <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </div>
 </div>
 <p>À partir de ces matrices, nous extrayons la valeur minimale pour chacune des adresses pour les quatre modes de transport. Puis, nous opérons une jointure attributaire avec la couche des adresses aléatoires avec la fonction <code>merge</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Création d'un vecteur pour la distance au supermarché le plus proche </span></span>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Création d'un vecteur pour la distance au supermarché le plus proche </span></span>
 <span><span class="va">SupermarchePlusProche.Auto</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">travel_time_p50</span> <span class="op">~</span> <span class="va">from_id</span>, <span class="va">matriceOD.Auto</span>, <span class="va">min</span><span class="op">)</span></span>
 <span><span class="va">SupermarchePlusProche.Pied</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">travel_time_p50</span> <span class="op">~</span> <span class="va">from_id</span>, <span class="va">matriceOD.Marche</span>, <span class="va">min</span><span class="op">)</span></span>
 <span><span class="va">SupermarchePlusProche.Velo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/aggregate.html">aggregate</a></span><span class="op">(</span><span class="va">travel_time_p50</span> <span class="op">~</span> <span class="va">from_id</span>, <span class="va">matriceOD.Velo</span>, <span class="va">min</span><span class="op">)</span></span>
@@ -1235,7 +1256,7 @@ Geodetic CRS:  WGS 84
 </div>
 <p>Finalement, nous utilisons le <em>package</em> <code>tmap</code> pour cartographier les résultats et réaliser une figure avec la fonction <code>tmap_arrange</code>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Importation des arrondissements de la ville de Sherbrooke</span></span>
+<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Importation des arrondissements de la ville de Sherbrooke</span></span>
 <span><span class="va">arrondissements</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span>dsn <span class="op">=</span> <span class="st">"data/Chap05/AutresDonnees/Arrondissements.shp"</span>, </span>
 <span>                           quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">## Construction des cartes</span></span>
@@ -1457,11 +1478,11 @@ A_{i} = \sum^{m}_{j=1}{R_j \times W(d_{ji}) }
 <p>Nous obtenons au final <span class="math inline">\(A_i\)</span>, soit pour chaque aire de diffusion le nombre total d’hectares de parcs disponible pour 1000&nbsp;habitants.</p>
 <p>Notez que la fonction <span class="math inline">\(W\)</span> joue un rôle très important dans la formulation du 2SFCA. Elle peut prendre plusieurs formes, la plus simple étant une fonction binaire donnant un poids de&nbsp;1 aux parcs situés en-dessous d’une certaine distance. Par exemple, la fonction R ci-dessous donne un poids de&nbsp;1 à des parcs situés à moins de 500&nbsp;mètres et 0 au-delà.</p>
 <div class="cell">
-<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">w_binaire</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">d</span> <span class="op">&lt;=</span> <span class="fl">500</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span><span class="op">}</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">w_binaire</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">{</span><span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">d</span> <span class="op">&lt;=</span> <span class="fl">500</span>, <span class="fl">1</span>, <span class="fl">0</span><span class="op">)</span><span class="op">}</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Le problème de cette formulation est qu’elle implique que l’accessibilité au parc est la même que l’on habite à 25 ou 500&nbsp;mètres du parc. Il a donc été proposé d’améliorer la méthode en ajoutant une fonction de pondération par palier qui accorde un poids différent selon des seuils de distances prédéfinis. Les fonctions R ci-dessous font ainsi varier le poids dans trois catégories de distance selon une pondération appelée <em>slow decay</em> et <em>fast decay</em> <span class="citation" data-cites="luo2009enhanced">(<a href="references.html#ref-luo2009enhanced" role="doc-biblioref">Luo et Qi 2009</a>)</span> et des paliers de 150, 300 et 500&nbsp;mètres.</p>
 <div class="cell">
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">w_slow_decay</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">{</span></span>
+<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">w_slow_decay</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">d</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">w</span> <span class="op">&lt;-</span> <span class="fu">case_when</span><span class="op">(</span></span>
 <span>    <span class="va">d</span> <span class="op">&lt;=</span> <span class="fl">150</span> <span class="op">~</span> <span class="fl">1</span>,</span>
 <span>    <span class="va">d</span> <span class="op">&gt;</span> <span class="fl">150</span> <span class="op">&amp;</span> <span class="va">d</span> <span class="op">&lt;=</span> <span class="fl">300</span> <span class="op">~</span> <span class="fl">0.68</span>,</span>
@@ -1483,7 +1504,7 @@ A_{i} = \sum^{m}_{j=1}{R_j \times W(d_{ji}) }
 </div>
 <p>Finalement, il a aussi été proposé d’utiliser des fonctions de pondération continues et décroissantes. Les fonctions R ci-dessous illustrent une fonction incluant un effet de palier tel que proposé par McGrail <span class="citation" data-cites="mcgrail2012spatial">(<a href="references.html#ref-mcgrail2012spatial" role="doc-biblioref">2012</a>)</span> et une fonction logistique décroissante.</p>
 <div class="cell">
-<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># palier à 125 mètres, maximum à 500 mètres</span></span>
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># palier à 125 mètres, maximum à 500 mètres</span></span>
 <span><span class="va">W_cont_palier</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;</span> <span class="fl">125</span>, <span class="fl">1</span>,<span class="op">(</span><span class="op">(</span><span class="fl">500</span> <span class="op">-</span> <span class="va">x</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">500</span> <span class="op">-</span> <span class="fl">125</span><span class="op">)</span><span class="op">)</span><span class="op">**</span><span class="fl">1.5</span><span class="op">)</span></span>
 <span>  <span class="va">w</span><span class="op">[</span><span class="va">x</span>  <span class="op">&gt;</span> <span class="fl">500</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
@@ -1498,7 +1519,7 @@ A_{i} = \sum^{m}_{j=1}{R_j \times W(d_{ji}) }
 </div>
 <p>Concernant la fonction logistique, elle comporte deux paramètre, <span class="math inline">\(\alpha\)</span> et <span class="math inline">\(\beta\)</span>. Le premier paramètre permet de contrôler la distance à laquelle la pondération atteindra la valeur de 0,5. Le second contrôle la vitesse de décroissance de la courbe. La figure ci-dessous illustre les poids obtenus selon chacune de ces fonctions de pondération.</p>
 <div class="cell">
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stderr">
 <pre><code>
 Attachement du package : 'dplyr'</code></pre>
@@ -1513,7 +1534,7 @@ Attachement du package : 'dplyr'</code></pre>
 
     intersect, setdiff, setequal, union</code></pre>
 </div>
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://tidyr.tidyverse.org">tidyr</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span></span>
 <span></span>
@@ -1561,7 +1582,7 @@ Attachement du package : 'dplyr'</code></pre>
 </ol>
 <p><strong>Étape&nbsp;1.</strong> Importation des trois couches géographiques.</p>
 <div class="cell">
-<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Unités d'évaluation foncière</span></span>
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Unités d'évaluation foncière</span></span>
 <span><span class="va">Role</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span>dsn <span class="op">=</span> <span class="st">"data/chap05/AutresDonnees/Role2022Sherb.gdb"</span>,</span>
 <span>                layer <span class="op">=</span> <span class="st">"rol_unite_Sherbrooke"</span>, quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">## Aires de diffusion</span></span>
@@ -1577,7 +1598,7 @@ Attachement du package : 'dplyr'</code></pre>
 </div>
 <p><strong>Étape&nbsp;2.</strong> Réalisation d’une jointure spatiale pour attribuer à chaque unité d’évaluation l’identifiant de l’aire de diffusion (champ <code>ADIDU</code>) dans laquelle elle est comprise.</p>
 <div class="cell">
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Jointure spatiale entre le Role et les AD</span></span>
+<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Jointure spatiale entre le Role et les AD</span></span>
 <span><span class="va">Role</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span><span class="va">Role</span>, <span class="va">AD</span><span class="op">[</span>,<span class="st">"ADIDU"</span><span class="op">]</span>, join <span class="op">=</span> <span class="va">st_intersects</span><span class="op">)</span></span>
 <span><span class="va">Role</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/subset.html">subset</a></span><span class="op">(</span><span class="va">Role</span>, <span class="fu"><a href="https://rdrr.io/r/base/NA.html">is.na</a></span><span class="op">(</span><span class="va">ADIDU</span><span class="op">)</span><span class="op">==</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="co">## Nombre de distances à calculer</span></span>
@@ -1608,7 +1629,7 @@ Attachement du package : 'dplyr'</code></pre>
 </div>
 </div>
 <div class="cell">
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Origines</span></span>
+<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Origines</span></span>
 <span><span class="va">Origines</span> <span class="op">&lt;-</span> <span class="va">Role</span></span>
 <span><span class="va">Origines</span><span class="op">$</span><span class="va">lat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">Origines</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span></span>
 <span><span class="va">Origines</span><span class="op">$</span><span class="va">lon</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">Origines</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span></span>
@@ -1631,7 +1652,7 @@ Attachement du package : 'dplyr'</code></pre>
 </div>
 <p><strong>Étape&nbsp;4.</strong> Construction de la matrice origines-destinations avec la fonction <code>travel_time_matrix</code> et sauvegarde dans un fichier <code>Rdata</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Matrice OD à la marche</span></span>
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Matrice OD à la marche</span></span>
 <span><span class="va">t1</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">matriceOD.Marche</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/r5r/man/travel_time_matrix.html">travel_time_matrix</a></span><span class="op">(</span>r5r_core <span class="op">=</span> <span class="va">r5r_core</span>,</span>
 <span>                                       origins <span class="op">=</span> <span class="va">Origines</span>,</span>
@@ -1649,13 +1670,13 @@ Attachement du package : 'dplyr'</code></pre>
 </div>
 <p><strong>Étape&nbsp;5.</strong> Calcul des trois mesures d’accessibilité pour les unités d’évaluation.</p>
 <div class="cell">
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Chargement du fichier Rdata</span></span>
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Chargement du fichier Rdata</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/load.html">load</a></span><span class="op">(</span><span class="st">"data/chap05/Resultats/MatricesMarcheRoleSupermarche.Rdata"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Temps de calcul pour la matrice :"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">duree.marche</span>,<span class="fl">2</span><span class="op">)</span>, <span class="st">"minutes"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Temps de calcul pour la matrice : 4.53 minutes</code></pre>
 </div>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Supermarché le plus proche</span></span>
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Supermarché le plus proche</span></span>
 <span><span class="va">Supermarche.PlusProche</span> <span class="op">&lt;-</span> <span class="va">matriceOD.Marche</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">from_id</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span></span>
@@ -1703,7 +1724,7 @@ Attachement du package : 'dplyr'</code></pre>
 </div>
 <p><strong>Étape&nbsp;6.</strong> Calcul des moyennes pondérées par le nombre de logements (champ <code>Logements</code>) pour les aires de diffusion avec le <em>package</em> <code>dplyr</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://dplyr.tidyverse.org">dplyr</a></span><span class="op">)</span></span>
 <span><span class="co">## Création d'un DataFrame temporaire sans la géométrie</span></span>
 <span><span class="va">Role.Temp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">Role</span><span class="op">)</span></span>
 <span><span class="co">## Moyennes pondérées pour les trois indicateurs d'accessibilité</span></span>
@@ -1721,7 +1742,7 @@ Attachement du package : 'dplyr'</code></pre>
 <p><strong>Étape&nbsp;7.</strong> Cartographie des résultats avec le <em>package</em> <code>tmap</code>.</p>
 <p>Tout d’abord, nous analysons les statistiques univariées pour repérer les valeurs minimales et maximales pour les trois mesures d’accessibilité avec la fonction <code>summary</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">TroisMesures</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SupPlusProcheMin"</span>,<span class="st">"SupN30min"</span>,<span class="st">"Moy3Sup"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">TroisMesures</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"SupPlusProcheMin"</span>,<span class="st">"SupN30min"</span>,<span class="st">"Moy3Sup"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/summary.html">summary</a></span><span class="op">(</span><span class="va">AD</span><span class="op">[</span>, <span class="va">TroisMesures</span><span class="op">]</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> SupPlusProcheMin    SupN30min        Moy3Sup                   geom    
@@ -1736,7 +1757,7 @@ Attachement du package : 'dplyr'</code></pre>
 </div>
 <p>Une fois les valeurs maximales et minimales analysées, réalisons les cartes (<a href="#fig-CartoSuperm">figure&nbsp;<span>5.16</span></a>).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Importation des arrondissements de la ville de Sherbrooke</span></span>
+<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Importation des arrondissements de la ville de Sherbrooke</span></span>
 <span><span class="va">arrondissements</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span>dsn <span class="op">=</span> <span class="st">"data/Chap05/AutresDonnees/Arrondissements.shp"</span>, </span>
 <span>                           quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">## Construction des cartes</span></span>
@@ -1814,7 +1835,7 @@ Attachement du package : 'dplyr'</code></pre>
 </ol>
 <p><strong>Étape&nbsp;1.</strong> Importation des trois couches géographiques.</p>
 <div class="cell">
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Unités d'évaluation foncière</span></span>
+<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Unités d'évaluation foncière</span></span>
 <span><span class="va">Patinoires</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span>dsn <span class="op">=</span> <span class="st">"data/chap05/AutresDonnees/Patinoires.shp"</span>,</span>
 <span>                      quiet <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">## Aires de diffusion</span></span>
@@ -1830,13 +1851,13 @@ Attachement du package : 'dplyr'</code></pre>
 </div>
 <p><strong>Étape&nbsp;2.</strong> Réalisation d’une jointure spatiale pour attribuer à chaque îlot l’identifiant de l’aire de diffusion (champ <code>ADIDU</code>) dans laquelle il est compris.</p>
 <div class="cell">
-<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Jointure spatiale entre le Rôle et les AD</span></span>
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Jointure spatiale entre le Rôle et les AD</span></span>
 <span><span class="va">Ilots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_join.html">st_join</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_centroid</a></span><span class="op">(</span><span class="va">Ilots</span><span class="op">)</span>, <span class="va">AD</span><span class="op">[</span>,<span class="st">"ADIDU"</span><span class="op">]</span>, join <span class="op">=</span> <span class="va">st_intersects</span><span class="op">)</span></span>
 <span><span class="va">Ilots</span> <span class="op">&lt;-</span> <span class="va">Ilots</span><span class="op">[</span>,<span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"id"</span>,<span class="st">"pop2021"</span>,<span class="st">"ADIDU"</span><span class="op">)</span><span class="op">]</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>Étape&nbsp;3.</strong> Création des points d’origine et de destination.</p>
 <div class="cell">
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Origines</span></span>
+<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Origines</span></span>
 <span><span class="va">Origines</span> <span class="op">&lt;-</span> <span class="va">Ilots</span></span>
 <span><span class="va">Origines</span><span class="op">$</span><span class="va">lat</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">Origines</span><span class="op">)</span><span class="op">[</span>,<span class="fl">2</span><span class="op">]</span></span>
 <span><span class="va">Origines</span><span class="op">$</span><span class="va">lon</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">Origines</span><span class="op">)</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span></span>
@@ -1858,7 +1879,7 @@ Attachement du package : 'dplyr'</code></pre>
 </div>
 <p><strong>Étape&nbsp;4.</strong> Construction de la matrice origines-destinations avec la fonction <code>travel_time_matrix</code> et sauvegarde dans un fichier <code>Rdata</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Matrice OD à la marche</span></span>
+<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Matrice OD à la marche</span></span>
 <span><span class="va">t1</span> <span class="op">&lt;-</span><span class="fu"><a href="https://rdrr.io/r/base/Sys.time.html">Sys.time</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="va">matriceODPatinoire.Marche</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/r5r/man/travel_time_matrix.html">travel_time_matrix</a></span><span class="op">(</span>r5r_core <span class="op">=</span> <span class="va">r5r_core</span>,</span>
 <span>                                                origins <span class="op">=</span> <span class="va">Origines</span>,</span>
@@ -1876,7 +1897,7 @@ Attachement du package : 'dplyr'</code></pre>
 </div>
 <p><strong>Étape&nbsp;5.</strong> Calcul des deux mesures d’accessibilité pour les îlots.</p>
 <div class="cell">
-<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Chargement du fichier Rdata</span></span>
+<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Chargement du fichier Rdata</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/load.html">load</a></span><span class="op">(</span><span class="st">"data/chap05/Resultats/matriceODPatinoire.Rdata"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Temps de calcul pour la matrice :"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">duree.marche</span>,<span class="fl">2</span><span class="op">)</span>, <span class="st">"minutes"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1885,7 +1906,7 @@ Attachement du package : 'dplyr'</code></pre>
 </div>
 <p>Le code ci-dessous permet de calculer la distance à la patinoire la plus proche pour les aires de diffusion.</p>
 <div class="cell">
-<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Patinoire la plus proche</span></span>
+<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Patinoire la plus proche</span></span>
 <span><span class="va">Patinoire.PlusProche</span> <span class="op">&lt;-</span> <span class="va">matriceODPatinoire.Marche</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span> </span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/group_by.html">group_by</a></span><span class="op">(</span><span class="va">from_id</span><span class="op">)</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html">summarise</a></span><span class="op">(</span>PatinoirePlusProche <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">travel_time_p50</span><span class="op">)</span><span class="op">)</span></span>
@@ -1894,7 +1915,7 @@ Attachement du package : 'dplyr'</code></pre>
 </div>
 <p>Puis, nous calculons la version de la méthode du E2SFCA avec une fonction de gradient continue <span class="citation" data-cites="mcgrail2009measuring">(<a href="references.html#ref-mcgrail2009measuring" role="doc-biblioref">McGrail et Humphreys 2009</a>)</span>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"code_complementaire/E2SFCA.R"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/source.html">source</a></span><span class="op">(</span><span class="st">"code_complementaire/E2SFCA.R"</span><span class="op">)</span></span>
 <span><span class="co">## Ajout des champs de population dans la matrice</span></span>
 <span><span class="va">TempIlots</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">Ilots</span><span class="op">)</span></span>
 <span><span class="va">matriceODPatinoire</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/merge.html">merge</a></span><span class="op">(</span><span class="va">matriceODPatinoire.Marche</span>, </span>
@@ -1908,7 +1929,7 @@ Attachement du package : 'dplyr'</code></pre>
 1: 24430011001     1     90 180  1
 2: 24430011001     2    159 180  1</code></pre>
 </div>
-<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Utilisation de la pondération de gradient continu du E2SFCA</span></span>
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Utilisation de la pondération de gradient continu du E2SFCA</span></span>
 <span><span class="va">Wfun</span> <span class="op">&lt;-</span> <span class="kw">function</span><span class="op">(</span><span class="va">x</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="va">w</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/ifelse.html">ifelse</a></span><span class="op">(</span><span class="va">x</span> <span class="op">&lt;</span> <span class="fl">5</span>, <span class="fl">1</span>,<span class="op">(</span><span class="op">(</span><span class="fl">30</span> <span class="op">-</span> <span class="va">x</span><span class="op">)</span> <span class="op">/</span> <span class="op">(</span><span class="fl">30</span> <span class="op">-</span> <span class="fl">5</span><span class="op">)</span><span class="op">)</span><span class="op">**</span><span class="fl">1.5</span><span class="op">)</span></span>
 <span>  <span class="va">w</span><span class="op">[</span><span class="va">x</span>  <span class="op">&gt;</span> <span class="fl">30</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fl">0</span></span>
@@ -1931,7 +1952,7 @@ Attachement du package : 'dplyr'</code></pre>
 </div>
 <p><strong>Étape&nbsp;6.</strong> Calcul des moyennes pondérées par la population des îlots (champ <code>pop2021</code>) pour les aires de diffusion avec le <em>package</em> <code>dplyr</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb73"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Création d'un DataFrame temporaire sans la géométrie</span></span>
+<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Création d'un DataFrame temporaire sans la géométrie</span></span>
 <span><span class="va">Ilots.Temp</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">Ilots</span><span class="op">)</span></span>
 <span><span class="co">## Moyenne pondérées pour la patinoire la plus proche</span></span>
 <span><span class="va">MesureAcc1</span> <span class="op">&lt;-</span> <span class="va">Ilots.Temp</span> <span class="op"><a href="https://magrittr.tidyverse.org/reference/pipe.html">%&gt;%</a></span></span>
@@ -1946,7 +1967,7 @@ Attachement du package : 'dplyr'</code></pre>
 <p><strong>Étape&nbsp;7.</strong> Cartographie des résultats avec le <em>package</em> <code>tmap</code>.</p>
 <p>Tout d’abord, nous analysons les statistiques univariées pour repérer les valeurs minimales et maximales pour les trois mesures d’accessibilité.</p>
 <div class="cell">
-<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">DeuxMesures</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"PatinoirePlusProche"</span>,<span class="st">"E2SFCA_G"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">DeuxMesures</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"PatinoirePlusProche"</span>,<span class="st">"E2SFCA_G"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/summary.html">summary</a></span><span class="op">(</span><span class="va">AD</span><span class="op">[</span>, <span class="va">DeuxMesures</span><span class="op">]</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> PatinoirePlusProche    E2SFCA_G                geometry  
@@ -1961,7 +1982,7 @@ Attachement du package : 'dplyr'</code></pre>
 </div>
 <p>Une fois avoir pris connaissance des valeurs maximales et minimales, nous pouvons réaliser les cartes (<a href="#fig-CartoPatinoires">figure&nbsp;<span>5.17</span></a>).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Importation des arrondissements de la ville de Sherbrooke</span></span>
+<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Importation des arrondissements de la ville de Sherbrooke</span></span>
 <span><span class="va">arrondissements</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_read.html">st_read</a></span><span class="op">(</span>dsn <span class="op">=</span> <span class="st">"data/Chap05/AutresDonnees/Arrondissements.shp"</span>, </span>
 <span>                           quiet<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span>
 <span><span class="co">## Construction des cartes</span></span>
@@ -2501,99 +2522,99 @@ Vérifier votre résultat
 <li><p>Arrêtez java.</p></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb77"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb77-1"><a href="#cb77-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb77-2"><a href="#cb77-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
-<span id="cb77-3"><a href="#cb77-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(r5r)</span>
-<span id="cb77-4"><a href="#cb77-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-5"><a href="#cb77-5" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"data/chap05/Laval"</span>)</span>
-<span id="cb77-6"><a href="#cb77-6" aria-hidden="true" tabindex="-1"></a>rJava<span class="sc">::</span><span class="fu">.jinit</span>()</span>
-<span id="cb77-7"><a href="#cb77-7" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">java.parameters =</span> <span class="st">"-Xmx2G"</span>)</span>
-<span id="cb77-8"><a href="#cb77-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-9"><a href="#cb77-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Construction du réseau</span></span>
-<span id="cb77-10"><a href="#cb77-10" aria-hidden="true" tabindex="-1"></a>dossierdata <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="fu">getwd</span>(),<span class="st">"/_DataReseau"</span>)</span>
-<span id="cb77-11"><a href="#cb77-11" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(dossierdata)</span>
-<span id="cb77-12"><a href="#cb77-12" aria-hidden="true" tabindex="-1"></a>r5r_core <span class="ot">&lt;-</span> <span class="fu">setup_r5</span>(à compléter)</span>
-<span id="cb77-13"><a href="#cb77-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-14"><a href="#cb77-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Création de deux points</span></span>
-<span id="cb77-15"><a href="#cb77-15" aria-hidden="true" tabindex="-1"></a>Pts <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="st">"Station Morency"</span>, <span class="st">"Adresse 1"</span>),</span>
-<span id="cb77-16"><a href="#cb77-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">lon =</span> <span class="fu">c</span>(à compléter),</span>
-<span id="cb77-17"><a href="#cb77-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">lat =</span> <span class="fu">c</span>(à compléter))</span>
-<span id="cb77-18"><a href="#cb77-18" aria-hidden="true" tabindex="-1"></a>Pts <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(Pts, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon"</span>,<span class="st">"lat"</span>), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
-<span id="cb77-19"><a href="#cb77-19" aria-hidden="true" tabindex="-1"></a>StationMorency <span class="ot">&lt;-</span> Pts[<span class="dv">1</span>,]</span>
-<span id="cb77-20"><a href="#cb77-20" aria-hidden="true" tabindex="-1"></a>Adresse1 <span class="ot">&lt;-</span> Pts[<span class="dv">2</span>,]</span>
-<span id="cb77-21"><a href="#cb77-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-22"><a href="#cb77-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 2.1. Trajets en automobile</span></span>
-<span id="cb77-23"><a href="#cb77-23" aria-hidden="true" tabindex="-1"></a>Auto<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(<span class="at">r5r_core =</span> r5r_core,</span>
-<span id="cb77-24"><a href="#cb77-24" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">origins =</span> Adresse1,</span>
-<span id="cb77-25"><a href="#cb77-25" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">destinations =</span> StationMorency,</span>
-<span id="cb77-26"><a href="#cb77-26" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">mode =</span> <span class="st">"CAR"</span>,</span>
-<span id="cb77-27"><a href="#cb77-27" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">shortest_path =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb77-28"><a href="#cb77-28" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">drop_geometry =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb77-29"><a href="#cb77-29" aria-hidden="true" tabindex="-1"></a>Auto<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(<span class="at">r5r_core =</span> r5r_core,</span>
-<span id="cb77-30"><a href="#cb77-30" aria-hidden="true" tabindex="-1"></a>                               <span class="at">origins =</span> StationMorency,</span>
-<span id="cb77-31"><a href="#cb77-31" aria-hidden="true" tabindex="-1"></a>                               <span class="at">destinations =</span> Adresse1,</span>
-<span id="cb77-32"><a href="#cb77-32" aria-hidden="true" tabindex="-1"></a>                               <span class="at">mode =</span> <span class="st">"CAR"</span>,</span>
-<span id="cb77-33"><a href="#cb77-33" aria-hidden="true" tabindex="-1"></a>                               <span class="at">shortest_path =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb77-34"><a href="#cb77-34" aria-hidden="true" tabindex="-1"></a>                               <span class="at">drop_geometry =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb77-35"><a href="#cb77-35" aria-hidden="true" tabindex="-1"></a><span class="do">## 2.2. Trajets en vélo</span></span>
-<span id="cb77-36"><a href="#cb77-36" aria-hidden="true" tabindex="-1"></a>velo<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(à compléter)</span>
-<span id="cb77-37"><a href="#cb77-37" aria-hidden="true" tabindex="-1"></a>velo<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(à compléter)</span>
-<span id="cb77-38"><a href="#cb77-38" aria-hidden="true" tabindex="-1"></a><span class="do">## 2.3. Trajets à pied</span></span>
-<span id="cb77-39"><a href="#cb77-39" aria-hidden="true" tabindex="-1"></a>marche<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(à compléter)</span>
-<span id="cb77-40"><a href="#cb77-40" aria-hidden="true" tabindex="-1"></a>marche<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(à compléter)</span>
-<span id="cb77-41"><a href="#cb77-41" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-42"><a href="#cb77-42" aria-hidden="true" tabindex="-1"></a><span class="do">## 2.4. Trajets en transport en commun</span></span>
-<span id="cb77-43"><a href="#cb77-43" aria-hidden="true" tabindex="-1"></a>dateheure.matin <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="st">"12-02-2024 08:00:00"</span>,</span>
-<span id="cb77-44"><a href="#cb77-44" aria-hidden="true" tabindex="-1"></a>                              <span class="at">format =</span> <span class="st">"%d-%m-%Y %H:%M:%S"</span>)</span>
-<span id="cb77-45"><a href="#cb77-45" aria-hidden="true" tabindex="-1"></a>dateheure.soir  <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="st">"12-02-2024 18:00:00"</span>,</span>
-<span id="cb77-46"><a href="#cb77-46" aria-hidden="true" tabindex="-1"></a>                              <span class="at">format =</span> <span class="st">"%d-%m-%Y %H:%M:%S"</span>)</span>
-<span id="cb77-47"><a href="#cb77-47" aria-hidden="true" tabindex="-1"></a><span class="do">### Définir le temps de marche maximal</span></span>
-<span id="cb77-48"><a href="#cb77-48" aria-hidden="true" tabindex="-1"></a>minutes_marches_max <span class="ot">&lt;-</span> <span class="dv">20</span></span>
-<span id="cb77-49"><a href="#cb77-49" aria-hidden="true" tabindex="-1"></a>TC<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(à compléter)</span>
-<span id="cb77-50"><a href="#cb77-50" aria-hidden="true" tabindex="-1"></a>TC<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(à compléter)</span>
-<span id="cb77-51"><a href="#cb77-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-52"><a href="#cb77-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-53"><a href="#cb77-53" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Cartographie</span></span>
-<span id="cb77-54"><a href="#cb77-54" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map1.Aller : Marche (de la résidence à la station de métro)</span></span>
-<span id="cb77-55"><a href="#cb77-55" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map2.Aller : Vélo (de la résidence à la station de métro)</span></span>
-<span id="cb77-56"><a href="#cb77-56" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map3.Aller : Auto (de la résidence à la station de métro)</span></span>
-<span id="cb77-57"><a href="#cb77-57" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map4.Aller : Transport en commun (de la résidence à la station de métro)</span></span>
-<span id="cb77-58"><a href="#cb77-58" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(view)</span>
-<span id="cb77-59"><a href="#cb77-59" aria-hidden="true" tabindex="-1"></a>Map1.Aller <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(marche<span class="fl">.1</span>)<span class="sc">+</span><span class="fu">tm_lines</span>(<span class="at">col=</span><span class="st">"mode"</span>, <span class="at">lwd =</span> <span class="dv">3</span>,</span>
-<span id="cb77-60"><a href="#cb77-60" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">popup.vars =</span> <span class="fu">c</span>(<span class="st">"mode"</span>, <span class="st">"from_id"</span>, <span class="st">"to_id"</span>,</span>
-<span id="cb77-61"><a href="#cb77-61" aria-hidden="true" tabindex="-1"></a>                                                     <span class="st">"segment_duration"</span>, <span class="st">"distance"</span>,</span>
-<span id="cb77-62"><a href="#cb77-62" aria-hidden="true" tabindex="-1"></a>                                                     <span class="st">"total_duration"</span>, <span class="st">"total_distance"</span>))<span class="sc">+</span></span>
-<span id="cb77-63"><a href="#cb77-63" aria-hidden="true" tabindex="-1"></a>              <span class="fu">tm_shape</span>(Adresse1)<span class="sc">+</span><span class="fu">tm_dots</span>(<span class="at">col=</span><span class="st">"green"</span>, <span class="at">size =</span> .<span class="dv">15</span>)<span class="sc">+</span></span>
-<span id="cb77-64"><a href="#cb77-64" aria-hidden="true" tabindex="-1"></a>              <span class="fu">tm_shape</span>(StationMorency)<span class="sc">+</span><span class="fu">tm_dots</span>(<span class="at">col=</span><span class="st">"red"</span>, <span class="at">size =</span> .<span class="dv">15</span>)</span>
-<span id="cb77-65"><a href="#cb77-65" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-66"><a href="#cb77-66" aria-hidden="true" tabindex="-1"></a>Map2.Aller <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb77-67"><a href="#cb77-67" aria-hidden="true" tabindex="-1"></a>Map3.Aller <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb77-68"><a href="#cb77-68" aria-hidden="true" tabindex="-1"></a>Map4.Aller <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb77-69"><a href="#cb77-69" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-70"><a href="#cb77-70" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(Map1.Aller, Map2.Aller, Map3.Aller, Map4.Aller, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>)</span>
-<span id="cb77-71"><a href="#cb77-71" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-72"><a href="#cb77-72" aria-hidden="true" tabindex="-1"></a><span class="do">## Réaliser une figure avec quatre figures pour les trajets retour :</span></span>
-<span id="cb77-73"><a href="#cb77-73" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map1.Retour : Marche (de la station de métro à la résidence)</span></span>
-<span id="cb77-74"><a href="#cb77-74" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map2.Retour : Vélo (de la station de métro à la résidence)</span></span>
-<span id="cb77-75"><a href="#cb77-75" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map3.Retour : Auto (de la station de métro à la résidence)</span></span>
-<span id="cb77-76"><a href="#cb77-76" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map4.Retour : Transport en commun (de la station de métro à la résidence)</span></span>
-<span id="cb77-77"><a href="#cb77-77" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-78"><a href="#cb77-78" aria-hidden="true" tabindex="-1"></a>Map1.Retour <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(marche<span class="fl">.2</span>)<span class="sc">+</span><span class="fu">tm_lines</span>(<span class="at">col=</span><span class="st">"mode"</span>, <span class="at">lwd =</span> <span class="dv">3</span>,</span>
-<span id="cb77-79"><a href="#cb77-79" aria-hidden="true" tabindex="-1"></a>                                          <span class="at">popup.vars =</span> <span class="fu">c</span>(<span class="st">"mode"</span>, <span class="st">"from_id"</span>, <span class="st">"to_id"</span>,</span>
-<span id="cb77-80"><a href="#cb77-80" aria-hidden="true" tabindex="-1"></a>                                                         <span class="st">"segment_duration"</span>, <span class="st">"distance"</span>,</span>
-<span id="cb77-81"><a href="#cb77-81" aria-hidden="true" tabindex="-1"></a>                                                         <span class="st">"total_duration"</span>, <span class="st">"total_distance"</span>))<span class="sc">+</span></span>
-<span id="cb77-82"><a href="#cb77-82" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(Adresse1)<span class="sc">+</span><span class="fu">tm_dots</span>(<span class="at">col=</span><span class="st">"red"</span>, <span class="at">size =</span> .<span class="dv">15</span>)<span class="sc">+</span></span>
-<span id="cb77-83"><a href="#cb77-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(StationMorency)<span class="sc">+</span><span class="fu">tm_dots</span>(<span class="at">col=</span><span class="st">"green"</span>, <span class="at">size =</span> .<span class="dv">15</span>)</span>
-<span id="cb77-84"><a href="#cb77-84" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-85"><a href="#cb77-85" aria-hidden="true" tabindex="-1"></a>Map2.Retour <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb77-86"><a href="#cb77-86" aria-hidden="true" tabindex="-1"></a>Map3.Retour <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb77-87"><a href="#cb77-87" aria-hidden="true" tabindex="-1"></a>Map4.Retour <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb77-88"><a href="#cb77-88" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-89"><a href="#cb77-89" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(Map1.Retour, Map2.Retour, Map3.Retour, Map4.Retour, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>)</span>
-<span id="cb77-90"><a href="#cb77-90" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-91"><a href="#cb77-91" aria-hidden="true" tabindex="-1"></a><span class="co"># 5.  Arrêt de java</span></span>
-<span id="cb77-92"><a href="#cb77-92" aria-hidden="true" tabindex="-1"></a>r5r<span class="sc">::</span><span class="fu">stop_r5</span>(r5r_core)</span>
-<span id="cb77-93"><a href="#cb77-93" aria-hidden="true" tabindex="-1"></a>rJava<span class="sc">::</span><span class="fu">.jgc</span>(<span class="at">R.gc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb79"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb79-1"><a href="#cb79-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb79-2"><a href="#cb79-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
+<span id="cb79-3"><a href="#cb79-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(r5r)</span>
+<span id="cb79-4"><a href="#cb79-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-5"><a href="#cb79-5" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"data/chap05/Laval"</span>)</span>
+<span id="cb79-6"><a href="#cb79-6" aria-hidden="true" tabindex="-1"></a>rJava<span class="sc">::</span><span class="fu">.jinit</span>()</span>
+<span id="cb79-7"><a href="#cb79-7" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">java.parameters =</span> <span class="st">"-Xmx2G"</span>)</span>
+<span id="cb79-8"><a href="#cb79-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-9"><a href="#cb79-9" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Construction du réseau</span></span>
+<span id="cb79-10"><a href="#cb79-10" aria-hidden="true" tabindex="-1"></a>dossierdata <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="fu">getwd</span>(),<span class="st">"/_DataReseau"</span>)</span>
+<span id="cb79-11"><a href="#cb79-11" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(dossierdata)</span>
+<span id="cb79-12"><a href="#cb79-12" aria-hidden="true" tabindex="-1"></a>r5r_core <span class="ot">&lt;-</span> <span class="fu">setup_r5</span>(à compléter)</span>
+<span id="cb79-13"><a href="#cb79-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-14"><a href="#cb79-14" aria-hidden="true" tabindex="-1"></a><span class="co"># 2. Création de deux points</span></span>
+<span id="cb79-15"><a href="#cb79-15" aria-hidden="true" tabindex="-1"></a>Pts <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">id =</span> <span class="fu">c</span>(<span class="st">"Station Morency"</span>, <span class="st">"Adresse 1"</span>),</span>
+<span id="cb79-16"><a href="#cb79-16" aria-hidden="true" tabindex="-1"></a>                  <span class="at">lon =</span> <span class="fu">c</span>(à compléter),</span>
+<span id="cb79-17"><a href="#cb79-17" aria-hidden="true" tabindex="-1"></a>                  <span class="at">lat =</span> <span class="fu">c</span>(à compléter))</span>
+<span id="cb79-18"><a href="#cb79-18" aria-hidden="true" tabindex="-1"></a>Pts <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(Pts, <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon"</span>,<span class="st">"lat"</span>), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb79-19"><a href="#cb79-19" aria-hidden="true" tabindex="-1"></a>StationMorency <span class="ot">&lt;-</span> Pts[<span class="dv">1</span>,]</span>
+<span id="cb79-20"><a href="#cb79-20" aria-hidden="true" tabindex="-1"></a>Adresse1 <span class="ot">&lt;-</span> Pts[<span class="dv">2</span>,]</span>
+<span id="cb79-21"><a href="#cb79-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-22"><a href="#cb79-22" aria-hidden="true" tabindex="-1"></a><span class="do">## 2.1. Trajets en automobile</span></span>
+<span id="cb79-23"><a href="#cb79-23" aria-hidden="true" tabindex="-1"></a>Auto<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(<span class="at">r5r_core =</span> r5r_core,</span>
+<span id="cb79-24"><a href="#cb79-24" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">origins =</span> Adresse1,</span>
+<span id="cb79-25"><a href="#cb79-25" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">destinations =</span> StationMorency,</span>
+<span id="cb79-26"><a href="#cb79-26" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">mode =</span> <span class="st">"CAR"</span>,</span>
+<span id="cb79-27"><a href="#cb79-27" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">shortest_path =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb79-28"><a href="#cb79-28" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">drop_geometry =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb79-29"><a href="#cb79-29" aria-hidden="true" tabindex="-1"></a>Auto<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(<span class="at">r5r_core =</span> r5r_core,</span>
+<span id="cb79-30"><a href="#cb79-30" aria-hidden="true" tabindex="-1"></a>                               <span class="at">origins =</span> StationMorency,</span>
+<span id="cb79-31"><a href="#cb79-31" aria-hidden="true" tabindex="-1"></a>                               <span class="at">destinations =</span> Adresse1,</span>
+<span id="cb79-32"><a href="#cb79-32" aria-hidden="true" tabindex="-1"></a>                               <span class="at">mode =</span> <span class="st">"CAR"</span>,</span>
+<span id="cb79-33"><a href="#cb79-33" aria-hidden="true" tabindex="-1"></a>                               <span class="at">shortest_path =</span> <span class="cn">FALSE</span>,</span>
+<span id="cb79-34"><a href="#cb79-34" aria-hidden="true" tabindex="-1"></a>                               <span class="at">drop_geometry =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb79-35"><a href="#cb79-35" aria-hidden="true" tabindex="-1"></a><span class="do">## 2.2. Trajets en vélo</span></span>
+<span id="cb79-36"><a href="#cb79-36" aria-hidden="true" tabindex="-1"></a>velo<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(à compléter)</span>
+<span id="cb79-37"><a href="#cb79-37" aria-hidden="true" tabindex="-1"></a>velo<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(à compléter)</span>
+<span id="cb79-38"><a href="#cb79-38" aria-hidden="true" tabindex="-1"></a><span class="do">## 2.3. Trajets à pied</span></span>
+<span id="cb79-39"><a href="#cb79-39" aria-hidden="true" tabindex="-1"></a>marche<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(à compléter)</span>
+<span id="cb79-40"><a href="#cb79-40" aria-hidden="true" tabindex="-1"></a>marche<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(à compléter)</span>
+<span id="cb79-41"><a href="#cb79-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-42"><a href="#cb79-42" aria-hidden="true" tabindex="-1"></a><span class="do">## 2.4. Trajets en transport en commun</span></span>
+<span id="cb79-43"><a href="#cb79-43" aria-hidden="true" tabindex="-1"></a>dateheure.matin <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="st">"12-02-2024 08:00:00"</span>,</span>
+<span id="cb79-44"><a href="#cb79-44" aria-hidden="true" tabindex="-1"></a>                              <span class="at">format =</span> <span class="st">"%d-%m-%Y %H:%M:%S"</span>)</span>
+<span id="cb79-45"><a href="#cb79-45" aria-hidden="true" tabindex="-1"></a>dateheure.soir  <span class="ot">&lt;-</span> <span class="fu">as.POSIXct</span>(<span class="st">"12-02-2024 18:00:00"</span>,</span>
+<span id="cb79-46"><a href="#cb79-46" aria-hidden="true" tabindex="-1"></a>                              <span class="at">format =</span> <span class="st">"%d-%m-%Y %H:%M:%S"</span>)</span>
+<span id="cb79-47"><a href="#cb79-47" aria-hidden="true" tabindex="-1"></a><span class="do">### Définir le temps de marche maximal</span></span>
+<span id="cb79-48"><a href="#cb79-48" aria-hidden="true" tabindex="-1"></a>minutes_marches_max <span class="ot">&lt;-</span> <span class="dv">20</span></span>
+<span id="cb79-49"><a href="#cb79-49" aria-hidden="true" tabindex="-1"></a>TC<span class="fl">.1</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(à compléter)</span>
+<span id="cb79-50"><a href="#cb79-50" aria-hidden="true" tabindex="-1"></a>TC<span class="fl">.2</span> <span class="ot">&lt;-</span> <span class="fu">detailed_itineraries</span>(à compléter)</span>
+<span id="cb79-51"><a href="#cb79-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-52"><a href="#cb79-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-53"><a href="#cb79-53" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Cartographie</span></span>
+<span id="cb79-54"><a href="#cb79-54" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map1.Aller : Marche (de la résidence à la station de métro)</span></span>
+<span id="cb79-55"><a href="#cb79-55" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map2.Aller : Vélo (de la résidence à la station de métro)</span></span>
+<span id="cb79-56"><a href="#cb79-56" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map3.Aller : Auto (de la résidence à la station de métro)</span></span>
+<span id="cb79-57"><a href="#cb79-57" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map4.Aller : Transport en commun (de la résidence à la station de métro)</span></span>
+<span id="cb79-58"><a href="#cb79-58" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(view)</span>
+<span id="cb79-59"><a href="#cb79-59" aria-hidden="true" tabindex="-1"></a>Map1.Aller <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(marche<span class="fl">.1</span>)<span class="sc">+</span><span class="fu">tm_lines</span>(<span class="at">col=</span><span class="st">"mode"</span>, <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb79-60"><a href="#cb79-60" aria-hidden="true" tabindex="-1"></a>                                      <span class="at">popup.vars =</span> <span class="fu">c</span>(<span class="st">"mode"</span>, <span class="st">"from_id"</span>, <span class="st">"to_id"</span>,</span>
+<span id="cb79-61"><a href="#cb79-61" aria-hidden="true" tabindex="-1"></a>                                                     <span class="st">"segment_duration"</span>, <span class="st">"distance"</span>,</span>
+<span id="cb79-62"><a href="#cb79-62" aria-hidden="true" tabindex="-1"></a>                                                     <span class="st">"total_duration"</span>, <span class="st">"total_distance"</span>))<span class="sc">+</span></span>
+<span id="cb79-63"><a href="#cb79-63" aria-hidden="true" tabindex="-1"></a>              <span class="fu">tm_shape</span>(Adresse1)<span class="sc">+</span><span class="fu">tm_dots</span>(<span class="at">col=</span><span class="st">"green"</span>, <span class="at">size =</span> .<span class="dv">15</span>)<span class="sc">+</span></span>
+<span id="cb79-64"><a href="#cb79-64" aria-hidden="true" tabindex="-1"></a>              <span class="fu">tm_shape</span>(StationMorency)<span class="sc">+</span><span class="fu">tm_dots</span>(<span class="at">col=</span><span class="st">"red"</span>, <span class="at">size =</span> .<span class="dv">15</span>)</span>
+<span id="cb79-65"><a href="#cb79-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-66"><a href="#cb79-66" aria-hidden="true" tabindex="-1"></a>Map2.Aller <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb79-67"><a href="#cb79-67" aria-hidden="true" tabindex="-1"></a>Map3.Aller <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb79-68"><a href="#cb79-68" aria-hidden="true" tabindex="-1"></a>Map4.Aller <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb79-69"><a href="#cb79-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-70"><a href="#cb79-70" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(Map1.Aller, Map2.Aller, Map3.Aller, Map4.Aller, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb79-71"><a href="#cb79-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-72"><a href="#cb79-72" aria-hidden="true" tabindex="-1"></a><span class="do">## Réaliser une figure avec quatre figures pour les trajets retour :</span></span>
+<span id="cb79-73"><a href="#cb79-73" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map1.Retour : Marche (de la station de métro à la résidence)</span></span>
+<span id="cb79-74"><a href="#cb79-74" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map2.Retour : Vélo (de la station de métro à la résidence)</span></span>
+<span id="cb79-75"><a href="#cb79-75" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map3.Retour : Auto (de la station de métro à la résidence)</span></span>
+<span id="cb79-76"><a href="#cb79-76" aria-hidden="true" tabindex="-1"></a>  <span class="co"># - Map4.Retour : Transport en commun (de la station de métro à la résidence)</span></span>
+<span id="cb79-77"><a href="#cb79-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-78"><a href="#cb79-78" aria-hidden="true" tabindex="-1"></a>Map1.Retour <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(marche<span class="fl">.2</span>)<span class="sc">+</span><span class="fu">tm_lines</span>(<span class="at">col=</span><span class="st">"mode"</span>, <span class="at">lwd =</span> <span class="dv">3</span>,</span>
+<span id="cb79-79"><a href="#cb79-79" aria-hidden="true" tabindex="-1"></a>                                          <span class="at">popup.vars =</span> <span class="fu">c</span>(<span class="st">"mode"</span>, <span class="st">"from_id"</span>, <span class="st">"to_id"</span>,</span>
+<span id="cb79-80"><a href="#cb79-80" aria-hidden="true" tabindex="-1"></a>                                                         <span class="st">"segment_duration"</span>, <span class="st">"distance"</span>,</span>
+<span id="cb79-81"><a href="#cb79-81" aria-hidden="true" tabindex="-1"></a>                                                         <span class="st">"total_duration"</span>, <span class="st">"total_distance"</span>))<span class="sc">+</span></span>
+<span id="cb79-82"><a href="#cb79-82" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(Adresse1)<span class="sc">+</span><span class="fu">tm_dots</span>(<span class="at">col=</span><span class="st">"red"</span>, <span class="at">size =</span> .<span class="dv">15</span>)<span class="sc">+</span></span>
+<span id="cb79-83"><a href="#cb79-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_shape</span>(StationMorency)<span class="sc">+</span><span class="fu">tm_dots</span>(<span class="at">col=</span><span class="st">"green"</span>, <span class="at">size =</span> .<span class="dv">15</span>)</span>
+<span id="cb79-84"><a href="#cb79-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-85"><a href="#cb79-85" aria-hidden="true" tabindex="-1"></a>Map2.Retour <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb79-86"><a href="#cb79-86" aria-hidden="true" tabindex="-1"></a>Map3.Retour <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb79-87"><a href="#cb79-87" aria-hidden="true" tabindex="-1"></a>Map4.Retour <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb79-88"><a href="#cb79-88" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-89"><a href="#cb79-89" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(Map1.Retour, Map2.Retour, Map3.Retour, Map4.Retour, <span class="at">ncol =</span> <span class="dv">2</span>, <span class="at">nrow =</span> <span class="dv">2</span>)</span>
+<span id="cb79-90"><a href="#cb79-90" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb79-91"><a href="#cb79-91" aria-hidden="true" tabindex="-1"></a><span class="co"># 5.  Arrêt de java</span></span>
+<span id="cb79-92"><a href="#cb79-92" aria-hidden="true" tabindex="-1"></a>r5r<span class="sc">::</span><span class="fu">stop_r5</span>(r5r_core)</span>
+<span id="cb79-93"><a href="#cb79-93" aria-hidden="true" tabindex="-1"></a>rJava<span class="sc">::</span><span class="fu">.jgc</span>(<span class="at">R.gc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Correction à la <a href="10-Exercices.html#sec-10051">section&nbsp;<span>9.5.1</span></a>.</p>
 </div>
@@ -2613,48 +2634,48 @@ Vérifier votre résultat
 <li><p>Cartographiez les résultats.</p></li>
 </ol>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb78"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb78-1"><a href="#cb78-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb78-2"><a href="#cb78-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
-<span id="cb78-3"><a href="#cb78-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(r5r)</span>
-<span id="cb78-4"><a href="#cb78-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-5"><a href="#cb78-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Construction du réseau</span></span>
-<span id="cb78-6"><a href="#cb78-6" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"data/chap05/Laval"</span>)</span>
-<span id="cb78-7"><a href="#cb78-7" aria-hidden="true" tabindex="-1"></a>rJava<span class="sc">::</span><span class="fu">.jinit</span>()</span>
-<span id="cb78-8"><a href="#cb78-8" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">java.parameters =</span> <span class="st">"-Xmx2G"</span>)</span>
-<span id="cb78-9"><a href="#cb78-9" aria-hidden="true" tabindex="-1"></a>dossierdata <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="fu">getwd</span>(),<span class="st">"/_DataReseau"</span>)</span>
-<span id="cb78-10"><a href="#cb78-10" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(dossierdata)</span>
-<span id="cb78-11"><a href="#cb78-11" aria-hidden="true" tabindex="-1"></a>r5r_core <span class="ot">&lt;-</span> <span class="fu">setup_r5</span>(<span class="at">data_path =</span> dossierdata,</span>
-<span id="cb78-12"><a href="#cb78-12" aria-hidden="true" tabindex="-1"></a>                     <span class="at">elevation =</span> <span class="st">"TOBLER"</span>,</span>
-<span id="cb78-13"><a href="#cb78-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">overwrite =</span> <span class="cn">FALSE</span>)</span>
-<span id="cb78-14"><a href="#cb78-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-15"><a href="#cb78-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Point pour la Station Morency</span></span>
-<span id="cb78-16"><a href="#cb78-16" aria-hidden="true" tabindex="-1"></a>StationMorency <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">id =</span> <span class="st">"Station Morency"</span>,</span>
-<span id="cb78-17"><a href="#cb78-17" aria-hidden="true" tabindex="-1"></a>                             <span class="at">lon =</span> <span class="sc">-</span><span class="fl">73.7199</span>,</span>
-<span id="cb78-18"><a href="#cb78-18" aria-hidden="true" tabindex="-1"></a>                             <span class="at">lat =</span> <span class="fl">45.5585</span>,  <span class="fl">45.5861</span>)</span>
-<span id="cb78-19"><a href="#cb78-19" aria-hidden="true" tabindex="-1"></a>StationMorency <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(StationMorency, </span>
-<span id="cb78-20"><a href="#cb78-20" aria-hidden="true" tabindex="-1"></a>                           <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon"</span>,<span class="st">"lat"</span>), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
-<span id="cb78-21"><a href="#cb78-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-22"><a href="#cb78-22" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Calcul d'isochrones à pied de 5, 10 et 15 minutes</span></span>
-<span id="cb78-23"><a href="#cb78-23" aria-hidden="true" tabindex="-1"></a>Iso.Marche <span class="ot">&lt;-</span> <span class="fu">isochrone</span>(à compléter)</span>
-<span id="cb78-24"><a href="#cb78-24" aria-hidden="true" tabindex="-1"></a><span class="co"># 1.2. Isochrone à vélo de 5, 10 et 15 minutes</span></span>
-<span id="cb78-25"><a href="#cb78-25" aria-hidden="true" tabindex="-1"></a>Iso.Velo <span class="ot">&lt;-</span> <span class="fu">isochrone</span>(à compléter)</span>
-<span id="cb78-26"><a href="#cb78-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-27"><a href="#cb78-27" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Cartographie les résultats</span></span>
-<span id="cb78-28"><a href="#cb78-28" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"view"</span>)</span>
-<span id="cb78-29"><a href="#cb78-29" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_options</span>(<span class="at">check.and.fix =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb78-30"><a href="#cb78-30" aria-hidden="true" tabindex="-1"></a>Carte.Marche <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(à compléter)<span class="sc">+</span></span>
-<span id="cb78-31"><a href="#cb78-31" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">tm_fill</span>(à compléter)<span class="sc">+</span></span>
-<span id="cb78-32"><a href="#cb78-32" aria-hidden="true" tabindex="-1"></a>                <span class="fu">tm_shape</span>(StationMorency)<span class="sc">+</span><span class="fu">tm_dots</span>(<span class="at">col=</span><span class="st">"darkred"</span>, <span class="at">size =</span> .<span class="dv">25</span>)</span>
-<span id="cb78-33"><a href="#cb78-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-34"><a href="#cb78-34" aria-hidden="true" tabindex="-1"></a>Carte.Velo <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(à compléter)<span class="sc">+</span></span>
-<span id="cb78-35"><a href="#cb78-35" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">tm_fill</span>(à compléter)<span class="sc">+</span></span>
-<span id="cb78-36"><a href="#cb78-36" aria-hidden="true" tabindex="-1"></a>                <span class="fu">tm_shape</span>(StationMorency)<span class="sc">+</span><span class="fu">tm_dots</span>(<span class="at">col=</span><span class="st">"darkred"</span>, <span class="at">size =</span> .<span class="dv">25</span>)</span>
-<span id="cb78-37"><a href="#cb78-37" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-38"><a href="#cb78-38" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(Carte.Marche, Carte.Velo, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
-<span id="cb78-39"><a href="#cb78-39" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb78-40"><a href="#cb78-40" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Arrêt de java</span></span>
-<span id="cb78-41"><a href="#cb78-41" aria-hidden="true" tabindex="-1"></a>r5r<span class="sc">::</span><span class="fu">stop_r5</span>(r5r_core)</span>
-<span id="cb78-42"><a href="#cb78-42" aria-hidden="true" tabindex="-1"></a>rJava<span class="sc">::</span><span class="fu">.jgc</span>(<span class="at">R.gc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb80"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb80-1"><a href="#cb80-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb80-2"><a href="#cb80-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
+<span id="cb80-3"><a href="#cb80-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(r5r)</span>
+<span id="cb80-4"><a href="#cb80-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-5"><a href="#cb80-5" aria-hidden="true" tabindex="-1"></a><span class="do">## Construction du réseau</span></span>
+<span id="cb80-6"><a href="#cb80-6" aria-hidden="true" tabindex="-1"></a><span class="fu">setwd</span>(<span class="st">"data/chap05/Laval"</span>)</span>
+<span id="cb80-7"><a href="#cb80-7" aria-hidden="true" tabindex="-1"></a>rJava<span class="sc">::</span><span class="fu">.jinit</span>()</span>
+<span id="cb80-8"><a href="#cb80-8" aria-hidden="true" tabindex="-1"></a><span class="fu">options</span>(<span class="at">java.parameters =</span> <span class="st">"-Xmx2G"</span>)</span>
+<span id="cb80-9"><a href="#cb80-9" aria-hidden="true" tabindex="-1"></a>dossierdata <span class="ot">&lt;-</span> <span class="fu">paste0</span>(<span class="fu">getwd</span>(),<span class="st">"/_DataReseau"</span>)</span>
+<span id="cb80-10"><a href="#cb80-10" aria-hidden="true" tabindex="-1"></a><span class="fu">list.files</span>(dossierdata)</span>
+<span id="cb80-11"><a href="#cb80-11" aria-hidden="true" tabindex="-1"></a>r5r_core <span class="ot">&lt;-</span> <span class="fu">setup_r5</span>(<span class="at">data_path =</span> dossierdata,</span>
+<span id="cb80-12"><a href="#cb80-12" aria-hidden="true" tabindex="-1"></a>                     <span class="at">elevation =</span> <span class="st">"TOBLER"</span>,</span>
+<span id="cb80-13"><a href="#cb80-13" aria-hidden="true" tabindex="-1"></a>                     <span class="at">verbose =</span> <span class="cn">FALSE</span>, <span class="at">overwrite =</span> <span class="cn">FALSE</span>)</span>
+<span id="cb80-14"><a href="#cb80-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-15"><a href="#cb80-15" aria-hidden="true" tabindex="-1"></a><span class="do">## Point pour la Station Morency</span></span>
+<span id="cb80-16"><a href="#cb80-16" aria-hidden="true" tabindex="-1"></a>StationMorency <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">id =</span> <span class="st">"Station Morency"</span>,</span>
+<span id="cb80-17"><a href="#cb80-17" aria-hidden="true" tabindex="-1"></a>                             <span class="at">lon =</span> <span class="sc">-</span><span class="fl">73.7199</span>,</span>
+<span id="cb80-18"><a href="#cb80-18" aria-hidden="true" tabindex="-1"></a>                             <span class="at">lat =</span> <span class="fl">45.5585</span>,  <span class="fl">45.5861</span>)</span>
+<span id="cb80-19"><a href="#cb80-19" aria-hidden="true" tabindex="-1"></a>StationMorency <span class="ot">&lt;-</span> <span class="fu">st_as_sf</span>(StationMorency, </span>
+<span id="cb80-20"><a href="#cb80-20" aria-hidden="true" tabindex="-1"></a>                           <span class="at">coords =</span> <span class="fu">c</span>(<span class="st">"lon"</span>,<span class="st">"lat"</span>), <span class="at">crs =</span> <span class="dv">4326</span>)</span>
+<span id="cb80-21"><a href="#cb80-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-22"><a href="#cb80-22" aria-hidden="true" tabindex="-1"></a><span class="co"># 1. Calcul d'isochrones à pied de 5, 10 et 15 minutes</span></span>
+<span id="cb80-23"><a href="#cb80-23" aria-hidden="true" tabindex="-1"></a>Iso.Marche <span class="ot">&lt;-</span> <span class="fu">isochrone</span>(à compléter)</span>
+<span id="cb80-24"><a href="#cb80-24" aria-hidden="true" tabindex="-1"></a><span class="co"># 1.2. Isochrone à vélo de 5, 10 et 15 minutes</span></span>
+<span id="cb80-25"><a href="#cb80-25" aria-hidden="true" tabindex="-1"></a>Iso.Velo <span class="ot">&lt;-</span> <span class="fu">isochrone</span>(à compléter)</span>
+<span id="cb80-26"><a href="#cb80-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-27"><a href="#cb80-27" aria-hidden="true" tabindex="-1"></a><span class="co"># 3. Cartographie les résultats</span></span>
+<span id="cb80-28"><a href="#cb80-28" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"view"</span>)</span>
+<span id="cb80-29"><a href="#cb80-29" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_options</span>(<span class="at">check.and.fix =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb80-30"><a href="#cb80-30" aria-hidden="true" tabindex="-1"></a>Carte.Marche <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(à compléter)<span class="sc">+</span></span>
+<span id="cb80-31"><a href="#cb80-31" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">tm_fill</span>(à compléter)<span class="sc">+</span></span>
+<span id="cb80-32"><a href="#cb80-32" aria-hidden="true" tabindex="-1"></a>                <span class="fu">tm_shape</span>(StationMorency)<span class="sc">+</span><span class="fu">tm_dots</span>(<span class="at">col=</span><span class="st">"darkred"</span>, <span class="at">size =</span> .<span class="dv">25</span>)</span>
+<span id="cb80-33"><a href="#cb80-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-34"><a href="#cb80-34" aria-hidden="true" tabindex="-1"></a>Carte.Velo <span class="ot">&lt;-</span> <span class="fu">tm_shape</span>(à compléter)<span class="sc">+</span></span>
+<span id="cb80-35"><a href="#cb80-35" aria-hidden="true" tabindex="-1"></a>                    <span class="fu">tm_fill</span>(à compléter)<span class="sc">+</span></span>
+<span id="cb80-36"><a href="#cb80-36" aria-hidden="true" tabindex="-1"></a>                <span class="fu">tm_shape</span>(StationMorency)<span class="sc">+</span><span class="fu">tm_dots</span>(<span class="at">col=</span><span class="st">"darkred"</span>, <span class="at">size =</span> .<span class="dv">25</span>)</span>
+<span id="cb80-37"><a href="#cb80-37" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-38"><a href="#cb80-38" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(Carte.Marche, Carte.Velo, <span class="at">ncol =</span> <span class="dv">2</span>)</span>
+<span id="cb80-39"><a href="#cb80-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-40"><a href="#cb80-40" aria-hidden="true" tabindex="-1"></a><span class="co"># 4. Arrêt de java</span></span>
+<span id="cb80-41"><a href="#cb80-41" aria-hidden="true" tabindex="-1"></a>r5r<span class="sc">::</span><span class="fu">stop_r5</span>(r5r_core)</span>
+<span id="cb80-42"><a href="#cb80-42" aria-hidden="true" tabindex="-1"></a>rJava<span class="sc">::</span><span class="fu">.jgc</span>(<span class="at">R.gc =</span> <span class="cn">TRUE</span>)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Correction à la <a href="10-Exercices.html#sec-10052">section&nbsp;<span>9.5.2</span></a>.</p>
 </div>

@@ -574,7 +574,8 @@ Pour l'analyse, nous utilisons la fonction *kernel* quadratique et la NKDE conti
 #| eval: false
 
 eval_bandwidth <- bw_cv_likelihood_calc.mc(
-  bws = seq(100,1200,50),
+  bw_range = c(100,1200),
+  bw_step = 50,
   lines = routes, 
   events = collisions,
   w = rep(1, nrow(collisions)), # le poids de chaque évènement est 1
@@ -662,7 +663,8 @@ Nous pouvons à présent utiliser une *bandwidth* adaptative. Pour cela, nous de
 ```{r}
 #| eval: false
 eval_bandwidth_adapt <- bw_cv_likelihood_calc.mc(
-  bws = seq(100,1200,50),
+  bw_range = c(100,1200),
+  bw_step = 50,
   lines = routes, 
   events = collisions,
   w = rep(1, nrow(collisions)), # le poids de chaque évènement sera 1
@@ -950,7 +952,7 @@ Maintenant que nous avons nettoyé notre réseau, nous calculons les scores pour
 lixels_main <- lixelize_lines(main_network, 100, mindist = 50)
 lixels_main_centers <- spNetwork::lines_center(lixels_main)
 # Calcul des scores pour les bandwidths
-cv_scores_tnkde <- bw_tnkde_cv_likelihood_calc(
+cv_scores_tnkde <- bws_tnkde_cv_likelihood_calc(
   bws_net = seq(700,1500,100),
   bws_time =  seq(10,40,5),
   lines = main_network,
