@@ -543,7 +543,7 @@ title(main="Rook", font.main= 1)
 
 Pour décrire la construction des matrices de contiguïté avec un ordre d'adjacence (décrites à la [section @sec-0221]), nous utilisons une couche géographique comprenant peu d'entités spatiales, soit celle des quatre arrondissements de la ville de Sherbrooke (figure 1). Le code ci-dessous permet d'obtenir les résultats suivants :
 
--   `Rook <- poly2nb(Arrondissements, queen=TRUE)`: matrice d'ordre 1 selon le partage d'un segment.
+-   `Rook <- poly2nb(Arrondissements, queen=FALSE)`: matrice d'ordre 1 selon le partage d'un segment.
 
 -   `str(Rook)`: pour chaque arrondissement, la liste des arrondissements adjacents d'ordre 1.
 
@@ -561,7 +561,7 @@ Pour décrire la construction des matrices de contiguïté avec un ordre d'adjac
 #| warning: false
 Arrondissements <- st_read("data/chap02/Arrondissements.shp", quiet=TRUE)
 ## Matrice de contiguïté d'ordre 1 selon le partage d'un segment (Rook)
-Rook <- poly2nb(Arrondissements, queen=TRUE)
+Rook <- poly2nb(Arrondissements, queen=FALSE)
 str(Rook)
 ## Matrice de contiguïté d'ordre 2 selon le partage d'un segment (Rook)
 Rook.Ordre2 <- nblag(Rook, 2)
@@ -2310,7 +2310,6 @@ tmap_arrange(Carte1, Carte2, ncol = 2, nrow = 1)
 ## Enregistrement les résultats dans deux champs de la couche des AD
 AD.DR$RevMed_localGetis.MC999 <- localGetis.MC999
 AD.DR$RevMed_localGetis.StarMC999 <- localGetis.StarMC999
-coupures = c(-Inf, -3.29, -2.58, -1.96, 1.96, 2.58, 3.29, Inf)
 # Définition des intervalles et des noms des classes
 classes.intervalles = c(-Inf, -3.29, -2.58, -1.96, 1.96, 2.58, 3.29, Inf)
 classes.noms = c("Point froid (p = 0,05)", 
@@ -2549,7 +2548,7 @@ signif = 0.05
 ## Construction de la typologie
 Typologie <- attributes(localMoranI)$quadr$mean
 Typologie <- case_when(
-  localMoranI[, 5] < signif ~ Typologie,
+  plocalMoranI < signif ~ Typologie,
   TRUE ~ "Non sign."
 )
 ## Enregistrement de la typologie dans un champ

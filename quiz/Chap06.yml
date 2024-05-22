@@ -25,7 +25,7 @@
   answers:
      - "Vrai"
      - "Faux"
-  help: "Relisez au besoin la [section @sec-06111]."
+  help: "Relisez au besoin la [section @sec-06213]."
 
 - label: "Contrairement à la KDE classique, la NKDE est moins sensible au choix de la bandwidth."
   type: uc
@@ -33,7 +33,7 @@
   answers:
      - "Vrai"
      - "Faux"
-  help: "Relisez au besoin la [section @sec-06114]."
+  help: "Relisez au besoin la [section @sec-06214]."
 
 - label: "L'extension spatio-temporelle du NKDE (TNKDE) consiste à :"
   type: uc

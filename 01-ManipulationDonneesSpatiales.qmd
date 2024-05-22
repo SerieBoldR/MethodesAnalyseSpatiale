@@ -174,14 +174,18 @@ ggplot()+ geom_sf(data = Arrondissements, lwd = .8)+
 
 #### Importation d'une couche dans un *GeoPackage* {#sec-01112}
 
-Pour importer une couche stockée dans un *GeoPackage* (GPKG), vous devez spécifier le fichier et la couche avec respectivement les paramètres `dsn` et `layer` de la fonction `st_read`. Le code ci-dessous permet d'importer les secteurs de recensement de la région métropolitaine de recensement de Sherbrooke pour l'année 2021.
+Pour importer une couche stockée dans un *GeoPackage* (GPKG), vous devez spécifier le fichier et la couche avec respectivement les paramètres `dsn` et `layer` de la fonction `st_read`. Le code ci-dessous permet d'importer les secteurs de recensement de la région métropolitaine de recensement de Sherbrooke pour l'année 2021. Notez que la fonction `st_layers(dsn)` permet d'obtenir la liste des couches contenues dans le fichier GPKG, avec le type de géométrie, les nombre d'entités spatiales et de champs, et la projection cartographique pour chacune d'elles.
 
 ```{r}
 #| echo: true
 #| message: false
 #| warning: false
-## Importation d'une couche dans un GPKG
-SR.RMRSherb <- st_read(dsn = "data/chap01/gpkg/Recen2021Sherbrooke.gpkg", 
+## Nom du fichier GPKG
+fichierGPKG <- "data/chap01/gpkg/Recen2021Sherbrooke.gpkg"
+## Liste des couches dans le GPKG
+st_layers(dsn=fichierGPKG, do_count = TRUE)
+## Importation d'une couche
+SR.RMRSherb <- st_read(dsn = fichierGPKG, 
                        layer = "SherbSR", quiet=TRUE)
 ## Affichage des deux premiers enregistrements
 head(SR.RMRSherb, n=2)
