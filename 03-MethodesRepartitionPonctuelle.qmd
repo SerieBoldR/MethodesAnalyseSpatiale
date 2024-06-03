@@ -154,7 +154,7 @@ Vous pouvez consulter [cette carte](https://www.census.gov/library/visualization
 Notez que les centres moyen et moyen pondéré peuvent aussi être calculés sur des données géographiques comprenant des valeurs d'élévation ($x,y,z$) :
 
 $$
-(\bar{x}_{cm}, \bar{y}_{cm}, \bar{z}_{cm}) = \Biggl( \frac{\Sigma_{i=1}^n x_i}{n}, \frac{\Sigma_{i=1}^n y_i}{n}, \frac{w_i\Sigma_{i=1}^n z_i}{n}\Biggl)
+(\bar{x}_{cm}, \bar{y}_{cm}, \bar{z}_{cm}) = \Biggl( \frac{\Sigma_{i=1}^n x_i}{n}, \frac{\Sigma_{i=1}^n y_i}{n}, \frac{\Sigma_{i=1}^n z_i}{n}\Biggl)
 $$ {#eq-PointMoyenZ1}
 
 $$
@@ -1506,7 +1506,7 @@ Imaginons que ce processus spatial représente le niveau de risque de se faire a
 #| fig-align: center
 #| fig-cap: Réalisation du processus spatial
 #| out-width: 85%
-pts <- rpoint(1500,dens1)
+pts <- rpoint(1500, dens1)
 plot(pts, main = "Attaques d'écureuils enregistrées")
 ```
 
@@ -1884,7 +1884,7 @@ Dans les sections précédentes, nous avons vu que l'analyse de densité dans un
 Cette méthode peut être étendue assez facilement au contexte spatio-temporel. En effet, lorsque les évènements étudiés sont caractérisés par une date d'occurrence, il est possible de répartir leur masse à la fois dans l'espace et dans le temps. Plus exactement, il s'agit d'un kernel bivarié comprenant une *bandwidth* spatiale et une *bandwidth* temporelle. La densité locale est alors estimée avec le produit de la densité spatiale et de la densité temporelle de chaque évènement (@eq-STKDEDensity).
 
 $$
-\lambda(s) = \sum_{i=1}^n \frac{1}{\pi bw_s^2 * bw_t} k\biggl(\frac{d_{si}}{bw_s}\biggl) k\biggl(\frac{t_{si}}{bw_t}\biggl)\text{ avec }
+\lambda(s) = \sum_{i=1}^n \frac{1}{\pi bw_s^2 \times bw_t} k\biggl(\frac{d_{si}}{bw_s}\biggl) k\biggl(\frac{t_{si}}{bw_t}\biggl)\text{ avec }
 $$ {#eq-STKDEDensity}
 
 -   $bw_t$ et $bw_s$ les rayons d'influence (*bandwidth*) temporel et spatial.
@@ -1984,7 +1984,7 @@ collisions <- st_transform(collisions, 2949)
 collisions$dt <- as_date(collisions$DATEINCIDE)
 collisions$dt_num <- as.numeric(collisions$dt - min(collisions$dt))
 ggplot(collisions, aes(x=dt)) + 
-  geom_density(bw = 'SJ', color = "blue", lwd = 1) + 
+  geom_density(bw = 'sj', color = "blue", lwd = 1) + 
   labs(y= "Densité", x = "Date")+
   scale_x_date(date_breaks = "6 months", date_labels =  "%b %Y")+
   theme_bw()

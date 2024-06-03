@@ -233,7 +233,6 @@ Modele.SLX <- lmSLX(NO2 ~ Pct0_14+Pct_65+Pct_Img+Pct_brevet+NivVieMed,
                    listw=W.Rook,     # matrice de pondération spatiale
                    data = LyonIris)  # dataframe
 ## Résultats du modèle
-# Résultats du modèles
 summary(Modele.SLX)
 ```
 
@@ -482,8 +481,7 @@ Modele.DurbinSpatial <- lagsarlm(NO2 ~ Pct0_14+Pct_65+Pct_Img+Pct_brevet+NivVieM
                        listw = W.Rook,    # matrice de pondération spatiale
                        data = LyonIris,   # dataframe
                        type = "mixed")
-## 7.2. Résultats du modèle
-# Résultats du modèles
+## Résultats du modèles
 summary(Modele.DurbinSpatial, Nagelkerke=TRUE)
 ```
 

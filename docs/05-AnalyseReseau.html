@@ -631,13 +631,13 @@ div.csl-indent {
 <p><strong><code>R5R</code> et JDK Java et allocation de la mémoire</strong></p>
 </div>
 <div class="bloc_attention-body">
-<p>Le <em>package</em> <code>R5R</code> utilise la version 11 de la JDK de Java (<em>Java Development Kit</em>). Vous devez préalablement la <a href="https://www.oracle.com/ca-en/java/technologies/javase/jdk11-archive-downloads.html">télécharger</a> et l’installer sur votre ordinateur. Les deux lignes de code ci-dessous permettent de vérifier si elle est bien installée sur votre ordinateur.</p>
+<p>Le <em>package</em> <code>R5R</code> utilise la version 21 de la JDK de Java (<em>Java Development Kit</em>). Vous devez préalablement la <a href="https://adoptium.net/">télécharger</a> et l’installer sur votre ordinateur. Les deux lignes de code ci-dessous permettent de vérifier si elle est bien installée sur votre ordinateur.</p>
 <div class="cell">
-<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Vérification que la JDK version 11 est bien installée</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Vérification que la JDK version 21 est bien installée</span></span>
 <span><span class="fu">rJava</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rJava/man/jinit.html">.jinit</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu">rJava</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/rJava/man/jcall.html">.jcall</a></span><span class="op">(</span><span class="st">"java.lang.System"</span>, <span class="st">"S"</span>, <span class="st">"getProperty"</span>, <span class="st">"java.version"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "11.0.19"</code></pre>
+<pre><code>[1] "21.0.3"</code></pre>
 </div>
 </div>
 <p>Il est fortement conseillé d’augmenter la mémoire allouée au processus JAVA, surtout si vous souhaitez calculer des matrices origines-destinations de grande taille. Par exemple, la commande <code>options(java.parameters = "-Xmx2G")</code> permet d’augmenter la mémoire disponible pour JAVA à deux gigaoctets. Si votre ordinateur ne manque pas de mémoire vive (16, 32 ou 64&nbsp;gigaoctets), n’hésitez pas à augmenter ce paramètre (par exemple, <code>options(java.parameters = "-Xmx8G")</code>).</p>
@@ -785,7 +785,7 @@ Geodetic CRS:  WGS 84
             from_id from_lat  from_lon      to_id   to_lat    to_lon option
 1 Rue Wellington S. 45.38947 -71.88393 Rue Darche 45.38353 -71.89169      1
   departure_time total_duration total_distance segment    mode segment_duration
-1       17:24:29            8.1           1215       1 BICYCLE              8.1
+1       15:18:25            8.1           1215       1 BICYCLE              8.1
   wait distance route                       geometry
 1    0     1215       LINESTRING (-71.88396 45.38...</code></pre>
 </div>
@@ -799,7 +799,7 @@ Geodetic CRS:  WGS 84
      from_id from_lat  from_lon             to_id   to_lat    to_lon option
 1 Rue Darche 45.38353 -71.89169 Rue Wellington S. 45.38947 -71.88393      1
   departure_time total_duration total_distance segment    mode segment_duration
-1       17:24:30            6.5           1215       1 BICYCLE              6.5
+1       15:18:25            6.8           1215       1 BICYCLE              6.8
   wait distance route                       geometry
 1    0     1215       LINESTRING (-71.89191 45.38...</code></pre>
 </div>
@@ -861,7 +861,7 @@ Geodetic CRS:  WGS 84
   from_id from_lat  from_lon            to_id   to_lat    to_lon option
 1  Départ 45.42203 -71.88183 Campus principal 45.37802 -71.92953      1
   departure_time total_duration total_distance segment mode segment_duration
-1       17:24:30           21.7          11352       1  CAR             21.7
+1       15:18:26             22          11352       1  CAR               22
   wait distance route                       geometry
 1    0    11352       LINESTRING (-71.88129 45.42...</code></pre>
 </div>
@@ -875,7 +875,7 @@ Geodetic CRS:  WGS 84
            from_id from_lat  from_lon  to_id   to_lat    to_lon option
 1 Campus principal 45.37802 -71.92953 Départ 45.42203 -71.88183      1
   departure_time total_duration total_distance segment mode segment_duration
-1       17:24:30           18.8           9685       1  CAR             18.8
+1       15:18:26           19.2           9685       1  CAR             19.2
   wait distance route                       geometry
 1    0     9685       LINESTRING (-71.92952 45.37...</code></pre>
 </div>
@@ -1209,10 +1209,10 @@ Geodetic CRS:  WGS 84
 <span>     <span class="st">"\n Transport en commun : "</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">duree.tc</span>,<span class="fl">2</span><span class="op">)</span>, <span class="st">"secondes"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Temps de calcul des matrices : 
- Voiture :  8.6 secondes 
- Marche :  0.25 secondes 
- Vélo :  2.76 secondes 
- Transport en commun :  0.34 secondes</code></pre>
+ Voiture :  8.62 secondes 
+ Marche :  0.33 secondes 
+ Vélo :  2.88 secondes 
+ Transport en commun :  0.26 secondes</code></pre>
 </div>
 </div>
 <p>Une fois les matrices obtenues, nous les enregistrons dans un fichier <code>Rdata</code>.</p>

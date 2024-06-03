@@ -360,12 +360,12 @@ Pour ce fichier, le seul type de ligne utilisé est le numéro 3, soit des ligne
 :::
 
 ::: bloc_attention-body
-Le *package* `R5R` utilise la version 11 de la JDK de Java (*Java Development Kit*). Vous devez préalablement la [télécharger](https://www.oracle.com/ca-en/java/technologies/javase/jdk11-archive-downloads.html) et l'installer sur votre ordinateur. Les deux lignes de code ci-dessous permettent de vérifier si elle est bien installée sur votre ordinateur.
+Le *package* `R5R` utilise la version 21 de la JDK de Java (*Java Development Kit*). Vous devez préalablement la [télécharger](https://adoptium.net/) et l'installer sur votre ordinateur. Les deux lignes de code ci-dessous permettent de vérifier si elle est bien installée sur votre ordinateur.
 
 ```{r}
 #| echo: true
 #| message: true 
-## Vérification que la JDK version 11 est bien installée
+## Vérification que la JDK version 21 est bien installée
 rJava::.jinit()
 rJava::.jcall("java.lang.System", "S", "getProperty", "java.version")
 ```
