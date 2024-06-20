@@ -1159,7 +1159,7 @@ Différentes mesures renvoyant à différentes conceptualisations de l'accessibi
 
 ```{r}
 #| label: tbl-ConceptualisationAccessibilite
-#| tbl-cap: Liste des formats avec le *package* `sf` (`st_drivers`)
+#| tbl-cap: Conceptualisation et mesures de l'accessibilité spatiale potentielle aux services
 #| echo: false
 #| message: false
 #| warning: false
@@ -1324,7 +1324,6 @@ ggplot(df2) +
        color = 'fonction'
        ) + 
   theme_minimal()
-
 ```
 
 Le choix d'une fonction de pondération doit avant tout reposer sur des considérations théoriques et représenter correctement la décroissance de l'attractivité d'un service en fonction de la distance d'éloignement. Idéalement, ces fonctions devraient être ajustées en fonction de données sur les habitudes de déplacement des individus.

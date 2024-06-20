@@ -1393,7 +1393,7 @@ TessalationC <- as.tess(FenetresC)
 TessalationH <- as.tess(FenetresH)
 ```
 
-Nous pouvons calculer différents tests avec la fonction `quadrat.test`. Dans un premier temps, nous vérifions si **la distribution est dispersée** avec la méthode Monte-Carlo et 999 permutations (`alternative ="regular"`). Que ce soit avec les quadrats carrés ou hexagonaux, la valeur de *p* est égale à 0. Cela signifie que nous sommes 100 % certains que la distribution n'est pas dispersée.
+Nous pouvons calculer différents tests avec la fonction `quadrat.test`. Dans un premier temps, nous vérifions si **la distribution est dispersée** avec la méthode Monte-Carlo et 999 permutations (`alternative ="regular"`). Que ce soit avec les quadrats carrés ou hexagonaux, la valeur de *p* est égale à 1. Cela signifie que nous sommes 100 % certains que la distribution n'est pas dispersée.
 
 ```{r}
 #| echo: true
