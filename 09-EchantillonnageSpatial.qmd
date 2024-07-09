@@ -1,0 +1,17 @@
+# Méthodes d'échantillonnage spatial {#sec-chap09}
+
+## Méthodes d'échantillonnage aléatoires versus probabilistes {#sec-091}
+
+## Échantillonnage aléatoire simple {#sec-092}
+
+## Échantillonnage aléatoire stratifié {#sec-093}
+
+## Échantillonnage aléatoire systématique {#sec-094}
+
+## Échantillonnage classifié {#sec-095}
+
+## Calcul de la taille de l'échantillon nécessaire {#sec-096}
+
+## Quiz de révision du chapitre {#sec-097}
+
+## Exercices de révision {#sec-098}

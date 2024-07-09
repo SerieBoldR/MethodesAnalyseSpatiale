@@ -2115,7 +2115,7 @@ CercleDS <- À compléter
 head(CercleDS)
 ```
 
-Correction à la [section @sec-10031].
+Correction à la [section @sec-12031].
 :::
 :::
 
@@ -2160,7 +2160,7 @@ tm_shape(SR)+
   tm_layout(frame = FALSE)+tm_scale_bar(text.size = .5, c(0, 5, 10))
 ```
 
-Correction à la [section @sec-10032].
+Correction à la [section @sec-12032].
 :::
 :::
 
@@ -2218,6 +2218,6 @@ tmap_mode("plot")
   À compléter
 ```
 
-Correction à la [section @sec-10033].
+Correction à la [section @sec-12033].
 :::
 :::

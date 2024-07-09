@@ -1,0 +1,13 @@
+# Méthodes de déségrégation spatiale {#sec-chap11}
+
+## Retour sur le MAUP {#sec-111}
+
+## Carroyage et lissage {#sec-112}
+
+## Interpolation pycnophylactique {#sec-113}
+
+## Cartographie dasymétrique {#sec-114}
+
+## Quiz de révision du chapitre {#sec-115}
+
+## Exercices de révision {#sec-116}

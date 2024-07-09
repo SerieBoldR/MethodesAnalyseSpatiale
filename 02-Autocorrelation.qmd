@@ -181,7 +181,7 @@ Petit conseil pour la partie A : une matrice de contiguïté est symétrique c'
 
 ![Exercice sur la contiguïté et les ordres d'adjacence](images/Chap02/ExoMatriceDeContiguite.png){#fig-ExoMatriceDeContiguiteCorrection width="60%" fig-align="center"}
 
-Correction à la [section @sec-10021].
+Correction à la [section @sec-12021].
 :::
 :::
 
@@ -680,10 +680,10 @@ InvDistances.5000m  <- ifelse(distances<=5000 & distances!=0, 1/distances, 0)
 InvDistances2.2500m <- ifelse(distances<=2500 & distances!=0, 1/distances^2, 0)
 InvDistances2.5000m <- ifelse(distances<=5000 & distances!=0, 1/distances^2, 0)
 ## Matrices de pondération spatiale standardisées en ligne
-W_InvDistances.2500 <- mat2listw(InvDistances.2500m, style="W")
-W_InvDistances.5000 <- mat2listw(InvDistances.5000m, style="W")
-W_InvDistances2.2500 <- mat2listw(InvDistances2.2500m, style="W")
-W_InvDistances2.5000 <- mat2listw(InvDistances2.5000m, style="W")
+W_InvDistances.2500 <- mat2listw(InvDistances.2500m, style="W", zero.policy = TRUE)
+W_InvDistances.5000 <- mat2listw(InvDistances.5000m, style="W", zero.policy = TRUE)
+W_InvDistances2.2500 <- mat2listw(InvDistances2.2500m, style="W", zero.policy = TRUE)
+W_InvDistances2.5000 <- mat2listw(InvDistances2.5000m, style="W", zero.policy = TRUE)
 ```
 
 Spécifier un seuil de distance peut toutefois être problématique. Par exemple, sur les 50 secteurs de recensement de la ville de Sherbrooke, 19 n'ont pas de voisins à 2500 mètres, indiqués par le résultat suivant :
@@ -974,10 +974,10 @@ InvDistances.2500m  <- ifelse(distances<=2500 & distances!=0, 1/distances, 0)
 InvDistances.5000m  <- ifelse(distances<=5000 & distances!=0, 1/distances, 0)
 InvDistances2.2500m <- ifelse(distances<=2500 & distances!=0, 1/distances^2, 0)
 InvDistances2.5000m <- ifelse(distances<=5000 & distances!=0, 1/distances^2, 0)
-W.InvDistances_2500 <- mat2listw(InvDistances.2500m, style="W")
-W.InvDistances_5000 <- mat2listw(InvDistances.5000m, style="W")
-W.InvDistances2_2500 <- mat2listw(InvDistances2.2500m, style="W")
-W.InvDistances2_5000 <- mat2listw(InvDistances2.5000m, style="W")
+W.InvDistances_2500 <- mat2listw(InvDistances.2500m, style="W", zero.policy = TRUE)
+W.InvDistances_5000 <- mat2listw(InvDistances.5000m, style="W", zero.policy = TRUE)
+W.InvDistances2_2500 <- mat2listw(InvDistances2.2500m, style="W", zero.policy = TRUE)
+W.InvDistances2_5000 <- mat2listw(InvDistances2.5000m, style="W", zero.policy = TRUE)
 ## Matrice de distance réduite standardisée
 k1 <- knn2nb(knearneigh(coords))
 plusprochevoisin.max <- max(unlist(nbdists(k1,coords)))
@@ -3433,7 +3433,7 @@ k2 <- À compléter
 W.k2 <-  À compléter
 ```
 
-Correction à la [section @sec-10022].
+Correction à la [section @sec-12022].
 :::
 :::
 
@@ -3472,7 +3472,7 @@ tm_shape(SRQc)+
 À compléter
 ```
 
-Quelle matrice de pondération spatiale donne la dépendance spatiale la plus forte? Correction à la [section @sec-10023].
+Quelle matrice de pondération spatiale donne la dépendance spatiale la plus forte? Correction à la [section @sec-12023].
 :::
 :::
 
@@ -3547,6 +3547,6 @@ tmap_mode("plot")
 À compléter
 ```
 
-Correction à la [section @sec-10024].
+Correction à la [section @sec-12024].
 :::
 :::

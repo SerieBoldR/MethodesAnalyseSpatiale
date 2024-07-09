@@ -558,8 +558,8 @@ routes <- st_read('data/chap01/shp/Segments_de_rue.shp', quiet = TRUE)
 collisions <- st_read('data/chap04/DataAccidentsSherb.shp', quiet = TRUE)
 ## Application de la même projection
 routes <- st_transform(routes, 2949)
-collisions <- st_transform(collisions, 2949)
 routes <- sf::st_cast(routes, 'LINESTRING')
+collisions <- st_transform(collisions, 2949)
 ## Cartographie des données des collisions et du réseau routier
 tm_shape(routes) + 
   tm_lines('grey20') + 
@@ -1492,7 +1492,7 @@ eval_bandwidth <- bw_cv_likelihood_calc.mc(à compléter)
 à compléter
 ```
 
-Correction à la [section @sec-10061].
+Correction à la [section @sec-12061].
 :::
 :::
 
@@ -1525,6 +1525,6 @@ lixels$density <- intensity * 1000
 À compléter
 ```
 
-Correction à la [section @sec-10062].
+Correction à la [section @sec-12062].
 :::
 :::

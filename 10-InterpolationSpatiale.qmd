@@ -1,0 +1,21 @@
+# Méthodes d'interpolation spatiale {#sec-chap10}
+
+## Méthodes déterministes {#sec-101}
+
+### Interpolation polynomiale locale {#sec-1011}
+
+### Interpolation de l'inverse à la distance (*IDW*) {#sec-1012}
+
+## Méthodes géostatistiques {#sec-102}
+
+### Krigeage simple {#sec-1021}
+
+### Krigeage universel {#sec-1022}
+
+### Co-krigeage {#sec-1023}
+
+### Krigeage résiduel {#sec-1024}
+
+## Quiz de révision du chapitre {#sec-103}
+
+## Exercices de révision {#sec-104}

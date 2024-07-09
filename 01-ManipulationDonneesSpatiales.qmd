@@ -2499,7 +2499,7 @@ Arrond.DesNations <- subset(À compléter)
 Rues.DesNations <- À compléter
 ```
 
-Correction à la [section @sec-10011].
+Correction à la [section @sec-12011].
 :::
 :::
 
@@ -2542,7 +2542,7 @@ tm_shape(À compléter)+
   tm_borders(col="black")
 ```
 
-Correction à la [section @sec-10012].
+Correction à la [section @sec-12012].
 :::
 :::
 
@@ -2582,7 +2582,7 @@ head(DR.Qc, n=2)
 summary(DR.Qc$HabKm2)
 ```
 
-Correction à la [section @sec-10013].
+Correction à la [section @sec-12013].
 :::
 :::
 
@@ -2636,6 +2636,6 @@ tm_shape(Point1_sf)+
   tm_dots(col= "blue", shape=21, size = .2)
 ```
 
-Correction à la [section @sec-10014].
+Correction à la [section @sec-12014].
 :::
 :::

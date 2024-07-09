@@ -1319,6 +1319,6 @@ Carte4 <- tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
 tmap_arrange(à compléter)
 ```
 
-Correction à la [section @sec-10081].
+Correction à la [section @sec-12081].
 :::
 :::

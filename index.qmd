@@ -192,7 +192,7 @@ Dans ce livre, nous utilisons de nombreux *packages* R que vous pouvez installer
 
 # Liste des packages
 ListePackages <- c("classInt", "cluster", "ClustGeo", "concaveman", "dbscan", "dplyr", "factoextra", 
-                   "foot", "foreign", "future", "geocmeans", "ggplot2", "ggpubr", "ggthemes", 
+                   "foreign", "future", "geocmeans", "ggplot2", "ggpubr", "ggthemes", 
                    "gifski", "Gmedian", "gpx", "gtfstools", "igraph", "lubridate", "MASS", 
                    "metR", "mgcv", "osmextract", "r5r", "raster", "RColorBrewer", "rgdal", 
                    "rgeoda", "rgl", "rmapshaper", "sf", "sparr", "spatialreg", "spatstat", 

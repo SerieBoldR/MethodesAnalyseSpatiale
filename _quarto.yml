@@ -38,7 +38,7 @@ book:
       Ce livre a été réalisé avec <a href="https://quarto.org/">Quarto</a>.
   cover-image: images/introduction/Couverture_16_01-01.png
   favicon: images/introduction/Couverture_16_01-01.png
-  site-url: https://github.com/SerieBoldR/MethodesAnalyseSpatiale/livre/index.html
+  site-url: https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html
   repo-url: https://github.com/SerieBoldR/MethodesAnalyseSpatiale
   repo-branch: main
   repo-actions:
@@ -60,12 +60,16 @@ book:
   - part: Partie 5. Régressions spatiales et classifications spatiales
   - 07-RegressionSpatiales.qmd
   - 08-ClassificationsSpatiales.qmd
-  - part: Partie 6. Exercices et bibliographie
-  - 10-Exercices.qmd
+  - part: Partie 6. Échantillonnage, interpolation et désagrégation spatiales
+  - 09-EchantillonnageSpatial.qmd
+  - 10-InterpolationSpatiale.qmd
+  - 11-DesagregationSpatiale.qmd
+  - part: Partie 7. Exercices et bibliographie
+  - 12-Exercices.qmd
   - references.qmd
       
 bibliography: references.bib
-csl: StyleINRS.csl
+csl: StyleRefs.csl
 
 format:
   html:

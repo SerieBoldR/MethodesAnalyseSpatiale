@@ -1329,7 +1329,7 @@ Modele.DurbinSpatial <- à compléter
 Modele.DurbinErreur <- à compléter
 ```
 
-Correction à la [section @sec-10071].
+Correction à la [section @sec-12071].
 :::
 :::
 
@@ -1362,7 +1362,7 @@ Modele.GAM2 <- gam(NO2 ~  à compléter
 summary(Modele.GAM2)
 ```
 
-Correction à la [section @sec-10072].
+Correction à la [section @sec-12072].
 :::
 :::
 
@@ -1398,6 +1398,6 @@ Modele.GWR <- gwr(à compléter)
 Modele.GWR
 ```
 
-Correction à la [section @sec-10073].
+Correction à la [section @sec-12073].
 :::
 :::
