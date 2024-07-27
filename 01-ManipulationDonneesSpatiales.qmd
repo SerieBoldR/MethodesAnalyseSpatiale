@@ -342,7 +342,7 @@ head(Arena_sf)
 
 ### Importation de données *raster* {#sec-0112}
 
-La fonction `terra::rast` permet d'importer des images de différents formats (GeoTiff, ESRI, ENVI, ERDAS, BIN, GRID, etc.). Nous importons ci-dessous quatre feuillets de [modèles numériques d'altitude (MNA) à l'échelle du 1/20000](https://www.donneesquebec.ca/recherche/dataset/modeles-numeriques-d-altitude-a-l-echelle-de-1-20-000) couvrant la ville de Sherbrooke. La @fig-MNA présente l'un d'entre eux.
+La fonction `terra::rast` permet d'importer des images de différents formats (GeoTiff, ESRI, ENVI, ERDAS, BIN, GRID, etc.). Nous importons ci-dessous cinq feuillets de [modèles numériques d'altitude (MNA) à l'échelle du 1/20000](https://www.donneesquebec.ca/recherche/dataset/modeles-numeriques-d-altitude-a-l-echelle-de-1-20-000) couvrant la ville de Sherbrooke. La @fig-MNA présente l'un d'entre eux.
 
 ```{r}
 #| echo: true 
@@ -1512,7 +1512,7 @@ Une fois plusieurs images importées, il est fréquent de vouloir les fusionner.
 
 -   `terra::merge` fusionne plusieurs images (objets de type `SpatRasters`) pour former un nouvel objet `SpatRasters` dont l'étendue est recalculée en fonction des images fusionnées. Par contre, quand les images se chevauchent, les valeurs des pixels dans les zones de chevauchement seront prises dans le même ordre que les images.
 
--   `terra::mosaic` fusionne aussi plusieurs images. Toutefois, dans les zones de chevauchement, les moyennes des pixels sont calculées. Selon la documentation de `terra`, cette méthode serait plus rapide que la précédente. Dans le code ci-dessous, nous fusionnons les quatre feuillets de modèles numériques d'altitude (MNA) importés dans la [section @sec-0112].
+-   `terra::mosaic` fusionne aussi plusieurs images. Toutefois, dans les zones de chevauchement, les moyennes des pixels sont calculées. Selon la documentation de `terra`, cette méthode serait plus rapide que la précédente. Dans le code ci-dessous, nous fusionnons les feuillets de modèles numériques d'altitude (MNA) importés dans la [section @sec-0112].
 
 ```{r}
 #| echo: true 
@@ -1531,13 +1531,13 @@ MosaicSherb
 
 Vous constatez ci-dessus que la projection des images est lon/lat NAD83 (EPSG:4269).
 
-D'autres fonctions permettent de découper une image en fonction d'une autre image (objet `SpatRaster` de `terra`)) ou d'un objet `terra` vectoriel (`SpatVector`) :
+D'autres fonctions permettent de découper une image en fonction d'une autre image (objet `SpatRaster` de `terra`) ou d'un objet `terra` vectoriel (`SpatVector`) :
 
 -   `crop(x, y)` découpe une image `x` en prenant l'étendue de `y`.
 
 -   `mask(x, y)` découpe une image `x` en prenant la zone (pixels avec des valeurs non nulles ou objets vectoriels) de `y`. Les pixels en dehors de cette zone auront nulle comme valeur (`NA` dans R).
 
-En guise d'exemple, découpons la mosaïque avec le polygone de la ville de Sherbrooke en utilisant la méthode `mask`. Attention, les deux sources de données doivent avoir la même projection et il faut préalablement convertir l'objet `sf` en objet `terra`.
+En guise d'exemple, découpons la mosaïque avec le polygone de la ville de Sherbrooke en utilisant la méthode `mask`. Attention, les deux sources de données doivent avoir la même projection et il faut préalablement convertir l'objet `sf` en objet `SpatVector` de `terra`.
 
 ```{r}
 #| echo: true 
@@ -1552,7 +1552,7 @@ VilleSherb.SpatVector = vect(VilleSherb.EPSG4269)
 ## Découpage de la mosaïque avec le polygone de la ville de Sherbrooke
 MosaicSherbCrop <- terra::mask(MosaicSherb, VilleSherb.SpatVector)
 MosaicSherbCrop
-## Constastez ci-dessus que le nom de l'image est f21e05_101.
+## Constatez ci-dessus que le nom de l'image est f21e05_101.
 ## Pour le changer, utilisez la fonction names()
 names(MosaicSherbCrop) = "Elevation"
 MosaicSherbCrop
@@ -1659,7 +1659,7 @@ st_write(PointsGPS,
          driver="GeoJSON")
 ```
 
-Le paramètre `driver` de la fonction `st_write` permet de spécifier le format du fichier. Pour obtenir la liste des formats qu'il est possible d'importer et d'exporter, tapez dans la console `?st_drivers` ou consultez le @tbl-ListeDrivers.
+Le paramètre `driver` de la fonction `st_write` permet de spécifier le format du fichier. Pour obtenir la liste des formats qu'il est possible d'importer et d'exporter, tapez dans la console `st_drivers()` ou consultez le @tbl-ListeDrivers.
 
 ```{r}
 #| label: tbl-ListeDrivers

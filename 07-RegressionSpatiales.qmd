@@ -81,7 +81,7 @@ knitr::kable(stats,
 :::
 
 ::: bloc_attention-body
-Dans cette section, nous décrivons uniquement les modèles économétriques spatiaux dont la variable dépendante est continue. Sommairement, ces modèles sont des extensions de la régression linéaire multiple dans laquelle est intégrée l'autocorrélation spatiale. Avant de lire cette section, il faut donc bien maîtriser la régression linéaire multiple. Si ce n'est pas le cas, nous vous invitons vivement à lire le [chapitre suivant](https://laeq.github.io/LivreMethoQuantBolR/chap07.html) [@RBoldAir].
+Dans cette section, nous décrivons uniquement les modèles économétriques spatiaux dont la variable dépendante est continue. Sommairement, ces modèles sont des extensions de la régression linéaire multiple dans laquelle est intégrée l'autocorrélation spatiale. Avant de lire cette section, il faut donc bien maîtriser la régression linéaire multiple. Si ce n'est pas le cas, nous vous invitons vivement à lire le [chapitre suivant](https://serieboldr.github.io/MethodesQuantitatives/07-regressionlineaire.html) [@RBoldAir].
 
 Ces deux dernières décennies, plusieurs ouvrages traitant des modèles économétriques spatiaux ont été publiés, surtout en anglais [@lesage2008introduction; @anselin2014modern; @bivand2008applied]. Ils méritent grandement d'être consultés, tout comme l'excellent livre en français de Jean Dubé et Diègo Legros [-@dube2014econometrie].
 :::
@@ -302,7 +302,7 @@ tm_shape(LyonIris)+
 
 #### Modèle SAR : autocorrélation spatiale sur la variable dépendante {#sec-07122}
 
-Dans le modèle SAR (aussi appelé SAR-LAG), l'autocorrélation spatiale est intégrée au niveau de la variable indépendante ($Wy$), qui est ainsi spatialement décalée. L'idée générale est que la valeur de la variable dépendante pour une observation ($y_i$) peut être influencée par les valeurs de $y$ des observations voisines et proches. L'exemple le plus classique est le prix de vente des maisons : il est influencé à la fois par les caractéristiques intrinsèques de la maison ($X$, par exemple, la superficie habitable, le nombre de chambres à coucher, de salles de bains, etc.) et par le prix de vente des maisons voisines ($Wy$). Jean Dubé et Diègo Legros [-@dube2014econometrie] qualifient ce phénomène « **d'effets d'entraînement ou d'effets de débordement** (*spillover effects*) » [-@dube2014econometrie, p. 123]. L'équation du modèle SAR s'écrit alors :
+Dans le modèle SAR (aussi appelé SAR-LAG), l'autocorrélation spatiale est intégrée au niveau de la variable dépendante ($Wy$), qui est ainsi spatialement décalée. L'idée générale est que la valeur de la variable dépendante pour une observation ($y_i$) peut être influencée par les valeurs de $y$ des observations voisines et proches. L'exemple le plus classique est le prix de vente des maisons : il est influencé à la fois par les caractéristiques intrinsèques de la maison ($X$, par exemple, la superficie habitable, le nombre de chambres à coucher, de salles de bains, etc.) et par le prix de vente des maisons voisines ($Wy$). Jean Dubé et Diègo Legros [-@dube2014econometrie] qualifient ce phénomène « **d'effets d'entraînement ou d'effets de débordement** (*spillover effects*) » [-@dube2014econometrie, p. 123]. L'équation du modèle SAR s'écrit alors :
 
 $$
 y = Wy\rho + X\beta + \epsilon
@@ -420,7 +420,7 @@ avec :
 
 **Construction du modèle SAR dans R**
 
-Le modèle SEM est construit avec la fonction `lmSLX` du *package* `spatialreg`.
+Le modèle SEM est construit avec la fonction `errorsarlm` du *package* `spatialreg`.
 
 ```{r}
 #| echo: true 

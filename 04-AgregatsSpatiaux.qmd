@@ -716,7 +716,7 @@ tmap_mode("plot")
 à compléter
 ```
 
-Correction à la [section @sec-10041].
+Correction à la [section @sec-12041].
 :::
 :::
 
@@ -780,6 +780,6 @@ stdbcan.Agregats <- subset(Coll.Velo, stdbscan != "00")
 À compléter
 ```
 
-Correction à la [section @sec-10042].
+Correction à la [section @sec-12042].
 :::
 :::
