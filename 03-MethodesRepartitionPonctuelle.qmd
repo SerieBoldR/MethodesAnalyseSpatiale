@@ -122,7 +122,7 @@ Il est possible de calculer le centre moyen en pondérant chacun des points du s
 :::
 
 ::: bloc_notes-body
-**Pour un rappel sur le calcul d'une moyenne pondérée**, consultez la section intitulée [*Statistiques descriptives pondérées*](https://laeq.github.io/LivreMethoQuantBolR/sect027.html) [@RBoldAir].
+**Pour un rappel sur le calcul d'une moyenne pondérée**, consultez la section intitulée [*Statistiques descriptives pondérées*](https://serieboldr.github.io/MethodesQuantitatives/02-univarie.html#sec-027) [@RBoldAir].
 :::
 :::
 
@@ -211,7 +211,7 @@ $$ {#eq-ecartype}
 :::
 
 ::: bloc_notes-body
-**Pour un rappel sur l'écart-type**, consultez la section intitulée [*Paramètres de dispersion*](https://laeq.github.io/LivreMethoQuantBolR/sect025.html#sect0253) [@RBoldAir].
+**Pour un rappel sur l'écart-type**, consultez la section intitulée [*Paramètres de dispersion*](https://serieboldr.github.io/MethodesQuantitatives/02-univarie.html#sec-0253) [@RBoldAir].
 :::
 :::
 
@@ -428,7 +428,7 @@ Les cercles et les ellipses de distance standard ($ds$) centrés au centre moyen
 
 #### Comparaison de la dispersion de deux semis de points dans deux régions différentes {#sec-03123}
 
-Pour comparer la dispersion de deux semis de points situés dans des régions de taille différente, il convient de supprimer les effets de taille des deux régions. Pour ce faire, nous divisons la **distance standard** ou la **distance standard pondérée** par la superficie de la région. Cette approche est donc très similaire au [coefficient de variation](https://laeq.github.io/LivreMethoQuantBolR/sect025.html#sect0253) en statistique univariée, soit le rapport entre l'écart-type et la moyenne.
+Pour comparer la dispersion de deux semis de points situés dans des régions de taille différente, il convient de supprimer les effets de taille des deux régions. Pour ce faire, nous divisons la **distance standard** ou la **distance standard pondérée** par la superficie de la région. Cette approche est donc très similaire au [coefficient de variation](https://serieboldr.github.io/MethodesQuantitatives/02-univarie.html#sec-0253) en statistique univariée, soit le rapport entre l'écart-type et la moyenne.
 
 Par exemple, si nous comparons les dispersions des personnes utilisatrices du parc de la Laurentie (0,078 ha) et parc du Mont-Bellevue (409 ha). Inévitablement, la valeur de la distance standard est plus forte pour le parc du Mont-Bellevue que celle du parc de la Laurentie. Il faut donc diviser chaque distance standard par la superficie associée.
 

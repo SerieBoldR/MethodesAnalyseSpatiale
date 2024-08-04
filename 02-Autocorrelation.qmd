@@ -680,10 +680,10 @@ InvDistances.5000m  <- ifelse(distances<=5000 & distances!=0, 1/distances, 0)
 InvDistances2.2500m <- ifelse(distances<=2500 & distances!=0, 1/distances^2, 0)
 InvDistances2.5000m <- ifelse(distances<=5000 & distances!=0, 1/distances^2, 0)
 ## Matrices de pondération spatiale standardisées en ligne
-W_InvDistances.2500 <- mat2listw(InvDistances.2500m, style="W")
-W_InvDistances.5000 <- mat2listw(InvDistances.5000m, style="W")
-W_InvDistances2.2500 <- mat2listw(InvDistances2.2500m, style="W")
-W_InvDistances2.5000 <- mat2listw(InvDistances2.5000m, style="W")
+W_InvDistances.2500 <- mat2listw(InvDistances.2500m, style="W", zero.policy = TRUE)
+W_InvDistances.5000 <- mat2listw(InvDistances.5000m, style="W", zero.policy = TRUE)
+W_InvDistances2.2500 <- mat2listw(InvDistances2.2500m, style="W", zero.policy = TRUE)
+W_InvDistances2.5000 <- mat2listw(InvDistances2.5000m, style="W", zero.policy = TRUE)
 ```
 
 Spécifier un seuil de distance peut toutefois être problématique. Par exemple, sur les 50 secteurs de recensement de la ville de Sherbrooke, 19 n'ont pas de voisins à 2500 mètres, indiqués par le résultat suivant :
@@ -816,7 +816,7 @@ Dans le cadre de cette section, nous présentons uniquement les mesures d'autoco
 
 Pour évaluer le degré d'autocorrélation spatiale d'une variable continue, les deux principales statistiques utilisées sont le *I* de Moran [-@moran1950test] et le *c* de Geary [-@geary1954contiguity]. Puisqu'elles renvoient une seule valeur pour la variable continue de la couche géographique étudiée, elles sont qualifiées de mesures globales de l'autocorrélation spatiale, par opposition aux mesures locales qui renvoient une valeur par entité spatiale ([section @sec-024]).
 
-Nous présentons ici uniquement le *I* de Moran pour deux raisons principales. Premièrement, étant basée sur la covariance, son interprétation est bien plus facile que celle du *c* de Geary (basé sur la variance des écarts), c'est-à-dire qu'elle est très similaire au bien connu [coefficient de corrélation de Pearson](https://laeq.github.io/LivreMethoQuantBolR/sect043.html) [@RBoldAir]. Deuxièmement, elle constitue la mesure la plus utilisée. Le *I* de Moran s'écrit :
+Nous présentons ici uniquement le *I* de Moran pour deux raisons principales. Premièrement, étant basée sur la covariance, son interprétation est bien plus facile que celle du *c* de Geary (basé sur la variance des écarts), c'est-à-dire qu'elle est très similaire au bien connu [coefficient de corrélation de Pearson](https://serieboldr.github.io/MethodesQuantitatives/04-bivarieeQuantiQuanti.html#sec-043) [@RBoldAir]. Deuxièmement, elle constitue la mesure la plus utilisée. Le *I* de Moran s'écrit :
 
 $$
 I = \frac{n}{\Sigma_{i=1}^n \Sigma_{j=1}^n w_{ij}} \frac{\Sigma_{i=1}^n \Sigma_{j=1}^n w_{ij}(x_i-\bar{x})(x_j-\bar{x})}{\Sigma_{i=1}^n (x_i-\bar{x})^2} \text{ avec :}
@@ -974,10 +974,10 @@ InvDistances.2500m  <- ifelse(distances<=2500 & distances!=0, 1/distances, 0)
 InvDistances.5000m  <- ifelse(distances<=5000 & distances!=0, 1/distances, 0)
 InvDistances2.2500m <- ifelse(distances<=2500 & distances!=0, 1/distances^2, 0)
 InvDistances2.5000m <- ifelse(distances<=5000 & distances!=0, 1/distances^2, 0)
-W.InvDistances_2500 <- mat2listw(InvDistances.2500m, style="W")
-W.InvDistances_5000 <- mat2listw(InvDistances.5000m, style="W")
-W.InvDistances2_2500 <- mat2listw(InvDistances2.2500m, style="W")
-W.InvDistances2_5000 <- mat2listw(InvDistances2.5000m, style="W")
+W.InvDistances_2500 <- mat2listw(InvDistances.2500m, style="W", zero.policy = TRUE)
+W.InvDistances_5000 <- mat2listw(InvDistances.5000m, style="W", zero.policy = TRUE)
+W.InvDistances2_2500 <- mat2listw(InvDistances2.2500m, style="W", zero.policy = TRUE)
+W.InvDistances2_5000 <- mat2listw(InvDistances2.5000m, style="W", zero.policy = TRUE)
 ## Matrice de distance réduite standardisée
 k1 <- knn2nb(knearneigh(coords))
 plusprochevoisin.max <- max(unlist(nbdists(k1,coords)))
@@ -1868,7 +1868,7 @@ Ces deux variables sont caractérisées par une forte corrélation linéaire pos
 :::
 
 ::: bloc_notes-body
-Pour un rappel sur la notion de corrélation entre deux variables continues, notamment sur l'interprétation du coefficient de corrélation de Pearson, nous vous invitons à lire la [section suivante](https://laeq.github.io/LivreMethoQuantBolR/sect043.html) [@RBoldAir].
+Pour un rappel sur la notion de corrélation entre deux variables continues, notamment sur l'interprétation du coefficient de corrélation de Pearson, nous vous invitons à lire la [section suivante](https://serieboldr.github.io/MethodesQuantitatives/04-bivarieeQuantiQuanti.html#sec-043) [@RBoldAir].
 :::
 :::
 
@@ -2432,7 +2432,7 @@ tmap_arrange(Carte1, Carte2, ncol = 2, nrow = 1)
 
 #### Formulation de la typologie basée sur le diagramme de Moran dans un contexte univarié {#sec-02431}
 
-La typologie basée sur le diagramme de Moran a été proposée par Luc Anselin [-@anselin1996chapter]. L'idée est fort simple, mais extrêmement efficace! Avant tout, la variable continue est centrée réduite (cote $z$, *z-score* en anglais). Pour un rappel sur la cote $z$, consultez la [section suivante](https://laeq.github.io/LivreMethoQuantBolR/sect025.html#sect02552) [@RBoldAir]. La moyenne est ainsi égale à 0 et l'écart-type à 1. Puis, il s'agit de construire un nuage de points entre :
+La typologie basée sur le diagramme de Moran a été proposée par Luc Anselin [-@anselin1996chapter]. L'idée est fort simple, mais extrêmement efficace! Avant tout, la variable continue est centrée réduite (cote $z$, *z-score* en anglais). Pour un rappel sur la cote $z$, consultez la [section suivante](https://serieboldr.github.io/MethodesQuantitatives/02-univarie.html#sec-02552) [@RBoldAir]. La moyenne est ainsi égale à 0 et l'écart-type à 1. Puis, il s'agit de construire un nuage de points entre :
 
 1.  Les valeurs de la variable centrée réduite (Z) **sur l'axe des X** pour les entités spatiales de la couche géographique.
 2.  Les valeurs de la variable centrée réduite spatialement décalée obtenues avec les pondérations spatiales de la matrice $W$ (voir l'encadré ci-dessous).

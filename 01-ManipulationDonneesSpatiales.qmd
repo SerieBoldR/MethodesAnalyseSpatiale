@@ -1,6 +1,6 @@
 # Manipulation des données spatiales dans R {#sec-chap01}
 
-Dans ce chapitre, nous décrivons comment importer, manipuler et cartographier des données spatiales dans R. Pour une description plus détaillée du langage de programmation R -- objets et expression, opérateurs, structures de données (vecteurs, matrices, *arrays*, *DataFrame*), importation et manipulation de données --, lisez le chapitre intitulé [*Prise en main avec R*](https://laeq.github.io/LivreMethoQuantBolR/chap01.html) [@RBoldAir].
+Dans ce chapitre, nous décrivons comment importer, manipuler et cartographier des données spatiales dans R. Pour une description plus détaillée du langage de programmation R -- objets et expression, opérateurs, structures de données (vecteurs, matrices, *arrays*, *DataFrame*), importation et manipulation de données --, lisez le chapitre intitulé [*Prise en main avec R*](https://serieboldr.github.io/MethodesQuantitatives/01-priseenmainR.html) [@RBoldAir].
 
 ::: bloc_package
 ::: bloc_package-header
@@ -71,7 +71,7 @@ Il convient d'installer les deux *packages*. Notez que l'installation d'un *pack
 
 Autrement dit, il n'est pas nécessaire de les installer à chaque ouverture de R! Pour utiliser les fonctions d'un *package*, vous devez préalablement le charger avec la fonction `library("Nom du package")` (équivalent à la fonction `import` de Python).
 
-Pour plus d'informations sur l'installation et le chargement de *packages*, consultez la [section suivante](https://laeq.github.io/LivreMethoQuantBolR/sect012.html#sect0123) [@RBoldAir].
+Pour plus d'informations sur l'installation et le chargement de *packages*, consultez la [section suivante](https://serieboldr.github.io/MethodesQuantitatives/01-priseenmainR.html#sec-0123) [@RBoldAir].
 :::
 :::
 
@@ -1281,7 +1281,7 @@ Pour ce faire, vous devez importer les données dans un *DataFrame* de R. Ces do
 
 Dans cette section, nous voyons seulement l'importation de fichiers texte délimités par des virgules, de fichiers Excel et *dBase*. Concernant ce dernier type de fichier, notez que la table attributaire d'une couche Esri Shapefile est stockée dans un fichier *dBase*! Il peut être intéressant d'importer la table sans les géométries.
 
-Pour une description détaillée de l'importation d'autres fichiers (entre autres Stata, SAS et SPSS), consultez la section intitulée [*Manipulation d'un DataFrame*](https://laeq.github.io/LivreMethoQuantBolR/sect014.html#0141) [@RBoldAir].
+Pour une description détaillée de l'importation d'autres fichiers (entre autres Stata, SAS et SPSS), consultez la section intitulée [*Manipulation d'un DataFrame*](https://serieboldr.github.io/MethodesQuantitatives/01-priseenmainR.html#sec-0142) [@RBoldAir].
 :::
 :::
 
@@ -1425,7 +1425,7 @@ Pour obtenir plus d'informations sur les différentes variantes d'une jointure, 
 
 Dans la [section @sec-0124], nous avons vu comment ajouter des champs relatifs à la géométrie (aire, longueur, distance, coordonnées de centroïdes). Dans un SIG, il est courant de calculer de nouveaux champs à partir de champs existants dans la table attributaire (par exemple, avec les outils *Calculatrice de champ* dans QGIS ou *Calculate Field* dans ArcGIS Pro).
 
-Ce type de traitement est aussi très simple à réaliser dans R. Pour ce faire, nous utilisons des [opérateurs mathématiques, relationnels et logiques](https://laeq.github.io/LivreMethoQuantBolR/sect013.html#sect0135) comme dans n'importe quel logiciel de SIG. En guise d'exemple, nous calculons ci-dessous les pourcentages d'enfants de moins de 15 ans et de locataires. Ces pourcentages sont arrondis à deux décimales avec la fonction `round`.
+Ce type de traitement est aussi très simple à réaliser dans R. Pour ce faire, nous utilisons des [opérateurs mathématiques, relationnels et logiques](https://serieboldr.github.io/MethodesQuantitatives/01-priseenmainR.html#sec-0135) comme dans n'importe quel logiciel de SIG. En guise d'exemple, nous calculons ci-dessous les pourcentages d'enfants de moins de 15 ans et de locataires. Ces pourcentages sont arrondis à deux décimales avec la fonction `round`.
 
 ```{r}
 #| echo: true 
@@ -1878,7 +1878,7 @@ tmap_arrange(CartePoints, CarteMarkers, ncol=2, nrow=1)
 
 #### Couleurs uniques et palette de couleurs dans `tmap` {#sec-01512}
 
-Vous avez remarqué plus haut que plusieurs fonctions comprennent l'argument `col` pour spécifier une couleur. Pour connaître les trois manières de spécifier une couleur dans R -- nom de la couleur R (`lightblue` par exemple), code hexadécimal (`#f03b20` par exemple) ou notation RVBA (`rgb(0.2, 0.4, 0.4, 0)` par exemple) --, consultez [la section suivante](https://laeq.github.io/LivreMethoQuantBolR/sect031.html#sect0315) [@RBoldAir].
+Vous avez remarqué plus haut que plusieurs fonctions comprennent l'argument `col` pour spécifier une couleur. Pour connaître les trois manières de spécifier une couleur dans R -- nom de la couleur R (`lightblue` par exemple), code hexadécimal (`#f03b20` par exemple) ou notation RVBA (`rgb(0.2, 0.4, 0.4, 0)` par exemple) --, consultez [la section suivante](https://serieboldr.github.io/MethodesQuantitatives/03-magiedesgraphiques.html#sec-0315) [@RBoldAir].
 
 Pour spécifier une palette de couleurs sur un champ dans différentes fonctions (entre autres, `tm_polygons`, `tm_lines`, `tm_fill`, `tm_dots`), il suffit d'utiliser deux arguments dans la fonction, soit `col="Nom du champ"` et `palette="nom de la palette de couleurs"`.
 

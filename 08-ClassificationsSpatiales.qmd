@@ -2,7 +2,7 @@
 
 Les méthodes de classification visent à regrouper des observations d'un jeu de données en plusieurs classes en fonction de leurs caractéristiques évaluées à partir de plusieurs variables. Appliquées à une couche spatiale (polygones, points, lignes), il s'agit alors de classifier les unités spatiales sur la base de plusieurs de leurs attributs mesurés à partir de variables. Dans le cadre de ce chapitre, nous abordons deux principales familles de méthodes de classification non supervisée : **celle avec une contrainte spatiale** (algorithmes AZP, SKATER, REDCAP) et **celle avec une dimension spatiale** (*ClustGeo* et classification floue c-moyennes spatiale).
 
-Sommairement, les deux dernières méthodes sont des extensions spatiales de la classification ascendante hiérarchique (CAH) et de l'algorithme flou c-moyennes. Par conséquent, la lecture de ce chapitre nécessite de bien maîtriser le fonctionnement de la CAH et des k-moyennes (*k-means*). Si ce n'est pas le cas, nous vous invitons vivement à lire le [chapitre suivant](https://laeq.github.io/LivreMethoQuantBolR/chap13.html) [@RBoldAir].
+Sommairement, les deux dernières méthodes sont des extensions spatiales de la classification ascendante hiérarchique (CAH) et de l'algorithme flou c-moyennes. Par conséquent, la lecture de ce chapitre nécessite de bien maîtriser le fonctionnement de la CAH et des k-moyennes (*k-means*). Si ce n'est pas le cas, nous vous invitons vivement à lire le [chapitre suivant](https://serieboldr.github.io/MethodesQuantitatives/13-MethodeClassification.html) [@RBoldAir].
 
 ::: bloc_attention
 ::: bloc_attention-header
@@ -324,7 +324,7 @@ tm_shape(LyonIris)+tm_borders(col="gray", lwd=.5)+
               tm_layout(frame=FALSE)+tm_scale_bar(breaks=c(0,5,10))
 ```
 
-Nous avons vu que pour les algorithmes AZP, il faut spécifier le nombre de régions. Nous l'avons fixé arbitrairement à 5. Comme pour n'importe quelle méthode de classification non supervisée, déterminer le nombre de classes optimal est une étape cruciale qui peut s'appuyer sur différentes techniques, dont la méthode du coude basée sur l'inertie expliquée (ici le ratio entre les variances interrégionale et totale), l'indicateur de silhouette et la méthode GAP. Pour une description détaillée de ces méthodes, consultez la [section suivante](https://laeq.github.io/LivreMethoQuantBolR/sect133.html#sect1332) [@RBoldAir]. Le code ci-dessous permet de réaliser un graphique avec les valeurs du ratio (inertie expliquée) obtenues avec l'algorithme AZP-TABU calculé pour 2 à 10 régions. À la lecture de la @fig-AZPCoude, nous observons deux ruptures (coudes) très nettes à 5 et 8.
+Nous avons vu que pour les algorithmes AZP, il faut spécifier le nombre de régions. Nous l'avons fixé arbitrairement à 5. Comme pour n'importe quelle méthode de classification non supervisée, déterminer le nombre de classes optimal est une étape cruciale qui peut s'appuyer sur différentes techniques, dont la méthode du coude basée sur l'inertie expliquée (ici le ratio entre les variances interrégionale et totale), l'indicateur de silhouette et la méthode GAP. Pour une description détaillée de ces méthodes, consultez la [section suivante](https://serieboldr.github.io/MethodesQuantitatives/13-MethodeClassification.html#sec-1332) [@RBoldAir]. Le code ci-dessous permet de réaliser un graphique avec les valeurs du ratio (inertie expliquée) obtenues avec l'algorithme AZP-TABU calculé pour 2 à 10 régions. À la lecture de la @fig-AZPCoude, nous observons deux ruptures (coudes) très nettes à 5 et 8.
 
 ```{r}
 #| echo: true 
@@ -691,7 +691,7 @@ Par conséquent, « \[...\] l'enjeu principal est de fixer la valeur du paramè
 :::
 
 ::: bloc_attention-body
-Pour une description détaillée de la CAH, consultez la [section suivante](https://laeq.github.io/LivreMethoQuantBolR/sect133.html) [@RBoldAir].
+Pour une description détaillée de la CAH, consultez la [section suivante](https://serieboldr.github.io/MethodesQuantitatives/13-MethodeClassification.html#sec-133) [@RBoldAir].
 :::
 :::
 
@@ -973,7 +973,7 @@ Comme pour la méthode *ClustGeo*, il est possible de fixer une pondération à 
 :::
 
 ::: bloc_attention-body
-La notion de variable spatialement décalée a été abordée au chapitre 2 (@fig-Chap02FigureVariableSpatialementDecalee). Pour une description détaillée de la classification k-moyennes, consultez la [section suivante](https://laeq.github.io/LivreMethoQuantBolR/sect133.html) [@RBoldAir].
+La notion de variable spatialement décalée a été abordée au chapitre 2 (@fig-Chap02FigureVariableSpatialementDecalee). Pour une description détaillée de la classification k-moyennes, consultez la [section suivante](https://serieboldr.github.io/MethodesQuantitatives/13-MethodeClassification.html#sec-134) [@RBoldAir].
 :::
 :::
 

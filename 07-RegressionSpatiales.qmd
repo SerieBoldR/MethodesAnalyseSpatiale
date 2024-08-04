@@ -699,7 +699,7 @@ Les modèles généralisés additifs (*Generalized additive models* en anglais) 
 :::
 
 ::: bloc_attention-body
-Pour une description détaillée des modèles généralisés additifs, nous vous invitons vivement à lire le [chapitre suivant](https://laeq.github.io/LivreMethoQuantBolR/chap11.html) [@RBoldAir].
+Pour une description détaillée des modèles généralisés additifs, nous vous invitons vivement à lire le [chapitre suivant](https://serieboldr.github.io/MethodesQuantitatives/11-GAM.html) [@RBoldAir].
 :::
 :::
 

@@ -456,7 +456,7 @@ library(tmap)
 
 data(mtl_network) 
 data(bike_accidents)
-lixels <- lixelize_lines(mtl_network,200,mindist = 50)
+lixels <- lixelize_lines(mtl_network, 200, mindist = 50)
 samples <- lines_center(lixels)
 
 ## on trouve les bandwidths locales par la méthode d'Abramson
@@ -574,8 +574,7 @@ Pour l'analyse, nous utilisons la fonction *kernel* quadratique et la NKDE conti
 #| eval: false
 
 eval_bandwidth <- bw_cv_likelihood_calc.mc(
-  bw_range = c(100,1200),
-  bw_step = 50,
+  bws = seq(100, 1200, 50),
   lines = routes, 
   events = collisions,
   w = rep(1, nrow(collisions)), # le poids de chaque évènement est 1
@@ -624,6 +623,7 @@ lixels_centers <- spNetwork::lines_center(lixels)
 #| eval: false
 
 ## Calcul de la NKDE
+future::plan(future::multisession(workers=2))
 intensity <- nkde.mc(lines = routes,
                      events = collisions,
                      w = rep(1, nrow(collisions)),
@@ -638,6 +638,7 @@ intensity <- nkde.mc(lines = routes,
                      agg = 5,
                      verbose = FALSE,
                      grid_shape = c(5,5))
+if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 ```
 
 Une fois que les valeurs de densité sont obtenues, nous pouvons les cartographier à l'échelle des lixels (@fig-mapNKDE).
@@ -650,7 +651,6 @@ Une fois que les valeurs de densité sont obtenues, nous pouvons les cartographi
 #| fig-align: center
 #| fig-cap: Densité des accidents sur le réseau routier de Sherbrooke
 #| out-width: 100%
-
 lixels$density <- intensity * 1000
 tm_shape(lixels) + 
   tm_lines("density", lwd = 1.5, n = 7, style = "fisher",
@@ -662,23 +662,24 @@ Nous pouvons à présent utiliser une *bandwidth* adaptative. Pour cela, nous de
 
 ```{r}
 #| eval: false
+future::plan(future::multisession(workers=2))
 eval_bandwidth_adapt <- bw_cv_likelihood_calc.mc(
-  bw_range = c(100,1200),
-  bw_step = 50,
+  bws = seq(100, 1200, 50),
   lines = routes, 
   events = collisions,
   w = rep(1, nrow(collisions)), # le poids de chaque évènement sera 1
   kernel_name = 'quartic',
   method = 'discontinuous',
   adaptive = TRUE,
-  trim_bws = seq(100,1200,50) * 2,
+  trim_bws = seq(100, 1200, 50) * 2,
   max_depth = 10,
-  digits = 1,
+  digits = 2,
   tol = 0.1,
   agg = 5, # tous les accidents dans un rayon de 5m seront agrégés
   grid_shape = c(5,5),
   verbose = TRUE
 )
+if (!inherits(future::plan(), "sequential")) future::plan(future::sequential)
 ```
 
 ```{r}
@@ -689,7 +690,6 @@ eval_bandwidth_adapt <- bw_cv_likelihood_calc.mc(
 #| fig-align: center
 #| fig-cap: Scores des bandwidths adaptatives
 #| out-width: 65%
-
 ggplot() + 
   geom_path(data = eval_bandwidth,
             mapping =  aes(x = bw, y = cv_scores)) + 
@@ -706,7 +706,6 @@ La @fig-bwScoresNKDEadpt indique que les scores obtenus par les *bandwidths* ada
 
 ```{r}
 #| eval: false
-
 intensity_adpt <- nkde.mc(lines = routes,
                   events = collisions,
                   w = rep(1, nrow(collisions)),
@@ -908,7 +907,6 @@ Nous commençons par compléter le réseau routier. En effet, certaines sections
 #| fig-align: center
 #| fig-cap: Visualisation des composantes du réseau routier
 #| out-width: 85%
-
 library(igraph)
 library(dbscan)
 library(tmap)
@@ -932,11 +930,10 @@ tm_shape(graph$spvertices) +
 #| fig-align: center
 #| fig-cap: Visualisation des composantes du réseau routier
 #| out-width: 85%
-
 main_component <- subset(graph$spvertices, graph$spvertices$part == "1")
 main_network <- subset(graph$spedges, 
                    (graph$spedges$start_oid %in% main_component$id) | 
-                     (graph$spedges$end_oid %in% main_component$id)
+                   (graph$spedges$end_oid %in% main_component$id)
                    )
 main_network <- subset(main_network, as.numeric(st_length(main_network)) > 0)
 ```
@@ -952,9 +949,9 @@ Maintenant que nous avons nettoyé notre réseau, nous calculons les scores pour
 lixels_main <- lixelize_lines(main_network, 100, mindist = 50)
 lixels_main_centers <- spNetwork::lines_center(lixels_main)
 # Calcul des scores pour les bandwidths
-cv_scores_tnkde <- bws_tnkde_cv_likelihood_calc(
-  bws_net = seq(700,1500,100),
-  bws_time =  seq(10,40,5),
+cv_scores_tnkde <- bw_tnkde_cv_likelihood_calc(
+  bws_net = seq(700, 1500, 100),
+  bws_time =  seq(10, 40, 5),
   lines = main_network,
   events = collisions,
   time_field = "dt_num",
@@ -1093,7 +1090,7 @@ net_distances <- spNetwork::network_listw.mc(
   mindist = 1,
   dist_func = 'identity',
   matrice_type = 'I',
-  grid_shape = c(5,5)
+  grid_shape = c(5, 5)
 )
 ```
 
@@ -1106,7 +1103,7 @@ Premièrement, nous construisons plusieurs matrices de connectivité selon la di
 
 # une liste qui permettra de stocker toutes les matrices
 all_matrices <- list()
-bin_dists <- c(250,300,500,700,900)
+bin_dists <- c(250, 300, 500, 700, 900)
 for(d in bin_dists){
   new_weights <- lapply(net_distances$weights, function(x){
     return( (x <= d) / sum(x <= d))
@@ -1133,7 +1130,6 @@ for(k in 3:10){
   net_distances_temp$weights <- new_weights
   all_matrices[[paste0("k_mat_",k)]] <- net_distances_temp
 }
-
 ```
 
 Troisièmement, nous construisons des matrices avec l'inverse de la distance, l'inverse de la distance au carrée et un *kernel* quadratique avec des seuils maximaux de la distance fixés à 250, 300, 500, 700 et 900 mètres.
@@ -1147,7 +1143,7 @@ Troisièmement, nous construisons des matrices avec l'inverse de la distance, l'
 # Inverse de la distance
 inv_weights <- lapply(net_distances$weights, function(x){
   inv <- (1/x) 
-  return( inv / sum(inv) )
+  return(inv / sum(inv))
 })
 net_distances_temp <- net_distances
 net_distances_temp$weights <- inv_weights
@@ -1155,7 +1151,7 @@ all_matrices[["inv_mat"]] <- net_distances_temp
 
 inv2_weights <- lapply(net_distances$weights, function(x){
   inv <- (1/x**2) 
-  return( inv / sum(inv) )
+  return(inv / sum(inv))
 })
 
 # Inverse de la distance au carré
@@ -1163,7 +1159,7 @@ net_distances_temp <- net_distances
 net_distances_temp$weights <- inv2_weights
 all_matrices[["inv2_mat"]] <- net_distances_temp
 
-bin_dists <- c(250,300,500,700,900)
+bin_dists <- c(250, 300, 500, 700, 900)
 
 for(d in bin_dists){
   new_weights <- lapply(net_distances$weights, function(x){
@@ -1177,7 +1173,7 @@ for(d in bin_dists){
   })
 net_distances_temp <- net_distances
 net_distances_temp$weights <- new_weights
-all_matrices[[paste0("dist_quartic_",d)]] <- net_distance
+all_matrices[[paste0("dist_quartic_",d)]] <- net_distances_temp
 }
 ```
 
@@ -1220,7 +1216,6 @@ ggplot(data=df_moran, aes(x=reorder(Matrices,MoranIs), y=MoranIs)) +
   xlab("Matrice de pondération spatiale sur le réseau") +
   ylab("I de Moran")+
   coord_flip()
-
 ```
 
 À la @fig-moranIGlobNKDE, nous constatons que la matrice utilisant les trois plus proches voisins obtient la valeur du *I* de Moran la plus élevé. Nous la conservons pour calculer la mesure d'autocorrélation spatiale locale basée sur la typologie basée sur le diagramme de Moran (@fig-localMoranNKDE).

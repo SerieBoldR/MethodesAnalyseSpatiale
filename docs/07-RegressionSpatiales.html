@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.433">
+<meta name="generator" content="quarto-1.3.353">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>Méthodes d’analyse spatiale : un grand bol d’R - 7&nbsp; Introduction aux modèles de régression spatiale</title>
 <style>
@@ -106,8 +106,7 @@ div.csl-indent {
     "search-more-matches-text": "correspondances de plus dans ce document",
     "search-clear-button-title": "Effacer",
     "search-detached-cancel-button-title": "Annuler",
-    "search-submit-button-title": "Envoyer",
-    "search-label": "Recherche"
+    "search-submit-button-title": "Envoyer"
   }
 }</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><link rel="stylesheet" href="css/quizlib.min.css">
 </head>
@@ -121,7 +120,7 @@ div.csl-indent {
       <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./07-RegressionSpatiales.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction aux modèles de régression spatiale</span></a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
-      <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
+      <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
@@ -131,7 +130,7 @@ div.csl-indent {
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Méthodes d’analyse spatiale : un grand bol d’R</a> 
         <div class="sidebar-tools-main">
-    <a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale" rel="" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
 </div>
     </div>
       </div>
@@ -542,8 +541,14 @@ y = X\beta + \epsilon
 <p>Avec la fonction <code><a href="https://rdrr.io/r/stats/lm.html">lm()</a></code>, il est facile de construire un modèle de régression linéaire multiple basé sur la méthode des moindres carrés ordinaires (MCO). Dans le code ci-dessous, la formule de l’équation du modèle est donc <code>NO2 ~ Pct0_14+Pct_65+Pct_Img+Pct_brevet+NivVieMed</code>. Notez que la variable dépendante et les variables indépendantes sont séparées avec un tilde (<code>~</code>). Quant à la fonction <code>summary(NomDuModèle)</code>, elle affiche les résultats du modèle.</p>
 <div class="cell">
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Appel des différents packages utilisés dans le chapitre</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/">spdep</a></span><span class="op">)</span></span>
-<span><span class="co">## Construction du modèle</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/">spdep</a></span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: le package 'spdep' a été compilé avec la version R 4.4.1</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: le package 'spData' a été compilé avec la version R 4.4.1</code></pre>
+</div>
+<div class="sourceCode" id="cb4"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Construction du modèle</span></span>
 <span><span class="va">Modele.MCO</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/lm.html">lm</a></span><span class="op">(</span><span class="va">NO2</span> <span class="op">~</span> <span class="va">Pct0_14</span><span class="op">+</span><span class="va">Pct_65</span><span class="op">+</span><span class="va">Pct_Img</span><span class="op">+</span><span class="va">Pct_brevet</span><span class="op">+</span><span class="va">NivVieMed</span>,</span>
 <span>                 data <span class="op">=</span> <span class="va">LyonIris</span><span class="op">)</span></span>
 <span><span class="co">## Résultats du modèle</span></span>
@@ -577,7 +582,7 @@ F-statistic:  39.5 on 5 and 500 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p><strong>Dépendance spatiale du modèle MCO?</strong></p>
 <p>Pour vérifier si ce modèle linéaire multiple a un problème de dépendance spatiale, nous calculons le <em>I</em> de Moran sur ses résidus avec la fonction <code>lm.morantest</code>, puis nous les cartographions.</p>
 <div class="cell">
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Matrice de contiguïté selon le partage d'un segment (Rook)</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Matrice de contiguïté selon le partage d'un segment (Rook)</span></span>
 <span><span class="va">Rook</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spdep/reference/poly2nb.html">poly2nb</a></span><span class="op">(</span><span class="va">LyonIris</span>, queen<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
 <span><span class="va">W.Rook</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spdep/reference/nb2listw.html">nb2listw</a></span><span class="op">(</span><span class="va">Rook</span>, zero.policy<span class="op">=</span><span class="cn">TRUE</span>, style <span class="op">=</span> <span class="st">"W"</span><span class="op">)</span></span>
 <span><span class="co"># Autocorrélation spatiale globale des résidus</span></span>
@@ -600,17 +605,17 @@ Observed Moran I      Expectation         Variance
 </div>
 <p>Avec une valeur du <em>I</em> de Moran de 0,587 (<em>p</em>&nbsp;&lt;&nbsp;0,001), les résidus sont fortement autocorrélés spatialement, traduisant ainsi un problème de dépendance spatiale du modèle MCO et la nécessité de recourir à des modèles économétriques spatiaux. La cartographie des résidus à la <a href="#fig-figCartoResMCO">figure&nbsp;<span>7.2</span></a> corrobore ce résultat.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap">tmap</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-tmap.github.io/tmap/">tmap</a></span><span class="op">)</span></span>
 <span><span class="co">## Ajout de la colonne dans LyonIris avec les valeurs des résidus</span></span>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">ModeleMCO.Residus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">Modele.MCO</span><span class="op">)</span></span>
 <span><span class="co">## Cartographie</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_mode.html">tmap_mode</a></span><span class="op">(</span><span class="st">"plot"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"ModeleMCO.Residus"</span>, n <span class="op">=</span> <span class="fl">5</span>, style <span class="op">=</span> <span class="st">"quantile"</span>, </span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_mode.html">tmap_mode</a></span><span class="op">(</span><span class="st">"plot"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"ModeleMCO.Residus"</span>, n <span class="op">=</span> <span class="fl">5</span>, style <span class="op">=</span> <span class="st">"quantile"</span>, </span>
 <span>          legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>          palette <span class="op">=</span> <span class="st">"-RdBu"</span>, title <span class="op">=</span> <span class="st">"Résidus"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-figCartoResMCO" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="07-RegressionSpatiales_files/figure-html/fig-figCartoResMCO-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
@@ -659,7 +664,7 @@ y = X\beta + WX\theta + \epsilon
 <p><strong>Construction du modèle SLX dans R</strong></p>
 <p>Le modèle SLX est construit avec la fonction <code>lmSLX</code> du <em>package</em> <code>spatialreg</code> <span class="citation" data-cites="bivand2021review">(<a href="references.html#ref-bivand2021review" role="doc-biblioref">Bivand, Millo et Piras 2021</a>)</span>. Remarquez, dans le code ci-dessous, le paramètre <code>listw=W.Rook</code> qui est utilisé pour spécifier la matrice de pondération spatiale.</p>
 <div class="cell">
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spatialreg/">spatialreg</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spatialreg/">spatialreg</a></span><span class="op">)</span></span>
 <span><span class="co">## Construction du modèle</span></span>
 <span><span class="va">Modele.SLX</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/SLX.html">lmSLX</a></span><span class="op">(</span><span class="va">NO2</span> <span class="op">~</span> <span class="va">Pct0_14</span><span class="op">+</span><span class="va">Pct_65</span><span class="op">+</span><span class="va">Pct_Img</span><span class="op">+</span><span class="va">Pct_brevet</span><span class="op">+</span><span class="va">NivVieMed</span>,</span>
 <span>                   listw<span class="op">=</span><span class="va">W.Rook</span>,     <span class="co"># matrice de pondération spatiale</span></span>
@@ -672,29 +677,19 @@ Call:
 lm(formula = formula(paste("y ~ ", paste(colnames(x)[-1], collapse = "+"))), 
     data = as.data.frame(x), weights = weights)
 
-Residuals:
-     Min       1Q   Median       3Q      Max 
--18.6087  -3.5084  -0.7178   2.9128  26.8724 
-
 Coefficients:
-               Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept)    50.67786    4.18791  12.101  &lt; 2e-16 ***
-Pct0_14        -0.20404    0.06268  -3.255  0.00121 ** 
-Pct_65         -0.03771    0.05361  -0.703  0.48217    
-Pct_Img         0.10406    0.04849   2.146  0.03235 *  
-Pct_brevet     -0.07363    0.03550  -2.074  0.03857 *  
-NivVieMed      -0.18441    0.11063  -1.667  0.09617 .  
-lag.Pct0_14    -0.77591    0.10295  -7.537 2.32e-13 ***
-lag.Pct_65     -0.06454    0.09115  -0.708  0.47924    
-lag.Pct_Img     0.64654    0.08593   7.524 2.53e-13 ***
-lag.Pct_brevet -0.30128    0.06157  -4.893 1.34e-06 ***
-lag.NivVieMed  -0.01805    0.17499  -0.103  0.91790    
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 5.77 on 495 degrees of freedom
-Multiple R-squared:  0.4713,    Adjusted R-squared:  0.4606 
-F-statistic: 44.13 on 10 and 495 DF,  p-value: &lt; 2.2e-16</code></pre>
+                Estimate    Std. Error  t value     Pr(&gt;|t|)  
+(Intercept)      5.068e+01   4.188e+00   1.210e+01   1.040e-29
+Pct0_14         -2.040e-01   6.268e-02  -3.255e+00   1.211e-03
+Pct_65          -3.771e-02   5.361e-02  -7.033e-01   4.822e-01
+Pct_Img          1.041e-01   4.849e-02   2.146e+00   3.235e-02
+Pct_brevet      -7.363e-02   3.550e-02  -2.074e+00   3.857e-02
+NivVieMed       -1.844e-01   1.106e-01  -1.667e+00   9.617e-02
+lag.Pct0_14     -7.759e-01   1.030e-01  -7.537e+00   2.315e-13
+lag.Pct_65      -6.454e-02   9.115e-02  -7.081e-01   4.792e-01
+lag.Pct_Img      6.465e-01   8.593e-02   7.524e+00   2.526e-13
+lag.Pct_brevet  -3.013e-01   6.157e-02  -4.893e+00   1.344e-06
+lag.NivVieMed   -1.805e-02   1.750e-01  -1.031e-01   9.179e-01</code></pre>
 </div>
 </div>
 <div class="bloc_attention">
@@ -714,7 +709,7 @@ F-statistic: 44.13 on 10 and 495 DF,  p-value: &lt; 2.2e-16</code></pre>
 <p>Pour capturer l’impact total sur le prix des maisons d’une augmentation de la superficie du jardin de la maison <span class="math inline">\(i\)</span>, il suffit de sommer son effet direct (augmentation du prix de la maison <span class="math inline">\(i\)</span>) et son effet indirect (augmentation du prix des maisons <span class="math inline">\(j\)</span>) pour obtenir son effet total.</p>
 <p>Le code suivant permet de calculer ces effets directs et indirects.</p>
 <div class="cell">
-<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (uniquement les coefficients)</span></span>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (uniquement les coefficients)</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">Modele.SLX</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Impact measures (SlX, glht):
@@ -725,7 +720,7 @@ Pct_Img     0.10406359  0.64653923  0.7506028
 Pct_brevet -0.07363272 -0.30128171 -0.3749144
 NivVieMed  -0.18440960 -0.01804718 -0.2024568</code></pre>
 </div>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (coefficients, valeurs de z et de p)</span></span>
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (coefficients, valeurs de z et de p)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">Modele.SLX</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Impact measures (SlX, glht, n-k):
@@ -767,7 +762,7 @@ NivVieMed  0.0955397 0.91786    0.17454   </code></pre>
 <p><strong>Dépendance spatiale du modèle SLX?</strong></p>
 <p>Ce modèle a-t-il corrigé le problème de dépendance spatiale du modèle de régression linéaire classique? Avec une valeur du <em>I</em> de Moran de 0,605 (<em>p</em>&nbsp;&lt;&nbsp;0,001), les résidus sont toujours fortement autocorrélés spatialement (<a href="#fig-figCartoResSLX">figure&nbsp;<span>7.3</span></a>).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.morantest.html">lm.morantest</a></span><span class="op">(</span><span class="va">Modele.SLX</span>, <span class="va">W.Rook</span>, alternative<span class="op">=</span><span class="st">"two.sided"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.morantest.html">lm.morantest</a></span><span class="op">(</span><span class="va">Modele.SLX</span>, <span class="va">W.Rook</span>, alternative<span class="op">=</span><span class="st">"two.sided"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Global Moran I for regression residuals
@@ -783,13 +778,13 @@ sample estimates:
 Observed Moran I      Expectation         Variance 
     0.6046602748    -0.0072844321     0.0007771643 </code></pre>
 </div>
-<div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">LyonIris</span><span class="op">$</span><span class="va">SLX.Residus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">Modele.SLX</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"SLX.Residus"</span>, n <span class="op">=</span> <span class="fl">5</span>, style <span class="op">=</span> <span class="st">"quantile"</span>, </span>
+<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">LyonIris</span><span class="op">$</span><span class="va">SLX.Residus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">residuals</a></span><span class="op">(</span><span class="va">Modele.SLX</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"SLX.Residus"</span>, n <span class="op">=</span> <span class="fl">5</span>, style <span class="op">=</span> <span class="st">"quantile"</span>, </span>
 <span>          legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>          palette <span class="op">=</span> <span class="st">"-RdBu"</span>, title <span class="op">=</span> <span class="st">"Résidus"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-figCartoResSLX" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="07-RegressionSpatiales_files/figure-html/fig-figCartoResSLX-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
@@ -823,7 +818,7 @@ y = Wy\rho + X\beta + \epsilon
 <p><strong>Construction du modèle SAR dans R</strong></p>
 <p>Le modèle SAR est construit avec la fonction <code>lagsarlm</code> du <em>package</em> <code>spatialreg</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb15"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Construction du modèle</span></span>
+<div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Construction du modèle</span></span>
 <span><span class="va">Modele.SAR</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">lagsarlm</a></span><span class="op">(</span><span class="va">NO2</span> <span class="op">~</span> <span class="va">Pct0_14</span><span class="op">+</span><span class="va">Pct_65</span><span class="op">+</span><span class="va">Pct_Img</span><span class="op">+</span><span class="va">Pct_brevet</span><span class="op">+</span><span class="va">NivVieMed</span>,</span>
 <span>                              listw<span class="op">=</span><span class="va">W.Rook</span>,    <span class="co"># matrice de pondération spatiale</span></span>
 <span>                              data <span class="op">=</span> <span class="va">LyonIris</span>, <span class="co"># dataframe</span></span>
@@ -884,7 +879,7 @@ test value: 0.6198, p-value: 0.43112</code></pre>
 <p>L’effet original de l’augmentation de la taille du jardin sur la maison <span class="math inline">\(i\)</span>, combiné à l’augmentation par rétroaction, est appelé l’effet direct. L’effet cumulé de l’augmentation de la taille du jardin sur toutes les autres maisons (<span class="math inline">\(\neq i\)</span>) est appelé l’effet indirect. La somme des effets indirects et des directs est appelée effets totaux.</p>
 <p>À nouveau, il est possible d’utiliser la fonction <code>impacts</code> pour calculer ces effets directs et indirects.</p>
 <div class="cell">
-<div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (uniquement les coefficients)</span></span>
+<div class="sourceCode" id="cb20"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (uniquement les coefficients)</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">Modele.SAR</span>, listw <span class="op">=</span> <span class="va">W.Rook</span>, R <span class="op">=</span> <span class="fl">999</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Impact measures (lag, exact):
@@ -895,7 +890,7 @@ Pct_Img     0.04251743  0.2082131  0.2507306
 Pct_brevet -0.02704205 -0.1324283 -0.1594703
 NivVieMed  -0.13836534 -0.6775923 -0.8159576</code></pre>
 </div>
-<div class="sourceCode" id="cb19"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (coefficients, valeurs de z et de p)</span></span>
+<div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (coefficients, valeurs de z et de p)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">Modele.SAR</span>, listw <span class="op">=</span> <span class="va">W.Rook</span>, R <span class="op">=</span> <span class="fl">999</span><span class="op">)</span>, zstats <span class="op">=</span> <span class="cn">TRUE</span>, short <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Impact measures (lag, exact):
@@ -910,27 +905,27 @@ Simulation results ( variance matrix):
 ========================================================
 Simulated standard errors
                Direct  Indirect     Total
-Pct0_14    0.04280997 0.2416211 0.2798736
-Pct_65     0.03861041 0.2017859 0.2392724
-Pct_Img    0.03467316 0.1818492 0.2156133
-Pct_brevet 0.02459634 0.1282354 0.1522143
-NivVieMed  0.06802398 0.3591278 0.4235277
+Pct0_14    0.04326929 0.2417407 0.2805365
+Pct_65     0.03830263 0.2006507 0.2378901
+Pct_Img    0.03475601 0.1811266 0.2149674
+Pct_brevet 0.02459614 0.1286788 0.1527126
+NivVieMed  0.06890889 0.3708196 0.4362971
 
 Simulated z-values:
               Direct  Indirect     Total
-Pct0_14    -3.246399 -2.882209 -2.984850
-Pct_65     -1.245339 -1.186895 -1.201902
-Pct_Img     1.176464  1.122074  1.135551
-Pct_brevet -1.080680 -1.032002 -1.044054
-NivVieMed  -2.042323 -1.934886 -1.968698
+Pct0_14    -3.246311 -2.913823 -3.011569
+Pct_65     -1.270341 -1.210825 -1.225820
+Pct_Img     1.208218  1.156290  1.169608
+Pct_brevet -1.058156 -1.007896 -1.019702
+NivVieMed  -2.029437 -1.895991 -1.931979
 
 Simulated p-values:
-           Direct    Indirect Total    
-Pct0_14    0.0011687 0.003949 0.0028372
-Pct_65     0.2130071 0.235269 0.2294017
-Pct_Img    0.2394096 0.261831 0.2561444
-Pct_brevet 0.2798397 0.302071 0.2964606
-NivVieMed  0.0411195 0.053004 0.0489878</code></pre>
+           Direct    Indirect  Total   
+Pct0_14    0.0011691 0.0035703 0.002599
+Pct_65     0.2039632 0.2259623 0.220266
+Pct_Img    0.2269633 0.2475626 0.242159
+Pct_brevet 0.2899845 0.3135046 0.307870
+NivVieMed  0.0424138 0.0579612 0.053362</code></pre>
 </div>
 </div>
 <p>L’interprétation des effets directs se rapproche de celle des coefficients classiques. Ainsi, selon ce modèle, l’augmentation du niveau de vie médian de 1000&nbsp;€ dans un IRIS est associée avec une diminution moyenne de la concentration de dioxyde d’azote de 0,14 dans cet IRIS. L’effet total est de -0.82, indiquant qu’en moyenne, l’augmentation de 1000&nbsp;€ du niveau de vie médian dans un IRIS est associée avec une diminution moyenne de 0,82 de la concentration de dioxyde d’azote dans l’ensemble des IRIS. Au final, l’effet indirect est simplement la différence entre l’effet total et l’effet direct. Nous pouvons constater ici que les effets indirects sont plus importants que les effets directs.</p>
@@ -939,7 +934,7 @@ NivVieMed  0.0411195 0.053004 0.0489878</code></pre>
 <p><strong>Dépendance spatiale du modèle SAR?</strong></p>
 <p>Ce modèle a-t-il corrigé le problème de dépendance spatiale du modèle de régression linéaire classique? Avec une valeur du <em>I</em> de Moran de -0,014 (<em>p</em>&nbsp;=&nbsp;0,654), les résidus ne sont plus spatialement autocorrélés (<a href="#fig-figCartoResSAR">figure&nbsp;<span>7.4</span></a>).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Autocorrélation spatiale des résidus</span></span>
+<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Autocorrélation spatiale des résidus</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/moran.mc.html">moran.mc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">resid</a></span><span class="op">(</span><span class="va">Modele.SAR</span><span class="op">)</span>, <span class="va">W.Rook</span>, nsim<span class="op">=</span><span class="fl">999</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -949,17 +944,17 @@ data:  resid(Modele.SAR)
 weights: W.Rook  
 number of simulations + 1: 1000 
 
-statistic = -0.014281, observed rank = 327, p-value = 0.673
+statistic = -0.014281, observed rank = 335, p-value = 0.665
 alternative hypothesis: greater</code></pre>
 </div>
-<div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Cartographie des résidus</span></span>
+<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Cartographie des résidus</span></span>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">SAR.Residus</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">resid</a></span><span class="op">(</span><span class="va">Modele.SAR</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"SAR.Residus"</span>, n <span class="op">=</span> <span class="fl">5</span>, style <span class="op">=</span> <span class="st">"quantile"</span>, </span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"SAR.Residus"</span>, n <span class="op">=</span> <span class="fl">5</span>, style <span class="op">=</span> <span class="st">"quantile"</span>, </span>
 <span>          legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>          palette <span class="op">=</span> <span class="st">"-RdBu"</span>, title <span class="op">=</span> <span class="st">"Résidus"</span><span class="op">)</span> <span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span> </span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span> <span class="op">+</span> </span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-figCartoResSAR" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="07-RegressionSpatiales_files/figure-html/fig-figCartoResSAR-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
@@ -991,7 +986,7 @@ y = X\beta + u \textrm{, } u = \lambda Wu + \epsilon
 <p><strong>Construction du modèle SAR dans R</strong></p>
 <p>Le modèle SEM est construit avec la fonction <code>errorsarlm</code> du <em>package</em> <code>spatialreg</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb24"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Construction du modèle</span></span>
+<div class="sourceCode" id="cb27"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Construction du modèle</span></span>
 <span><span class="va">Modele.SEM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">errorsarlm</a></span><span class="op">(</span><span class="va">NO2</span> <span class="op">~</span> <span class="va">Pct0_14</span><span class="op">+</span><span class="va">Pct_65</span><span class="op">+</span><span class="va">Pct_Img</span><span class="op">+</span><span class="va">Pct_brevet</span><span class="op">+</span><span class="va">NivVieMed</span>,</span>
 <span>                         listw<span class="op">=</span><span class="va">W.Rook</span>,    <span class="co"># matrice de pondération spatiale</span></span>
 <span>                         data <span class="op">=</span> <span class="va">LyonIris</span><span class="op">)</span> <span class="co"># dataframe</span></span>
@@ -1026,14 +1021,14 @@ ML residual variance (sigma squared): 9.9971, (sigma: 3.1618)
 Nagelkerke pseudo-R-squared: 0.78662 
 Number of observations: 506 
 Number of parameters estimated: 8 
-AIC: NA (not available for weighted model), (AIC for lm: 3366.6)</code></pre>
+AIC: 2755.5, (AIC for lm: 3366.6)</code></pre>
 </div>
 </div>
 <p>Dans les résultats ci-dessus, la valeur de <em>lambda</em> est de 0,91 (LR&nbsp;=&nbsp;613, <em>p</em>&nbsp;&lt;&nbsp;0,001), traduisant une très forte autocorrélation spatiale sur le terme d’erreur.</p>
 <p><strong>Dépendance spatiale du modèle SEM?</strong></p>
 <p>Ce modèle a-t-il corrigé le problème de dépendance spatiale du modèle de régression linéaire classique? Avec une valeur du <em>I</em> de Moran de -0,013 (<em>p</em>&nbsp;=&nbsp;0,614), les résidus ne sont plus spatialement autocorrélés.</p>
 <div class="cell">
-<div class="sourceCode" id="cb26"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Autocorrélation spatiale des résidus</span></span>
+<div class="sourceCode" id="cb29"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Autocorrélation spatiale des résidus</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/moran.mc.html">moran.mc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">resid</a></span><span class="op">(</span><span class="va">Modele.SEM</span><span class="op">)</span>, <span class="va">W.Rook</span>, nsim<span class="op">=</span><span class="fl">999</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1043,7 +1038,7 @@ data:  resid(Modele.SEM)
 weights: W.Rook  
 number of simulations + 1: 1000 
 
-statistic = -0.011827, observed rank = 377, p-value = 0.623
+statistic = -0.011827, observed rank = 361, p-value = 0.639
 alternative hypothesis: greater</code></pre>
 </div>
 </div>
@@ -1077,7 +1072,7 @@ y = Wy\rho + X\beta + WX\theta + \epsilon
 <p><strong>Construction du modèle SDM dans R</strong></p>
 <p>Le modèle SDM est construit avec la fonction <code>lagsarlm</code> du <em>package</em> <code>spatialreg</code>. Notez que le paramètre <code>type = "mixed"</code> spécifie l’utilisation d’un modèle mixte.</p>
 <div class="cell">
-<div class="sourceCode" id="cb28"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Construction du modèle</span></span>
+<div class="sourceCode" id="cb31"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Construction du modèle</span></span>
 <span><span class="va">Modele.DurbinSpatial</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">lagsarlm</a></span><span class="op">(</span><span class="va">NO2</span> <span class="op">~</span> <span class="va">Pct0_14</span><span class="op">+</span><span class="va">Pct_65</span><span class="op">+</span><span class="va">Pct_Img</span><span class="op">+</span><span class="va">Pct_brevet</span><span class="op">+</span><span class="va">NivVieMed</span>,</span>
 <span>                       listw <span class="op">=</span> <span class="va">W.Rook</span>,    <span class="co"># matrice de pondération spatiale</span></span>
 <span>                       data <span class="op">=</span> <span class="va">LyonIris</span>,   <span class="co"># dataframe</span></span>
@@ -1125,7 +1120,7 @@ test value: 0.0748, p-value: 0.78447</code></pre>
 </div>
 <p><strong>Effets directs, indirects et totaux</strong></p>
 <div class="cell">
-<div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Effets directs, indirects et totaux (uniquement les coefficients)</span></span>
+<div class="sourceCode" id="cb33"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Effets directs, indirects et totaux (uniquement les coefficients)</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">Modele.DurbinSpatial</span>, listw <span class="op">=</span> <span class="va">W.Rook</span>, R <span class="op">=</span> <span class="fl">999</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Impact measures (mixed, exact):
@@ -1136,7 +1131,7 @@ Pct_Img     0.06632543  0.94692639  1.01325182
 Pct_brevet -0.01903815 -0.46681402 -0.48585217
 NivVieMed  -0.15403413 -0.11775603 -0.27179016</code></pre>
 </div>
-<div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Effets directs, indirects et totaux (coefficients, valeurs de z et de p)</span></span>
+<div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Effets directs, indirects et totaux (coefficients, valeurs de z et de p)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">Modele.DurbinSpatial</span>, listw <span class="op">=</span> <span class="va">W.Rook</span>, R <span class="op">=</span> <span class="fl">999</span><span class="op">)</span>, zstats <span class="op">=</span> <span class="cn">TRUE</span>, short <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Impact measures (mixed, exact):
@@ -1151,32 +1146,32 @@ Simulation results ( variance matrix):
 ========================================================
 Simulated standard errors
                Direct  Indirect     Total
-Pct0_14    0.04294241 0.3362740 0.3636405
-Pct_65     0.03523987 0.2858022 0.3082065
-Pct_Img    0.03315837 0.2769984 0.2963449
-Pct_brevet 0.02392061 0.1950191 0.2101674
-NivVieMed  0.06712489 0.4965631 0.5285900
+Pct0_14    0.04430686 0.3395464 0.3693651
+Pct_65     0.03580240 0.2904877 0.3147007
+Pct_Img    0.03235258 0.2693100 0.2884844
+Pct_brevet 0.02426162 0.1997187 0.2152533
+NivVieMed  0.06935759 0.4874925 0.5237558
 
 Simulated z-values:
                Direct   Indirect       Total
-Pct0_14    -2.8653160 -3.0459955 -3.15512955
-Pct_65     -0.6074776  0.1081199  0.03080231
-Pct_Img     2.0269637  3.4643782  3.46500909
-Pct_brevet -0.8229791 -2.4244379 -2.34335947
-NivVieMed  -2.3043242 -0.2315386 -0.51013271
+Pct0_14    -2.8084985 -3.0195552 -3.11267848
+Pct_65     -0.6501741  0.1179942  0.03494771
+Pct_Img     2.0634538  3.5520890  3.54740508
+Pct_brevet -0.7157838 -2.3167129 -2.23019527
+NivVieMed  -2.1842635 -0.2165114 -0.49076865
 
 Simulated p-values:
            Direct    Indirect   Total     
-Pct0_14    0.0041659 0.00231911 0.00160427
-Pct_65     0.5435340 0.91390060 0.97542720
-Pct_Img    0.0426661 0.00053146 0.00053021
-Pct_brevet 0.4105199 0.01533211 0.01911096
-NivVieMed  0.0212045 0.81689638 0.60995849</code></pre>
+Pct0_14    0.0049773 0.00253146 0.00185398
+Pct_65     0.5155797 0.90607224 0.97212144
+Pct_Img    0.0390695 0.00038219 0.00038905
+Pct_brevet 0.4741249 0.02051938 0.02573448
+NivVieMed  0.0289429 0.82858918 0.62359008</code></pre>
 </div>
 </div>
 <p><strong>Dépendance spatiale du modèle SDM?</strong></p>
 <div class="cell">
-<div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/moran.mc.html">moran.mc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">resid</a></span><span class="op">(</span><span class="va">Modele.DurbinSpatial</span><span class="op">)</span>, <span class="va">W.Rook</span>, nsim<span class="op">=</span><span class="fl">999</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/moran.mc.html">moran.mc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">resid</a></span><span class="op">(</span><span class="va">Modele.DurbinSpatial</span><span class="op">)</span>, <span class="va">W.Rook</span>, nsim<span class="op">=</span><span class="fl">999</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Monte-Carlo simulation of Moran I
@@ -1185,7 +1180,7 @@ data:  resid(Modele.DurbinSpatial)
 weights: W.Rook  
 number of simulations + 1: 1000 
 
-statistic = -0.0046127, observed rank = 461, p-value = 0.539
+statistic = -0.0046127, observed rank = 470, p-value = 0.53
 alternative hypothesis: greater</code></pre>
 </div>
 </div>
@@ -1217,7 +1212,7 @@ y = X\beta + WX\theta + u \textrm{, } u = \lambda Wu + \epsilon
 <p><strong>Construction du modèle SDEM dans R</strong></p>
 <p>Le modèle SDEM est construit avec la fonction <code>errorsarlm</code> du <em>package</em> <code>spatialreg</code>. Notez que le paramètre <code>etype = "mixed"</code> spécifie l’utilisation d’un modèle mixte.</p>
 <div class="cell">
-<div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Construction du modèle</span></span>
+<div class="sourceCode" id="cb39"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Construction du modèle</span></span>
 <span><span class="va">Modele.DurbinErreur</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/ML_models.html">errorsarlm</a></span><span class="op">(</span><span class="va">NO2</span> <span class="op">~</span> <span class="va">Pct0_14</span><span class="op">+</span><span class="va">Pct_65</span><span class="op">+</span><span class="va">Pct_Img</span><span class="op">+</span><span class="va">Pct_brevet</span><span class="op">+</span><span class="va">NivVieMed</span>,</span>
 <span>                                  listw<span class="op">=</span><span class="va">W.Rook</span>,    <span class="co"># matrice de pondération spatiale</span></span>
 <span>                                  data <span class="op">=</span> <span class="va">LyonIris</span>, <span class="co"># dataframe</span></span>
@@ -1235,18 +1230,18 @@ Residuals:
 
 Type: error 
 Coefficients: (asymptotic standard errors) 
-                 Estimate Std. Error z value  Pr(&gt;|z|)
-(Intercept)    37.0610133  6.5010177  5.7008 1.192e-08
-Pct0_14        -0.0819977  0.0416988 -1.9664   0.04925
-Pct_65         -0.0263294  0.0347137 -0.7585   0.44817
-Pct_Img         0.0046560  0.0310281  0.1501   0.88072
-Pct_brevet      0.0097849  0.0238839  0.4097   0.68203
-NivVieMed      -0.1678555  0.0680048 -2.4683   0.01358
-lag.Pct0_14    -0.1767469  0.1023451 -1.7270   0.08417
-lag.Pct_65      0.0105325  0.0891835  0.1181   0.90599
-lag.Pct_Img     0.0927851  0.0797036  1.1641   0.24437
-lag.Pct_brevet -0.0380482  0.0566883 -0.6712   0.50210
-lag.NivVieMed  -0.1025307  0.1724055 -0.5947   0.55204
+                Estimate Std. Error z value  Pr(&gt;|z|)
+(Intercept)    37.061010   6.501018  5.7008 1.192e-08
+Pct0_14        -0.081998   0.041699 -1.9664   0.04925
+Pct_65         -0.026329   0.034714 -0.7585   0.44817
+Pct_Img         0.004656   0.031028  0.1501   0.88072
+Pct_brevet      0.009785   0.023884  0.4097   0.68203
+NivVieMed      -0.167855   0.068005 -2.4683   0.01358
+lag.Pct0_14    -0.176747   0.102345 -1.7270   0.08417
+lag.Pct_65      0.010533   0.089183  0.1181   0.90599
+lag.Pct_Img     0.092785   0.079704  1.1641   0.24437
+lag.Pct_brevet -0.038048   0.056688 -0.6712   0.50211
+lag.NivVieMed  -0.102531   0.172405 -0.5947   0.55204
 
 Lambda: 0.8976, LR test value: 464.09, p-value: &lt; 2.22e-16
 Asymptotic standard error: 0.018242
@@ -1258,62 +1253,62 @@ ML residual variance (sigma squared): 10.046, (sigma: 3.1696)
 Nagelkerke pseudo-R-squared: 0.78871 
 Number of observations: 506 
 Number of parameters estimated: 13 
-AIC: NA (not available for weighted model), (AIC for lm: 3222.6)</code></pre>
+AIC: 2760.5, (AIC for lm: 3222.6)</code></pre>
 </div>
 </div>
 <p><strong>Effets directs, indirects et totaux</strong></p>
 <div class="cell">
-<div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (uniquement les coefficients)</span></span>
+<div class="sourceCode" id="cb41"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (uniquement les coefficients)</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">Modele.DurbinErreur</span>, listw <span class="op">=</span> <span class="va">W.Rook</span>, R <span class="op">=</span> <span class="fl">999</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Impact measures (SDEM, glht):
                  Direct    Indirect       Total
-Pct0_14    -0.081997661 -0.17674688 -0.25874455
-Pct_65     -0.026329377  0.01053246 -0.01579692
-Pct_Img     0.004656049  0.09278514  0.09744119
-Pct_brevet  0.009784949 -0.03804816 -0.02826321
-NivVieMed  -0.167855503 -0.10253070 -0.27038620</code></pre>
+Pct0_14    -0.081997642 -0.17674683 -0.25874447
+Pct_65     -0.026329370  0.01053248 -0.01579689
+Pct_Img     0.004656039  0.09278511  0.09744115
+Pct_brevet  0.009784961 -0.03804813 -0.02826317
+NivVieMed  -0.167855498 -0.10253070 -0.27038620</code></pre>
 </div>
-<div class="sourceCode" id="cb40"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (coefficients, valeurs de z et de p)</span></span>
+<div class="sourceCode" id="cb43"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Effets directs, indirects et totaux (coefficients, valeurs de z et de p)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/impacts.html">impacts</a></span><span class="op">(</span><span class="va">Modele.DurbinErreur</span>, listw <span class="op">=</span> <span class="va">W.Rook</span>, R <span class="op">=</span> <span class="fl">999</span><span class="op">)</span>, zstats <span class="op">=</span> <span class="cn">TRUE</span>, short <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Impact measures (SDEM, glht, n):
                  Direct    Indirect       Total
-Pct0_14    -0.081997661 -0.17674688 -0.25874455
-Pct_65     -0.026329377  0.01053246 -0.01579692
-Pct_Img     0.004656049  0.09278514  0.09744119
-Pct_brevet  0.009784949 -0.03804816 -0.02826321
-NivVieMed  -0.167855503 -0.10253070 -0.27038620
+Pct0_14    -0.081997642 -0.17674683 -0.25874447
+Pct_65     -0.026329370  0.01053248 -0.01579689
+Pct_Img     0.004656039  0.09278511  0.09744115
+Pct_brevet  0.009784961 -0.03804813 -0.02826317
+NivVieMed  -0.167855498 -0.10253070 -0.27038620
 ========================================================
 Standard errors:
                Direct   Indirect      Total
-Pct0_14    0.04169878 0.10234506 0.13146452
+Pct0_14    0.04169878 0.10234506 0.13146453
 Pct_65     0.03471367 0.08918350 0.11192948
 Pct_Img    0.03102807 0.07970364 0.09949722
 Pct_brevet 0.02388387 0.05668833 0.07344175
-NivVieMed  0.06800483 0.17240548 0.21172909
+NivVieMed  0.06800483 0.17240549 0.21172909
 ========================================================
 Z-values:
                Direct   Indirect      Total
-Pct0_14    -1.9664284 -1.7269703 -1.9681701
-Pct_65     -0.7584729  0.1180987 -0.1411328
-Pct_Img     0.1500592  1.1641268  0.9793358
-Pct_brevet  0.4096885 -0.6711815 -0.3848384
-NivVieMed  -2.4682881 -0.5947067 -1.2770386
+Pct0_14    -1.9664279 -1.7269698 -1.9681695
+Pct_65     -0.7584727  0.1180989 -0.1411325
+Pct_Img     0.1500589  1.1641264  0.9793354
+Pct_brevet  0.4096890 -0.6711810 -0.3848379
+NivVieMed  -2.4682880 -0.5947067 -1.2770385
 
 p-values:
            Direct   Indirect Total   
-Pct0_14    0.049249 0.084173 0.049048
+Pct0_14    0.049249 0.084173 0.049049
 Pct_65     0.448168 0.905989 0.887765
 Pct_Img    0.880718 0.244373 0.327414
-Pct_brevet 0.682034 0.502105 0.700357
+Pct_brevet 0.682034 0.502105 0.700358
 NivVieMed  0.013576 0.552040 0.201589</code></pre>
 </div>
 </div>
 <p><strong>Dépendance spatiale du modèle SDEM?</strong></p>
 <p>Avec une valeur du <em>I</em> de Moran de -0,010 (<em>p</em>&nbsp;=&nbsp;0,619), les résidus du modèle SDEM ne sont pas spatialement autocorrélés.</p>
 <div class="cell">
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/moran.mc.html">moran.mc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">resid</a></span><span class="op">(</span><span class="va">Modele.DurbinErreur</span><span class="op">)</span>, <span class="va">W.Rook</span>, nsim<span class="op">=</span><span class="fl">999</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb45"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/moran.mc.html">moran.mc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">resid</a></span><span class="op">(</span><span class="va">Modele.DurbinErreur</span><span class="op">)</span>, <span class="va">W.Rook</span>, nsim<span class="op">=</span><span class="fl">999</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Monte-Carlo simulation of Moran I
@@ -1322,7 +1317,7 @@ data:  resid(Modele.DurbinErreur)
 weights: W.Rook  
 number of simulations + 1: 1000 
 
-statistic = -0.010362, observed rank = 420, p-value = 0.58
+statistic = -0.010362, observed rank = 403, p-value = 0.597
 alternative hypothesis: greater</code></pre>
 </div>
 </div>
@@ -1339,21 +1334,22 @@ alternative hypothesis: greater</code></pre>
 </ol>
 <p>Dans les résultats ci-dessous, nous ne retenons pas le modèle SEM car la valeur de 0,740 pour le <code>RLMerr</code> n’est pas significative (<em>p</em>&nbsp;=&nbsp;0,3898). Par contre, les valeurs de <code>LMlag</code> et de <code>RLMlag</code> (555 et 123) sont significatives, ce qui justifie la sélection du modèle SAR.</p>
 <div class="cell">
-<div class="sourceCode" id="cb44"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.LMtests.html">lm.LMtests</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">Modele.MCO</span>,</span>
+<div class="sourceCode" id="cb47"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/lm.RStests.html">lm.LMtests</a></span><span class="op">(</span>model <span class="op">=</span> <span class="va">Modele.MCO</span>,</span>
 <span>                   listw <span class="op">=</span> <span class="va">W.Rook</span>,</span>
 <span>                   test <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"LMlag"</span>,<span class="st">"LMerr"</span>,<span class="st">"RLMlag"</span>,<span class="st">"RLMerr"</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>    Lagrange multiplier diagnostics for spatial dependence
+<pre><code>    Rao's score (a.k.a Lagrange multiplier) diagnostics for spatial
+    dependence
 data:  
 model: lm(formula = NO2 ~ Pct0_14 + Pct_65 + Pct_Img + Pct_brevet +
 NivVieMed, data = LyonIris)
-weights: W.Rook
+test weights: listw
  
-       statistic parameter p.value    
-LMlag  554.65778         1  &lt;2e-16 ***
-LMerr  432.83282         1  &lt;2e-16 ***
-RLMlag 122.56452         1  &lt;2e-16 ***
-RLMerr   0.73955         1  0.3898    
+         statistic parameter p.value    
+RSlag    554.65778         1  &lt;2e-16 ***
+RSerr    432.83282         1  &lt;2e-16 ***
+adjRSlag 122.56452         1  &lt;2e-16 ***
+adjRSerr   0.73955         1  0.3898    
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
@@ -1362,7 +1358,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <span class="header-section-number">7.1.3.2</span> Comparaison des modèles mixtes et non mixtes</h4>
 <p>Nous avons vu qu’il existe deux modèles mixtes (SDM et SDEM). Il convient alors de vérifier si le recours d’un modèle mixte est justifié comparativement à un modèle non mixte. Dans le code ci-dessous, nous vérifions si le modèle SDM est statistiquement différent du modèle SAR avec les fonctions <code>LR.Sarlm</code> et <code>anova</code>. Les résultats signalent un écart significatif des valeurs du log-vraisemblance (26,101, <em>p</em>&nbsp;&lt;&nbsp;0,001). Par conséquent, ce modèle mixte a un apport significatif.</p>
 <div class="cell">
-<div class="sourceCode" id="cb46"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## SDM et SEM sont-ils significativement différents?</span></span>
+<div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## SDM et SEM sont-ils significativement différents?</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/sarlm_tests.html">LR.Sarlm</a></span><span class="op">(</span><span class="va">Modele.DurbinSpatial</span>, <span class="va">Modele.SAR</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1374,7 +1370,7 @@ sample estimates:
 Log likelihood of Modele.DurbinSpatial           Log likelihood of Modele.SAR 
                              -1353.106                              -1366.157 </code></pre>
 </div>
-<div class="sourceCode" id="cb48"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">Modele.DurbinSpatial</span>, <span class="va">Modele.SAR</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">Modele.DurbinSpatial</span>, <span class="va">Modele.SAR</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                     Model df    AIC  logLik Test L.Ratio    p-value
 Modele.DurbinSpatial     1 13 2732.2 -1353.1    1                   
@@ -1383,7 +1379,7 @@ Modele.SAR               2  8 2748.3 -1366.2    2  26.101 8.5283e-05</code></pre
 </div>
 <p>À l’inverse, la différence entre les valeurs du log-vraisemblance des modèles SDEM et SEM n’est pas significative (4,9728, <em>p</em>&nbsp;=&nbsp;0,42), signalant que l’utilisation d’un modèle SDEM comparativement à un modèle SEM n’est pas nécessaire.</p>
 <div class="cell">
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## SDEM et SEM sont-ils significativement différents?</span></span>
+<div class="sourceCode" id="cb53"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## SDEM et SEM sont-ils significativement différents?</span></span>
 <span><span class="fu"><a href="https://r-spatial.github.io/spatialreg/reference/sarlm_tests.html">LR.Sarlm</a></span><span class="op">(</span><span class="va">Modele.DurbinErreur</span>, <span class="va">Modele.SEM</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
@@ -1395,7 +1391,7 @@ sample estimates:
 Log likelihood of Modele.DurbinErreur          Log likelihood of Modele.SEM 
                             -1367.250                             -1369.737 </code></pre>
 </div>
-<div class="sourceCode" id="cb52"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">Modele.DurbinErreur</span>, <span class="va">Modele.SEM</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb55"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">Modele.DurbinErreur</span>, <span class="va">Modele.SEM</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                    Model df    AIC  logLik Test L.Ratio p-value
 Modele.DurbinErreur     1 13 2760.5 -1367.2    1                
@@ -1406,7 +1402,7 @@ Modele.SEM              2  8 2755.5 -1369.7    2  4.9728  0.4192</code></pre>
 <span class="header-section-number">7.1.3.3</span> Mesures AIC et BIC et dépendance spatiale</h4>
 <p>Le critère d’information d’Akaike (AIC) et le critère d’information bayésien (BIC) sont largement utilisés pour évaluer la qualité d’ajustement du modèle. Plus leurs valeurs sont faibles, meilleur est le modèle. Il est donc possible de comparer leurs valeurs pour les différents modèles (MCO, SLX, SAR, SEM, SDM et SDEM). Nous pouvons aussi comparer l’autocorrélation spatiale des résidus des modèles avec le <em>I</em> de Moran.</p>
 <div class="cell">
-<div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Valeurs d'AIC et de BIC</span></span>
+<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Valeurs d'AIC et de BIC</span></span>
 <span><span class="va">AICs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/AIC.html">AIC</a></span><span class="op">(</span><span class="va">Modele.MCO</span>, <span class="va">Modele.SLX</span>, <span class="va">Modele.SAR</span>, <span class="va">Modele.SEM</span>, </span>
 <span>            <span class="va">Modele.DurbinSpatial</span>, <span class="va">Modele.DurbinErreur</span><span class="op">)</span></span>
 <span><span class="va">BICs</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/AIC.html">BIC</a></span><span class="op">(</span><span class="va">Modele.MCO</span>, <span class="va">Modele.SLX</span>, <span class="va">Modele.SAR</span>, <span class="va">Modele.SEM</span>, </span>
@@ -1436,10 +1432,10 @@ Modele.SEM              2  8 2755.5 -1369.7    2  4.9728  0.4192</code></pre>
 <pre><code>    Modele      AIC      BIC dl       MoranI MoranIp
 1      MCO 3366.626 3396.212  7  0.587312061   0.001
 2      SLX 3222.594 3273.313 12  0.604660275   0.001
-3      SAR 2748.314 2782.126  8 -0.014281059   0.631
-4      SEM 2755.474 2789.286  8 -0.011826630   0.639
-5 Durbin S 2732.212 2787.157 13 -0.004612686   0.547
-6 Durbin E 2760.501 2815.446 13 -0.010361614   0.613</code></pre>
+3      SAR 2748.314 2782.126  8 -0.014281059   0.641
+4      SEM 2755.474 2789.286  8 -0.011826605   0.620
+5 Durbin S 2732.212 2787.157 13 -0.004612686   0.536
+6 Durbin E 2760.501 2815.446 13 -0.010361653   0.612</code></pre>
 </div>
 </div>
 <p>Quelques lignes de code suffisent pour créer deux graphiques permettant de comparer visuellement les résultats des différents modèles (<a href="#fig-GraphComparaison">figure&nbsp;<span>7.5</span></a>). Les résultats démontrent que&nbsp;:</p>
@@ -1448,7 +1444,7 @@ Modele.SEM              2  8 2755.5 -1369.7    2  4.9728  0.4192</code></pre>
 <li>Les modèles SDM, SAR et SEM sont les plus performants avec les valeurs d’AIC les plus faibles.</li>
 </ul>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rpkgs.datanovia.com/ggpubr/">ggpubr</a></span><span class="op">)</span></span>
 <span><span class="co">## Graphique pour l'autocorrélation spatiale</span></span>
 <span><span class="va">g1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span>data<span class="op">=</span><span class="va">Comparaison</span>, <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/stats/reorder.factor.html">reorder</a></span><span class="op">(</span><span class="va">Modele</span>,<span class="va">MoranI</span><span class="op">)</span>, y<span class="op">=</span><span class="va">MoranI</span><span class="op">)</span><span class="op">)</span> <span class="op">+</span></span>
@@ -1488,7 +1484,7 @@ Modele.SEM              2  8 2755.5 -1369.7    2  4.9728  0.4192</code></pre>
 <p><strong>Modèles généralisés additifs</strong></p>
 </div>
 <div class="bloc_attention-body">
-<p>Pour une description détaillée des modèles généralisés additifs, nous vous invitons vivement à lire le <a href="https://laeq.github.io/LivreMethoQuantBolR/chap11.html">chapitre suivant</a> <span class="citation" data-cites="RBoldAir">(<a href="references.html#ref-RBoldAir" role="doc-biblioref">Apparicio et Gelb 2022</a>)</span>.</p>
+<p>Pour une description détaillée des modèles généralisés additifs, nous vous invitons vivement à lire le <a href="https://serieboldr.github.io/MethodesQuantitatives/11-GAM.html">chapitre suivant</a> <span class="citation" data-cites="RBoldAir">(<a href="references.html#ref-RBoldAir" role="doc-biblioref">Apparicio et Gelb 2022</a>)</span>.</p>
 </div>
 </div>
 <section id="sec-0721" class="level3" data-number="7.2.1"><h3 data-number="7.2.1" class="anchored" data-anchor-id="sec-0721">
@@ -1522,7 +1518,7 @@ g(Y) \ = \beta_{0} \ + X\beta + s(CoordX,CoordY) \ + \epsilon
 <span class="header-section-number">7.2.2.1</span> Réalisation du modèle GAM</h4>
 <p>Pour construire des modèles GAM dans R, nous utilisons la fonction <code>gam</code> du <em>package</em> <code>mgcv</code> <span class="citation" data-cites="wood2011fast">(<a href="references.html#ref-wood2011fast" role="doc-biblioref">Wood 2011</a>)</span>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb57"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb60"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va">mgcv</span><span class="op">)</span></span>
 <span><span class="co">## Ajout des coordonnées X et Y dans LyonIris </span></span>
 <span><span class="va">xy</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_centroid</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">X</span> <span class="op">&lt;-</span> <span class="va">xy</span><span class="op">[</span>,<span class="fl">1</span><span class="op">]</span></span>
@@ -1566,7 +1562,7 @@ GCV = 18.814  Scale est. = 17.605    n = 506</code></pre>
 <p>Les résultats ci-dessus signalent que la localisation a un effet très significatif puisque (s(X,Y) = 26,5 avec <em>p</em>&nbsp;&lt;&nbsp;0,001). Notez que la valeur de <em>p</em> permet de déterminer si la <em>spline</em> bivariée (et donc l’espace) a ou non un effet significatif. Si la valeur de <em>p</em> est supérieure à 0,05, alors il n’est pas nécessaire de conserver la <em>spline</em> bivariée sur les coordonnées géographiques.</p>
 <p>De plus, le code ci-dessous permet de constater que le modèle GAM est plus performant que le modèle linéaire multiple classique (MCO).</p>
 <div class="cell">
-<div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">Modele.MCO</span>, <span class="va">Modele.GAM1</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb62"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">Modele.MCO</span>, <span class="va">Modele.GAM1</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Analysis of Variance Table
 
@@ -1582,7 +1578,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 </div>
 <p>Nous pouvons aussi introduire une <em>spline</em> plus complexe en augmentant le nombre de nœuds à 40.</p>
 <div class="cell">
-<div class="sourceCode" id="cb61"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Modele.GAM2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">NO2</span> <span class="op">~</span>  <span class="va">Pct0_14</span><span class="op">+</span><span class="va">Pct_65</span><span class="op">+</span><span class="va">Pct_Img</span><span class="op">+</span><span class="va">Pct_brevet</span><span class="op">+</span><span class="va">NivVieMed</span><span class="op">+</span></span>
+<div class="sourceCode" id="cb64"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Modele.GAM2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/gam.html">gam</a></span><span class="op">(</span><span class="va">NO2</span> <span class="op">~</span>  <span class="va">Pct0_14</span><span class="op">+</span><span class="va">Pct_65</span><span class="op">+</span><span class="va">Pct_Img</span><span class="op">+</span><span class="va">Pct_brevet</span><span class="op">+</span><span class="va">NivVieMed</span><span class="op">+</span></span>
 <span>                          <span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/s.html">s</a></span><span class="op">(</span><span class="va">X</span>, <span class="va">Y</span>, k<span class="op">=</span> <span class="fl">40</span><span class="op">)</span>, data <span class="op">=</span> <span class="va">LyonIris</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">Modele.GAM2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
@@ -1617,7 +1613,7 @@ GCV = 17.014  Scale est. = 15.613    n = 506</code></pre>
 </div>
 <p>La valeur plus faible d’AIC pour le second modèle GAM signale qu’il est plus performant que le premier.</p>
 <div class="cell">
-<div class="sourceCode" id="cb63"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/AIC.html">AIC</a></span><span class="op">(</span><span class="va">Modele.MCO</span>, <span class="va">Modele.GAM1</span>, <span class="va">Modele.GAM2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/AIC.html">AIC</a></span><span class="op">(</span><span class="va">Modele.MCO</span>, <span class="va">Modele.GAM1</span>, <span class="va">Modele.GAM2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>                  df      AIC
 Modele.MCO   7.00000 3366.626
@@ -1629,7 +1625,7 @@ Modele.GAM2 42.67520 2868.355</code></pre>
 <span class="header-section-number">7.2.2.2</span> Visualisation de l’effet de l’espace</h4>
 <p>Pour visualiser les prédictions du modèle dans l’espace, toutes choses étant égales par ailleurs, nous utilisons la fonction <code>vis.gam</code> (<a href="#fig-EffetLocalisation1">figure&nbsp;<span>7.6</span></a>). Les contours signalent qu’au centre de Lyon, les valeurs de dioxyde d’azote sont les plus élevées et dépassent même 40&nbsp;<span class="math inline">\(\mu\)</span>g/m<sup>3</sup>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb65"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/vis.gam.html">vis.gam</a></span><span class="op">(</span><span class="va">Modele.GAM2</span>, view<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">"Y"</span><span class="op">)</span>, plot.type <span class="op">=</span> <span class="st">"contour"</span>, color<span class="op">=</span><span class="st">"terrain"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb68"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/mgcv/man/vis.gam.html">vis.gam</a></span><span class="op">(</span><span class="va">Modele.GAM2</span>, view<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">"Y"</span><span class="op">)</span>, plot.type <span class="op">=</span> <span class="st">"contour"</span>, color<span class="op">=</span><span class="st">"terrain"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-EffetLocalisation1" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="07-RegressionSpatiales_files/figure-html/fig-EffetLocalisation1-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
@@ -1647,29 +1643,29 @@ Modele.GAM2 42.67520 2868.355</code></pre>
 <li>Découper et cartographier le <em>raster</em>.</li>
 </ol>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/raster">raster</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/terra/">terra</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/raster">raster</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/">terra</a></span><span class="op">)</span></span>
 <span><span class="co">## Étape 1 : création d'une grid pour la prédiction de 100 mètres de résolution spatiale</span></span>
 <span><span class="va">Xcoords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">$</span><span class="va">X</span><span class="op">-</span><span class="fl">100</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">$</span><span class="va">X</span><span class="op">+</span><span class="fl">100</span><span class="op">)</span>, by<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span>
 <span><span class="va">Ycoords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/seq.html">seq</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">min</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">$</span><span class="va">Y</span><span class="op">-</span><span class="fl">100</span><span class="op">)</span>, <span class="fu"><a href="https://rdrr.io/r/base/Extremes.html">max</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">$</span><span class="va">Y</span><span class="op">+</span><span class="fl">100</span><span class="op">)</span>, by<span class="op">=</span><span class="fl">100</span><span class="op">)</span></span>
 <span><span class="va">PredDF</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/expand.grid.html">expand.grid</a></span><span class="op">(</span><span class="va">Xcoords</span>,<span class="va">Ycoords</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">PredDF</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"X"</span>,<span class="st">"Y"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">PredDF</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"X"</span>,<span class="st">"Y"</span><span class="op">)</span></span>
 <span><span class="co">## Étape 2 : fixation de tous les autres paramètres à leur moyenne</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">Var</span> <span class="kw">in</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"VegHautPrt"</span>,<span class="st">"Pct0_14"</span>,<span class="st">"Pct_65"</span>,<span class="st">"Pct_Img"</span>,<span class="st">"Pct_brevet"</span>, <span class="st">"NivVieMed"</span><span class="op">)</span><span class="op">)</span><span class="op">{</span></span>
-<span>  <span class="va">PredDF</span><span class="op">[[</span><span class="va">Var</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/summarize-generics.html">mean</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">[[</span><span class="va">Var</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
+<span>  <span class="va">PredDF</span><span class="op">[[</span><span class="va">Var</span><span class="op">]</span><span class="op">]</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/summarize-generics.html">mean</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">[[</span><span class="va">Var</span><span class="op">]</span><span class="op">]</span><span class="op">)</span></span>
 <span><span class="op">}</span></span>
 <span><span class="co">## Étape 3 : calcul de la prédiction</span></span>
 <span><span class="va">PredDF</span><span class="op">$</span><span class="va">PM25</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/predict.html">predict</a></span><span class="op">(</span><span class="va">Modele.GAM2</span>,newdata<span class="op">=</span><span class="va">PredDF</span><span class="op">)</span></span>
 <span><span class="co">## Étape 4 : centrage de la prédiction (sans la constante)</span></span>
-<span><span class="va">PredDF</span><span class="op">$</span><span class="va">CenterPredPM25</span> <span class="op">&lt;-</span> <span class="va">PredDF</span><span class="op">$</span><span class="va">PM25</span> <span class="op">-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/summarize-generics.html">mean</a></span><span class="op">(</span><span class="va">PredDF</span><span class="op">$</span><span class="va">PM25</span><span class="op">)</span></span>
+<span><span class="va">PredDF</span><span class="op">$</span><span class="va">CenterPredPM25</span> <span class="op">&lt;-</span> <span class="va">PredDF</span><span class="op">$</span><span class="va">PM25</span> <span class="op">-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/summarize-generics.html">mean</a></span><span class="op">(</span><span class="va">PredDF</span><span class="op">$</span><span class="va">PM25</span><span class="op">)</span></span>
 <span><span class="co">### Étape 5 : construction du raster</span></span>
 <span><span class="va">rasterGAM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/raster/man/rasterFromXYZ.html">rasterFromXYZ</a></span><span class="op">(</span><span class="va">PredDF</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"X"</span>, <span class="st">"Y"</span>, <span class="st">"CenterPredPM25"</span><span class="op">)</span><span class="op">]</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/crs.html">crs</a></span><span class="op">(</span><span class="va">rasterGAM</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/crs.html">crs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/methods/as.html">as</a></span><span class="op">(</span><span class="va">LyonIris</span>, <span class="st">"Spatial"</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">rasterGAM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/rast.html">rast</a></span><span class="op">(</span><span class="va">rasterGAM</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/crs.html">crs</a></span><span class="op">(</span><span class="va">rasterGAM</span><span class="op">)</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/crs.html">crs</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/methods/as.html">as</a></span><span class="op">(</span><span class="va">LyonIris</span>, <span class="st">"Spatial"</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">rasterGAM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/rast.html">rast</a></span><span class="op">(</span><span class="va">rasterGAM</span><span class="op">)</span></span>
 <span><span class="co">### Étape 6 : découpage et cartographie du raster</span></span>
-<span><span class="va">LyonIris.SpatVector</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/terra/man/vect.html">vect</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span></span>
-<span><span class="va">rasterGAM</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/mask.html">mask</a></span><span class="op">(</span><span class="va">rasterGAM</span>, <span class="va">LyonIris.SpatVector</span><span class="op">)</span></span>
-<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rdrr.io/pkg/terra/man/plot.html">plot</a></span><span class="op">(</span><span class="va">rasterGAM</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="va">LyonIris.SpatVector</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rspatial.github.io/terra/reference/vect.html">vect</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span></span>
+<span><span class="va">rasterGAM</span> <span class="op">&lt;-</span> <span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/mask.html">mask</a></span><span class="op">(</span><span class="va">rasterGAM</span>, <span class="va">LyonIris.SpatVector</span><span class="op">)</span></span>
+<span><span class="fu">terra</span><span class="fu">::</span><span class="fu"><a href="https://rspatial.github.io/terra/reference/plot.html">plot</a></span><span class="op">(</span><span class="va">rasterGAM</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-EffetLocalisation2" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="07-RegressionSpatiales_files/figure-html/fig-EffetLocalisation2-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
@@ -1682,7 +1678,7 @@ Modele.GAM2 42.67520 2868.355</code></pre>
 <span class="header-section-number">7.2.2.3</span> Dépendance spatiale du modèle GAM</h4>
 <p>Par contre, bien que l’autocorrélation spatiale des résidus du modèle GAM soit plus faible que pour le modèle MCO (<em>I</em> de Moran de 0,337 contre 0,570 avec <em>p</em>&nbsp;&lt;&nbsp;0,001), il reste que le problème de la dépendance spatiale n’est pas corrigé.</p>
 <div class="cell">
-<div class="sourceCode" id="cb67"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/moran.mc.html">moran.mc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">resid</a></span><span class="op">(</span><span class="va">Modele.GAM2</span><span class="op">)</span>, <span class="va">W.Rook</span>, nsim<span class="op">=</span><span class="fl">999</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb70"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-spatial.github.io/spdep/reference/moran.mc.html">moran.mc</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/residuals.html">resid</a></span><span class="op">(</span><span class="va">Modele.GAM2</span><span class="op">)</span>, <span class="va">W.Rook</span>, nsim<span class="op">=</span><span class="fl">999</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Monte-Carlo simulation of Moran I
@@ -1757,7 +1753,7 @@ w_{ij} = [1-(d_{ij}/b)^2]^2 \text{ si } d_{ij}&lt; b \text{, sinon } w_{ij}=0
 <li><p>le paramètre <code>adapt</code> permet de spécifier si vous optimisez le nombre de plus proches voisins (<code>adapt=TRUE</code>) ou la distance (<code>adapt=FALSE</code>).</p></li>
 </ul>
 <div class="cell">
-<div class="sourceCode" id="cb69"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rsbivand/spgwr/">spgwr</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/rsbivand/spgwr/">spgwr</a></span><span class="op">)</span></span>
 <span><span class="co">## Optimisation du nombre de voisins avec le CV</span></span>
 <span><span class="va">bwaCV.voisins</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rsbivand.github.io/spgwr/reference/gwr.cv.html">gwr.sel</a></span><span class="op">(</span><span class="va">NO2</span> <span class="op">~</span>  <span class="va">Pct0_14</span><span class="op">+</span><span class="va">Pct_65</span><span class="op">+</span><span class="va">Pct_Img</span><span class="op">+</span><span class="va">Pct_brevet</span><span class="op">+</span><span class="va">NivVieMed</span>,</span>
 <span>                          data <span class="op">=</span> <span class="va">LyonIris</span>,</span>
@@ -1801,13 +1797,13 @@ w_{ij} = [1-(d_{ij}/b)^2]^2 \text{ si } d_{ij}&lt; b \text{, sinon } w_{ij}=0
 <span><span class="co">## Affichage des résultats d'optimisation </span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html">cat</a></span><span class="op">(</span><span class="st">"Sélection de la taille de la zone optimale (bandwidth)"</span>,</span>
 <span>    <span class="st">"\n avec le nombre de plus proches voisins :"</span>,</span>
-<span>    <span class="st">"\n  CV ="</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">bwaCV.voisins</span>,<span class="fl">4</span><span class="op">)</span>, <span class="st">"nombre de voisins ="</span>, </span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">bwaCV.voisins</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">)</span>,</span>
-<span>    <span class="st">"\n  AIC ="</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">bwaAIC.voisins</span>,<span class="fl">4</span><span class="op">)</span>, <span class="st">"nombre de voisins ="</span>, </span>
-<span>    <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">bwaAIC.voisins</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="st">"\n  CV ="</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html">round</a></span><span class="op">(</span><span class="va">bwaCV.voisins</span>,<span class="fl">4</span><span class="op">)</span>, <span class="st">"nombre de voisins ="</span>, </span>
+<span>    <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html">round</a></span><span class="op">(</span><span class="va">bwaCV.voisins</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">)</span>,</span>
+<span>    <span class="st">"\n  AIC ="</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html">round</a></span><span class="op">(</span><span class="va">bwaAIC.voisins</span>,<span class="fl">4</span><span class="op">)</span>, <span class="st">"nombre de voisins ="</span>, </span>
+<span>    <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html">round</a></span><span class="op">(</span><span class="va">bwaAIC.voisins</span><span class="op">*</span><span class="fu"><a href="https://rdrr.io/r/base/nrow.html">nrow</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">)</span>,</span>
 <span>    <span class="st">"\nSélection de la taille de la zone optimale (bandwidth) avec la distance :"</span>,</span>
-<span>    <span class="st">"\n  CV ="</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">bwnaCV.dist</span>, <span class="fl">0</span><span class="op">)</span>,  <span class="st">"mètres"</span>,</span>
-<span>    <span class="st">"\n  AIC ="</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html">round</a></span><span class="op">(</span><span class="va">bwnaAIC.dist</span>, <span class="fl">0</span><span class="op">)</span>, <span class="st">"mètres"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>    <span class="st">"\n  CV ="</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html">round</a></span><span class="op">(</span><span class="va">bwnaCV.dist</span>, <span class="fl">0</span><span class="op">)</span>,  <span class="st">"mètres"</span>,</span>
+<span>    <span class="st">"\n  AIC ="</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html">round</a></span><span class="op">(</span><span class="va">bwnaAIC.dist</span>, <span class="fl">0</span><span class="op">)</span>, <span class="st">"mètres"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Sélection de la taille de la zone optimale (bandwidth) 
  avec le nombre de plus proches voisins : 
@@ -1823,7 +1819,7 @@ Sélection de la taille de la zone optimale (bandwidth) avec la distance :
 <span class="header-section-number">7.3.2.2</span> Réalisation de la GWR</h4>
 <p>Avec la fonction <code>gwr</code>, nous estimons un modèle GWR avec un <em>kernel</em> bicarré et un nombre optimisé de plus voisins selon la méthode CV, soit 92.</p>
 <div class="cell">
-<div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Modele.GWR</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rsbivand.github.io/spgwr/reference/gwr.html">gwr</a></span><span class="op">(</span><span class="va">NO2</span> <span class="op">~</span> <span class="va">Pct0_14</span><span class="op">+</span><span class="va">Pct_65</span><span class="op">+</span><span class="va">Pct_Img</span><span class="op">+</span><span class="va">Pct_brevet</span><span class="op">+</span><span class="va">NivVieMed</span>,</span>
+<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Modele.GWR</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rsbivand.github.io/spgwr/reference/gwr.html">gwr</a></span><span class="op">(</span><span class="va">NO2</span> <span class="op">~</span> <span class="va">Pct0_14</span><span class="op">+</span><span class="va">Pct_65</span><span class="op">+</span><span class="va">Pct_Img</span><span class="op">+</span><span class="va">Pct_brevet</span><span class="op">+</span><span class="va">NivVieMed</span>,</span>
 <span>              data <span class="op">=</span> <span class="va">LyonIris</span>,</span>
 <span>              adapt<span class="op">=</span><span class="va">bwaCV.voisins</span>,</span>
 <span>              gweight<span class="op">=</span><span class="va">gwr.bisquare</span>,</span>
@@ -1834,7 +1830,7 @@ Sélection de la taille de la zone optimale (bandwidth) avec la distance :
 </div>
 <p>Le code ci-dessous permet de renvoyer les statistiques univariées des coefficients des 506 régressions locales, réalisées pour chacune des 506&nbsp;entités spatiales (IRIS), et les statistiques d’ajustement du modèle (AIC, R<sup>2</sup> global, etc.)</p>
 <div class="cell">
-<div class="sourceCode" id="cb72"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Modele.GWR</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb75"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Modele.GWR</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Call:
 gwr(formula = NO2 ~ Pct0_14 + Pct_65 + Pct_Img + Pct_brevet + 
@@ -1870,7 +1866,7 @@ Quasi-global R2: 0.783008 </code></pre>
 <p>Le R<sup>2</sup> global du modèle GWR est bien supérieur au modèle classique MCO (0,783 contre 0,283). Fotheringham <em>et al.</em> <span class="citation" data-cites="fotheringham2003geographically">(<a href="references.html#ref-fotheringham2003geographically" role="doc-biblioref">2003</a>)</span> proposent plusieurs tests pour comparer les modèles GWR et classique qui sont implémentés dans le <em>package</em> <code>spgwr</code> (fonctions <code>anova(Modele.GWR)</code>, <code>anova(Modele.GWR, approx=TRUE)</code>, <code>LMZ.F1GWR.test(Modele.GWR)</code>, <code>LMZ.F2GWR.test(Modele.GWR)</code>.</p>
 <p>Si les valeurs de <em>p</em> de ces tests sont inférieures à 0,05, alors le modèle GWR améliore de façon significative la capacité prédictive du modèle de régression globale, ce que confirment les résultats ci-dessous.</p>
 <div class="cell">
-<div class="sourceCode" id="cb74"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">Modele.GWR</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb77"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">Modele.GWR</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Analysis of Variance Table 
                     Df  Sum Sq Mean Sq F value
@@ -1878,7 +1874,7 @@ OLS Residuals     6.00 22346.0
 GWR Improvement 101.13 15581.6 154.078        
 GWR Residuals   398.87  6764.4  16.959  9.0854</code></pre>
 </div>
-<div class="sourceCode" id="cb76"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">Modele.GWR</span>, approx<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb79"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/stats/anova.html">anova</a></span><span class="op">(</span><span class="va">Modele.GWR</span>, approx<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Analysis of Variance Table 
 approximate degrees of freedom (only tr(S))
@@ -1887,7 +1883,7 @@ OLS Residuals     6.000 22346.0
 GWR Improvement  75.533 15581.6 206.290        
 GWR Residuals   424.467  6764.4  15.936  12.945</code></pre>
 </div>
-<div class="sourceCode" id="cb78"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rsbivand.github.io/spgwr/reference/LMZ.F3GWR.test.html">LMZ.F1GWR.test</a></span><span class="op">(</span><span class="va">Modele.GWR</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb81"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rsbivand.github.io/spgwr/reference/LMZ.F3GWR.test.html">LMZ.F1GWR.test</a></span><span class="op">(</span><span class="va">Modele.GWR</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Leung et al. (2000) F(1) test
@@ -1899,7 +1895,7 @@ sample estimates:
 SS OLS residuals SS GWR residuals 
        22346.021         6764.424 </code></pre>
 </div>
-<div class="sourceCode" id="cb80"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rsbivand.github.io/spgwr/reference/LMZ.F3GWR.test.html">LMZ.F2GWR.test</a></span><span class="op">(</span><span class="va">Modele.GWR</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb83"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rsbivand.github.io/spgwr/reference/LMZ.F3GWR.test.html">LMZ.F2GWR.test</a></span><span class="op">(</span><span class="va">Modele.GWR</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
     Leung et al. (2000) F(2) test
@@ -1914,7 +1910,7 @@ sample estimates:
 </div>
 <p>Un autre test (<code>LMZ.F3GWR.test</code>) permet de répondre à la question suivante&nbsp;: est-ce que les coefficients de régression du modèle GWR varient spatialement de façon significative? Les résultats ci-dessous démontrent que c’est le cas pour toutes les variables indépendantes et la constante (<em>p</em>&nbsp;&lt;&nbsp;0,001).</p>
 <div class="cell">
-<div class="sourceCode" id="cb82"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rsbivand.github.io/spgwr/reference/LMZ.F3GWR.test.html">LMZ.F3GWR.test</a></span><span class="op">(</span><span class="va">Modele.GWR</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb85"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rsbivand.github.io/spgwr/reference/LMZ.F3GWR.test.html">LMZ.F3GWR.test</a></span><span class="op">(</span><span class="va">Modele.GWR</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>
 Leung et al. (2000) F(3) test
@@ -1934,10 +1930,10 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <span class="header-section-number">7.3.2.4</span> Cartographie des résultats du modèle GWR</h4>
 <p>Dans un premier temps, nous ajoutons les valeurs locales des R<sup>2</sup>, des coefficients de régression et des valeurs de <em>t</em> dans la couche <code>sf</code>. Notez que les résultats locaux de la GWR sont stockés dans l’objet <code>Modele.GWR$SDF</code>.</p>
 <div class="cell">
-<div class="sourceCode" id="cb84"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Récupération du R carré local</span></span>
+<div class="sourceCode" id="cb87"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Récupération du R carré local</span></span>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">GWR.R2</span> <span class="op">&lt;-</span> <span class="va">Modele.GWR</span><span class="op">$</span><span class="va">SDF</span><span class="op">$</span><span class="va">localR2</span></span>
 <span><span class="co">## Récupération des coefficients de régression et calcul des valeurs de t locales</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/names.html">names</a></span><span class="op">(</span><span class="va">Modele.GWR</span><span class="op">$</span><span class="va">SDF</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rspatial.github.io/terra/reference/names.html">names</a></span><span class="op">(</span><span class="va">Modele.GWR</span><span class="op">$</span><span class="va">SDF</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code> [1] "sum.w"              "(Intercept)"        "Pct0_14"           
  [4] "Pct_65"             "Pct_Img"            "Pct_brevet"        
@@ -1948,7 +1944,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 [19] "Pct0_14_se_EDF"     "Pct_65_se_EDF"      "Pct_Img_se_EDF"    
 [22] "Pct_brevet_se_EDF"  "NivVieMed_se_EDF"   "pred.se"           </code></pre>
 </div>
-<div class="sourceCode" id="cb86"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">VarsIndep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Pct0_14"</span>, <span class="st">"Pct_65"</span>, <span class="st">"Pct_Img"</span>, <span class="st">"Pct_brevet"</span>, <span class="st">"NivVieMed"</span><span class="op">)</span></span>
+<div class="sourceCode" id="cb89"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">VarsIndep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Pct0_14"</span>, <span class="st">"Pct_65"</span>, <span class="st">"Pct_Img"</span>, <span class="st">"Pct_brevet"</span>, <span class="st">"NivVieMed"</span><span class="op">)</span></span>
 <span><span class="kw">for</span><span class="op">(</span><span class="va">e</span> <span class="kw">in</span> <span class="va">VarsIndep</span><span class="op">)</span><span class="op">{</span></span>
 <span>  <span class="co"># Nom des nouvelles variables</span></span>
 <span>  <span class="va">var.coef</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"GWR."</span>, <span class="st">"B_"</span>, <span class="va">e</span><span class="op">)</span></span>
@@ -1962,16 +1958,16 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p><strong>Cartographie des R<sup>2</sup> locaux</strong></p>
 <p>Le code ci-dessous permet ensuite de cartographier les R<sup>2</sup> locaux de la GWR (<a href="#fig-GWRR2">figure&nbsp;<span>7.9</span></a>).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb87"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap">tmap</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.R2"</span>, </span>
+<div class="sourceCode" id="cb90"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-tmap.github.io/tmap/">tmap</a></span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.R2"</span>, </span>
 <span>          palette<span class="op">=</span><span class="st">"YlOrBr"</span>, </span>
 <span>          n<span class="op">=</span><span class="fl">5</span>, style<span class="op">=</span><span class="st">"quantile"</span>,</span>
 <span>          legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>          title <span class="op">=</span> <span class="st">"R2 locaux"</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">+</span></span>
-<span>  <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">+</span></span>
+<span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-GWRR2" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="07-RegressionSpatiales_files/figure-html/fig-GWRR2-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
@@ -1982,32 +1978,32 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p><strong>Cartographie des coefficients de régression</strong></p>
 <p>Le code ci-dessous permet ensuite de cartographier les coefficients locaux de la GWR (<a href="#fig-GWRCoeffReg">figure&nbsp;<span>7.10</span></a>).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb88"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Carte1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.B_Pct0_14"</span>, palette<span class="op">=</span><span class="st">"YlOrBr"</span>, n<span class="op">=</span><span class="fl">4</span>, style<span class="op">=</span><span class="st">"pretty"</span>,</span>
+<div class="sourceCode" id="cb91"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Carte1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.B_Pct0_14"</span>, palette<span class="op">=</span><span class="st">"YlOrBr"</span>, n<span class="op">=</span><span class="fl">4</span>, style<span class="op">=</span><span class="st">"pretty"</span>,</span>
 <span>                  legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>                  title <span class="op">=</span> <span class="st">"Moins de 15 ans (%)"</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">Carte2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.B_Pct_65"</span>, palette<span class="op">=</span><span class="st">"YlOrBr"</span>, n<span class="op">=</span><span class="fl">4</span>, style<span class="op">=</span><span class="st">"pretty"</span>, </span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">Carte2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.B_Pct_65"</span>, palette<span class="op">=</span><span class="st">"YlOrBr"</span>, n<span class="op">=</span><span class="fl">4</span>, style<span class="op">=</span><span class="st">"pretty"</span>, </span>
 <span>                  legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>                  title <span class="op">=</span> <span class="st">"65 ans et plus (%)"</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">Carte3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.B_Pct_Img"</span>, palette<span class="op">=</span><span class="st">"YlOrBr"</span>, n<span class="op">=</span><span class="fl">4</span>, style<span class="op">=</span><span class="st">"pretty"</span>, </span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">Carte3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.B_Pct_Img"</span>, palette<span class="op">=</span><span class="st">"YlOrBr"</span>, n<span class="op">=</span><span class="fl">4</span>, style<span class="op">=</span><span class="st">"pretty"</span>, </span>
 <span>                  legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>                  title <span class="op">=</span> <span class="st">"Immigrants (%)"</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">Carte4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.B_Pct_brevet"</span>, palette<span class="op">=</span><span class="st">"YlOrBr"</span>, n<span class="op">=</span><span class="fl">4</span>, style<span class="op">=</span><span class="st">"pretty"</span>, </span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">Carte4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.B_Pct_brevet"</span>, palette<span class="op">=</span><span class="st">"YlOrBr"</span>, n<span class="op">=</span><span class="fl">4</span>, style<span class="op">=</span><span class="st">"pretty"</span>, </span>
 <span>                  legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>                  title <span class="op">=</span> <span class="st">"Faible scolarité (%)"</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">Carte5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.B_NivVieMed"</span>, palette<span class="op">=</span><span class="st">"YlOrBr"</span>, n<span class="op">=</span><span class="fl">4</span>, style<span class="op">=</span><span class="st">"pretty"</span>, </span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">Carte5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.B_NivVieMed"</span>, palette<span class="op">=</span><span class="st">"YlOrBr"</span>, n<span class="op">=</span><span class="fl">4</span>, style<span class="op">=</span><span class="st">"pretty"</span>, </span>
 <span>                  legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>                  title <span class="op">=</span> <span class="st">"Niveau de vie (€1000)"</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte1</span>, <span class="va">Carte2</span>, <span class="va">Carte3</span>, <span class="va">Carte4</span>, <span class="va">Carte5</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte1</span>, <span class="va">Carte2</span>, <span class="va">Carte3</span>, <span class="va">Carte4</span>, <span class="va">Carte5</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-GWRCoeffReg" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="07-RegressionSpatiales_files/figure-html/fig-GWRCoeffReg-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
@@ -2018,39 +2014,39 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p><strong>Cartographie des valeurs de <em>t</em></strong></p>
 <p>Pour cartographier les valeurs de <em>t</em>, nous utilisons les seuils de ± 1,96, 2,58 et 3,29, indiquant des seuils de signification à 5&nbsp;%, 1&nbsp;% et 0,1&nbsp;% (<a href="#fig-GWRValT">figure&nbsp;<span>7.11</span></a>).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb89"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">classes.intervalles</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="op">-</span><span class="fl">3.29</span>, <span class="op">-</span><span class="fl">2.58</span>, <span class="op">-</span><span class="fl">1.96</span>, <span class="fl">1.96</span>, <span class="fl">2.58</span>, <span class="fl">3.29</span>, <span class="cn">Inf</span><span class="op">)</span></span>
-<span><span class="va">Carte1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.T_Pct0_14"</span>, palette<span class="op">=</span><span class="st">"-RdBu"</span>, </span>
+<div class="sourceCode" id="cb92"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">classes.intervalles</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="op">-</span><span class="fl">3.29</span>, <span class="op">-</span><span class="fl">2.58</span>, <span class="op">-</span><span class="fl">1.96</span>, <span class="fl">1.96</span>, <span class="fl">2.58</span>, <span class="fl">3.29</span>, <span class="cn">Inf</span><span class="op">)</span></span>
+<span><span class="va">Carte1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.T_Pct0_14"</span>, palette<span class="op">=</span><span class="st">"-RdBu"</span>, </span>
 <span>                  breaks <span class="op">=</span> <span class="va">classes.intervalles</span>,</span>
 <span>                  legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>                  title <span class="op">=</span> <span class="st">"Moins de 15 ans (%)"</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">Carte2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.T_Pct_65"</span>, palette<span class="op">=</span><span class="st">"-RdBu"</span>,</span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">Carte2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.T_Pct_65"</span>, palette<span class="op">=</span><span class="st">"-RdBu"</span>,</span>
 <span>                  breaks <span class="op">=</span> <span class="va">classes.intervalles</span>,</span>
 <span>                  legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>                  title <span class="op">=</span> <span class="st">"65 ans et plus (%)"</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">Carte3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.T_Pct_Img"</span>, palette<span class="op">=</span><span class="st">"-RdBu"</span>, </span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">Carte3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.T_Pct_Img"</span>, palette<span class="op">=</span><span class="st">"-RdBu"</span>, </span>
 <span>                  breaks <span class="op">=</span> <span class="va">classes.intervalles</span>,</span>
 <span>                  legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>                  title <span class="op">=</span> <span class="st">"Immigrants (%)"</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">Carte4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.B_Pct_brevet"</span>, palette<span class="op">=</span><span class="st">"-RdBu"</span>, </span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">Carte4</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.B_Pct_brevet"</span>, palette<span class="op">=</span><span class="st">"-RdBu"</span>, </span>
 <span>                  breaks <span class="op">=</span> <span class="va">classes.intervalles</span>,</span>
 <span>                  legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>                  title <span class="op">=</span> <span class="st">"Faible scolarité (%)"</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
-<span><span class="va">Carte5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.T_NivVieMed"</span>, palette<span class="op">=</span><span class="st">"-RdBu"</span>, </span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span>
+<span><span class="va">Carte5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"GWR.T_NivVieMed"</span>, palette<span class="op">=</span><span class="st">"-RdBu"</span>, </span>
 <span>                 breaks <span class="op">=</span> <span class="va">classes.intervalles</span>,</span>
 <span>                  legend.format <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html">list</a></span><span class="op">(</span>text.separator <span class="op">=</span> <span class="st">"à"</span><span class="op">)</span>,</span>
 <span>                 title <span class="op">=</span> <span class="st">"Niveau de vie (€1000)"</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte1</span>, <span class="va">Carte2</span>, <span class="va">Carte3</span>, <span class="va">Carte4</span>, <span class="va">Carte5</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte1</span>, <span class="va">Carte2</span>, <span class="va">Carte3</span>, <span class="va">Carte4</span>, <span class="va">Carte5</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow<span class="op">=</span><span class="fl">3</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-GWRValT" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="07-RegressionSpatiales_files/figure-html/fig-GWRValT-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
@@ -2061,7 +2057,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p><strong>Cartographie du nombre de variables significatives</strong></p>
 <p>Nous pouvons aussi cartographier le nombre de variables localement significatives aux seuils de 5&nbsp;% et 1&nbsp;%.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb90"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Identifier la variable plus significative avec les valeurs de t</span></span>
+<div class="sourceCode" id="cb93"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Identifier la variable plus significative avec les valeurs de t</span></span>
 <span><span class="va">VarsT</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/paste.html">paste0</a></span><span class="op">(</span><span class="st">"GWR.T_"</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Pct0_14"</span>, <span class="st">"Pct_65"</span>, <span class="st">"Pct_Img"</span>, <span class="st">"Pct_brevet"</span>, <span class="st">"NivVieMed"</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">Lyon.df</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_drop_geometry</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span></span>
 <span><span class="va">Lyon.df</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/MathFun.html">abs</a></span><span class="op">(</span><span class="va">Lyon.df</span><span class="op">[</span>,<span class="va">VarsT</span><span class="op">]</span><span class="op">)</span></span>
@@ -2074,15 +2070,15 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">NbSignif_2.58</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/raster/man/rowSums.html">rowSums</a></span><span class="op">(</span><span class="va">Lyon.df</span> <span class="op">&gt;</span> <span class="fl">2.58</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">PlusSign</span>      <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/factor.html">as.factor</a></span><span class="op">(</span><span class="va">PlusSign</span><span class="op">)</span></span>
 <span><span class="co">## Cartographie</span></span>
-<span><span class="va">Carte1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"NbSignif_1.96"</span>, palette<span class="op">=</span><span class="st">"Reds"</span>,</span>
+<span><span class="va">Carte1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"NbSignif_1.96"</span>, palette<span class="op">=</span><span class="st">"Reds"</span>,</span>
 <span>                 title <span class="op">=</span> <span class="st">"Sign. au seuil de 5%"</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
-<span><span class="va">Carte2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"NbSignif_2.58"</span>, palette<span class="op">=</span><span class="st">"Reds"</span>, </span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
+<span><span class="va">Carte2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"NbSignif_2.58"</span>, palette<span class="op">=</span><span class="st">"Reds"</span>, </span>
 <span>                 title <span class="op">=</span> <span class="st">"Sign. au seuil de 1%"</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte1</span>, <span class="va">Carte2</span>, ncol<span class="op">=</span><span class="fl">2</span>, nrow<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte1</span>, <span class="va">Carte2</span>, ncol<span class="op">=</span><span class="fl">2</span>, nrow<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-GWRNNsign" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="07-RegressionSpatiales_files/figure-html/fig-GWRNNsign-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
@@ -2093,10 +2089,10 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1</code></pre>
 <p><strong>Cartographie de la variable la plus significative avec la valeur de <em>t</em></strong></p>
 <p>Finalement, le code ci-dessous permet de repérer la variable la plus significative au seuil de 5&nbsp;%, c’est-à-dire avec la plus forte valeur absolue pour la valeur de <em>t</em>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb91"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"PlusSign"</span>, palette<span class="op">=</span><span class="st">"Set1"</span>, </span>
+<div class="sourceCode" id="cb94"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray25"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"PlusSign"</span>, palette<span class="op">=</span><span class="st">"Set1"</span>, </span>
 <span>                 title <span class="op">=</span> <span class="st">"Variable la plus significative"</span><span class="op">)</span><span class="op">+</span></span>
-<span>          <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span>          <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span><span class="op">)</span><span class="op">+</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>breaks<span class="op">=</span><span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>,<span class="fl">5</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-GWRPlussign" class="quarto-figure quarto-figure-center anchored">
 <figure class="figure"><p><img src="07-RegressionSpatiales_files/figure-html/fig-GWRPlussign-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
@@ -2511,20 +2507,20 @@ Vérifier votre résultat
 </div>
 <div class="bloc_exercice-body">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb92"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb92-1"><a href="#cb92-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb92-2"><a href="#cb92-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spatialreg)</span>
-<span id="cb92-3"><a href="#cb92-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Matrice de contiguïté selon le partage d'un segment (Rook)</span></span>
-<span id="cb92-4"><a href="#cb92-4" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data/chap07/DonneesLyon.Rdata"</span>)</span>
-<span id="cb92-5"><a href="#cb92-5" aria-hidden="true" tabindex="-1"></a>Rook <span class="ot">&lt;-</span> <span class="fu">poly2nb</span>(LyonIris, <span class="at">queen=</span><span class="cn">FALSE</span>)</span>
-<span id="cb92-6"><a href="#cb92-6" aria-hidden="true" tabindex="-1"></a>Rook <span class="ot">&lt;-</span> <span class="fu">poly2nb</span>(LyonIris, <span class="at">queen=</span><span class="cn">FALSE</span>)</span>
-<span id="cb92-7"><a href="#cb92-7" aria-hidden="true" tabindex="-1"></a>W.Rook <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(Rook, <span class="at">zero.policy=</span><span class="cn">TRUE</span>, <span class="at">style =</span> <span class="st">"W"</span>)</span>
-<span id="cb92-8"><a href="#cb92-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Modèles</span></span>
-<span id="cb92-9"><a href="#cb92-9" aria-hidden="true" tabindex="-1"></a>formule <span class="ot">&lt;-</span> <span class="st">"PM25 ~  Pct0_14+Pct_65+Pct_Img+Pct_brevet+NivVieMed"</span></span>
-<span id="cb92-10"><a href="#cb92-10" aria-hidden="true" tabindex="-1"></a>Modele.SLX <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb92-11"><a href="#cb92-11" aria-hidden="true" tabindex="-1"></a>Modele.SAR <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb92-12"><a href="#cb92-12" aria-hidden="true" tabindex="-1"></a>Modele.SEM <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb92-13"><a href="#cb92-13" aria-hidden="true" tabindex="-1"></a>Modele.DurbinSpatial <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb92-14"><a href="#cb92-14" aria-hidden="true" tabindex="-1"></a>Modele.DurbinErreur <span class="ot">&lt;-</span> à compléter</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb95"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb95-1"><a href="#cb95-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb95-2"><a href="#cb95-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spatialreg)</span>
+<span id="cb95-3"><a href="#cb95-3" aria-hidden="true" tabindex="-1"></a><span class="co"># Matrice de contiguïté selon le partage d'un segment (Rook)</span></span>
+<span id="cb95-4"><a href="#cb95-4" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data/chap07/DonneesLyon.Rdata"</span>)</span>
+<span id="cb95-5"><a href="#cb95-5" aria-hidden="true" tabindex="-1"></a>Rook <span class="ot">&lt;-</span> <span class="fu">poly2nb</span>(LyonIris, <span class="at">queen=</span><span class="cn">FALSE</span>)</span>
+<span id="cb95-6"><a href="#cb95-6" aria-hidden="true" tabindex="-1"></a>Rook <span class="ot">&lt;-</span> <span class="fu">poly2nb</span>(LyonIris, <span class="at">queen=</span><span class="cn">FALSE</span>)</span>
+<span id="cb95-7"><a href="#cb95-7" aria-hidden="true" tabindex="-1"></a>W.Rook <span class="ot">&lt;-</span> <span class="fu">nb2listw</span>(Rook, <span class="at">zero.policy=</span><span class="cn">TRUE</span>, <span class="at">style =</span> <span class="st">"W"</span>)</span>
+<span id="cb95-8"><a href="#cb95-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Modèles</span></span>
+<span id="cb95-9"><a href="#cb95-9" aria-hidden="true" tabindex="-1"></a>formule <span class="ot">&lt;-</span> <span class="st">"PM25 ~  Pct0_14+Pct_65+Pct_Img+Pct_brevet+NivVieMed"</span></span>
+<span id="cb95-10"><a href="#cb95-10" aria-hidden="true" tabindex="-1"></a>Modele.SLX <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb95-11"><a href="#cb95-11" aria-hidden="true" tabindex="-1"></a>Modele.SAR <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb95-12"><a href="#cb95-12" aria-hidden="true" tabindex="-1"></a>Modele.SEM <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb95-13"><a href="#cb95-13" aria-hidden="true" tabindex="-1"></a>Modele.DurbinSpatial <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb95-14"><a href="#cb95-14" aria-hidden="true" tabindex="-1"></a>Modele.DurbinErreur <span class="ot">&lt;-</span> à compléter</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Correction à la <a href="12-Exercices.html#sec-12071">section&nbsp;<span>12.7.1</span></a>.</p>
 </div>
@@ -2538,19 +2534,19 @@ Vérifier votre résultat
 </div>
 <div class="bloc_exercice-body">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb93"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb93-1"><a href="#cb93-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb93-2"><a href="#cb93-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span>
-<span id="cb93-3"><a href="#cb93-3" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data/chap07/DonneesLyon.Rdata"</span>)</span>
-<span id="cb93-4"><a href="#cb93-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Ajout des coordonnées x et y</span></span>
-<span id="cb93-5"><a href="#cb93-5" aria-hidden="true" tabindex="-1"></a>xy <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb93-6"><a href="#cb93-6" aria-hidden="true" tabindex="-1"></a>LyonIris<span class="sc">$</span>X <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb93-7"><a href="#cb93-7" aria-hidden="true" tabindex="-1"></a>LyonIris<span class="sc">$</span>Y <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb93-8"><a href="#cb93-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Construction du modèle</span></span>
-<span id="cb93-9"><a href="#cb93-9" aria-hidden="true" tabindex="-1"></a>formule <span class="ot">&lt;-</span> <span class="st">"PM25 ~  Pct0_14+Pct_65+Pct_Img+Pct_brevet+NivVieMed"</span></span>
-<span id="cb93-10"><a href="#cb93-10" aria-hidden="true" tabindex="-1"></a>Modele.GAM2 <span class="ot">&lt;-</span> <span class="fu">gam</span>(NO2 <span class="sc">~</span>  à compléter</span>
-<span id="cb93-11"><a href="#cb93-11" aria-hidden="true" tabindex="-1"></a>                          à compléter,</span>
-<span id="cb93-12"><a href="#cb93-12" aria-hidden="true" tabindex="-1"></a>                          <span class="at">data =</span> LyonIris)</span>
-<span id="cb93-13"><a href="#cb93-13" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Modele.GAM2)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb96"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb96-1"><a href="#cb96-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb96-2"><a href="#cb96-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(mgcv)</span>
+<span id="cb96-3"><a href="#cb96-3" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data/chap07/DonneesLyon.Rdata"</span>)</span>
+<span id="cb96-4"><a href="#cb96-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Ajout des coordonnées x et y</span></span>
+<span id="cb96-5"><a href="#cb96-5" aria-hidden="true" tabindex="-1"></a>xy <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb96-6"><a href="#cb96-6" aria-hidden="true" tabindex="-1"></a>LyonIris<span class="sc">$</span>X <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb96-7"><a href="#cb96-7" aria-hidden="true" tabindex="-1"></a>LyonIris<span class="sc">$</span>Y <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb96-8"><a href="#cb96-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Construction du modèle</span></span>
+<span id="cb96-9"><a href="#cb96-9" aria-hidden="true" tabindex="-1"></a>formule <span class="ot">&lt;-</span> <span class="st">"PM25 ~  Pct0_14+Pct_65+Pct_Img+Pct_brevet+NivVieMed"</span></span>
+<span id="cb96-10"><a href="#cb96-10" aria-hidden="true" tabindex="-1"></a>Modele.GAM2 <span class="ot">&lt;-</span> <span class="fu">gam</span>(NO2 <span class="sc">~</span>  à compléter</span>
+<span id="cb96-11"><a href="#cb96-11" aria-hidden="true" tabindex="-1"></a>                          à compléter,</span>
+<span id="cb96-12"><a href="#cb96-12" aria-hidden="true" tabindex="-1"></a>                          <span class="at">data =</span> LyonIris)</span>
+<span id="cb96-13"><a href="#cb96-13" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(Modele.GAM2)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Correction à la <a href="12-Exercices.html#sec-12072">section&nbsp;<span>12.7.2</span></a>.</p>
 </div>
@@ -2564,22 +2560,22 @@ Vérifier votre résultat
 </div>
 <div class="bloc_exercice-body">
 <div class="cell">
-<div class="sourceCode cell-code" id="cb94"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb94-1"><a href="#cb94-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
-<span id="cb94-2"><a href="#cb94-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spgwr)</span>
-<span id="cb94-3"><a href="#cb94-3" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data/chap07/DonneesLyon.Rdata"</span>)</span>
-<span id="cb94-4"><a href="#cb94-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Ajout des coordonnées x et y</span></span>
-<span id="cb94-5"><a href="#cb94-5" aria-hidden="true" tabindex="-1"></a>xy <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb94-6"><a href="#cb94-6" aria-hidden="true" tabindex="-1"></a>LyonIris<span class="sc">$</span>X <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb94-7"><a href="#cb94-7" aria-hidden="true" tabindex="-1"></a>LyonIris<span class="sc">$</span>Y <span class="ot">&lt;-</span> à compléter</span>
-<span id="cb94-8"><a href="#cb94-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Optimisation du nombre de voisins avec le CV</span></span>
-<span id="cb94-9"><a href="#cb94-9" aria-hidden="true" tabindex="-1"></a>formule <span class="ot">&lt;-</span> <span class="st">"PM25 ~ Pct0_14+Pct_65+Pct_Img+Pct_brevet+NivVieMed"</span></span>
-<span id="cb94-10"><a href="#cb94-10" aria-hidden="true" tabindex="-1"></a>bwaCV.voisins  <span class="ot">&lt;-</span> <span class="fu">gwr.sel</span>(à compléter)</span>
-<span id="cb94-11"><a href="#cb94-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Optimisation du nombre de voisins avec l'AIC</span></span>
-<span id="cb94-12"><a href="#cb94-12" aria-hidden="true" tabindex="-1"></a>bwaCV.voisins  <span class="ot">&lt;-</span> <span class="fu">gwr.sel</span>(à compléter)</span>
-<span id="cb94-13"><a href="#cb94-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Réalisation de la GWR</span></span>
-<span id="cb94-14"><a href="#cb94-14" aria-hidden="true" tabindex="-1"></a>Modele.GWR <span class="ot">&lt;-</span> <span class="fu">gwr</span>(à compléter)</span>
-<span id="cb94-15"><a href="#cb94-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Affichage des résultats</span></span>
-<span id="cb94-16"><a href="#cb94-16" aria-hidden="true" tabindex="-1"></a>Modele.GWR</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb97"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb97-1"><a href="#cb97-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
+<span id="cb97-2"><a href="#cb97-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(spgwr)</span>
+<span id="cb97-3"><a href="#cb97-3" aria-hidden="true" tabindex="-1"></a><span class="fu">load</span>(<span class="st">"data/chap07/DonneesLyon.Rdata"</span>)</span>
+<span id="cb97-4"><a href="#cb97-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Ajout des coordonnées x et y</span></span>
+<span id="cb97-5"><a href="#cb97-5" aria-hidden="true" tabindex="-1"></a>xy <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb97-6"><a href="#cb97-6" aria-hidden="true" tabindex="-1"></a>LyonIris<span class="sc">$</span>X <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb97-7"><a href="#cb97-7" aria-hidden="true" tabindex="-1"></a>LyonIris<span class="sc">$</span>Y <span class="ot">&lt;-</span> à compléter</span>
+<span id="cb97-8"><a href="#cb97-8" aria-hidden="true" tabindex="-1"></a><span class="co"># Optimisation du nombre de voisins avec le CV</span></span>
+<span id="cb97-9"><a href="#cb97-9" aria-hidden="true" tabindex="-1"></a>formule <span class="ot">&lt;-</span> <span class="st">"PM25 ~ Pct0_14+Pct_65+Pct_Img+Pct_brevet+NivVieMed"</span></span>
+<span id="cb97-10"><a href="#cb97-10" aria-hidden="true" tabindex="-1"></a>bwaCV.voisins  <span class="ot">&lt;-</span> <span class="fu">gwr.sel</span>(à compléter)</span>
+<span id="cb97-11"><a href="#cb97-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Optimisation du nombre de voisins avec l'AIC</span></span>
+<span id="cb97-12"><a href="#cb97-12" aria-hidden="true" tabindex="-1"></a>bwaCV.voisins  <span class="ot">&lt;-</span> <span class="fu">gwr.sel</span>(à compléter)</span>
+<span id="cb97-13"><a href="#cb97-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Réalisation de la GWR</span></span>
+<span id="cb97-14"><a href="#cb97-14" aria-hidden="true" tabindex="-1"></a>Modele.GWR <span class="ot">&lt;-</span> <span class="fu">gwr</span>(à compléter)</span>
+<span id="cb97-15"><a href="#cb97-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Affichage des résultats</span></span>
+<span id="cb97-16"><a href="#cb97-16" aria-hidden="true" tabindex="-1"></a>Modele.GWR</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Correction à la <a href="12-Exercices.html#sec-12073">section&nbsp;<span>12.7.3</span></a>.</p>
 </div>
