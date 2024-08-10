@@ -19,7 +19,7 @@
 
 - label: "Laquelle de ces fonctions n'est pas une fonction géométrique sur une couche?"
   type: uc
-  response: 2
+  response: 4
   answers:
      - "st_bbox(x)"
      - "st_union(x)"

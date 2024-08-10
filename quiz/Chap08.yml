@@ -28,7 +28,7 @@
      - "Faux"
   help: "Relisez au besoin la [section @sec-chap08]."
   
-- label: "La méthode de classification avec contrainte spatiale produit des régions non discontinues (sans mitage spatial) :"
+- label: "Une méthode de classification avec contrainte spatiale produit des régions non discontinues (sans mitage spatial) :"
   type: uc
   response: 1
   answers:

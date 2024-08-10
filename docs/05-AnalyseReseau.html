@@ -806,7 +806,7 @@ Geodetic CRS:  WGS 84
             from_id from_lat  from_lon      to_id   to_lat    to_lon option
 1 Rue Wellington S. 45.38947 -71.88393 Rue Darche 45.38353 -71.89169      1
   departure_time total_duration total_distance segment    mode segment_duration
-1       23:07:35            6.3           1215       1 BICYCLE              6.3
+1       20:03:13            6.3           1215       1 BICYCLE              6.3
   wait distance route                       geometry
 1    0     1215       LINESTRING (-71.88396 45.38...</code></pre>
 </div>
@@ -820,7 +820,7 @@ Geodetic CRS:  WGS 84
      from_id from_lat  from_lon             to_id   to_lat    to_lon option
 1 Rue Darche 45.38353 -71.89169 Rue Wellington S. 45.38947 -71.88393      1
   departure_time total_duration total_distance segment    mode segment_duration
-1       23:07:36            6.4           1215       1 BICYCLE              6.4
+1       20:03:14            6.4           1215       1 BICYCLE              6.4
   wait distance route                       geometry
 1    0     1215       LINESTRING (-71.89191 45.38...</code></pre>
 </div>
@@ -882,7 +882,7 @@ Geodetic CRS:  WGS 84
   from_id from_lat  from_lon            to_id   to_lat    to_lon option
 1  Départ 45.42203 -71.88183 Campus principal 45.37802 -71.92953      1
   departure_time total_duration total_distance segment mode segment_duration
-1       23:07:36           21.2          11352       1  CAR             21.2
+1       20:03:14           21.2          11352       1  CAR             21.2
   wait distance route                       geometry
 1    0    11352       LINESTRING (-71.88129 45.42...</code></pre>
 </div>
@@ -896,7 +896,7 @@ Geodetic CRS:  WGS 84
            from_id from_lat  from_lon  to_id   to_lat    to_lon option
 1 Campus principal 45.37802 -71.92953 Départ 45.42203 -71.88183      1
   departure_time total_duration total_distance segment mode segment_duration
-1       23:07:36           18.4           9685       1  CAR             18.4
+1       20:03:14           18.4           9685       1  CAR             18.4
   wait distance route                       geometry
 1    0     9685       LINESTRING (-71.92952 45.37...</code></pre>
 </div>
@@ -1269,10 +1269,10 @@ First 10 features:
 <span>     <span class="st">"\n Transport en commun : "</span>, <span class="fu"><a href="https://rspatial.github.io/terra/reference/math-generics.html">round</a></span><span class="op">(</span><span class="va">duree.tc</span>,<span class="fl">2</span><span class="op">)</span>, <span class="st">"secondes"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>Temps de calcul des matrices : 
- Voiture :  10.96 secondes 
- Marche :  0.44 secondes 
- Vélo :  3.56 secondes 
- Transport en commun :  0.32 secondes</code></pre>
+ Voiture :  11.96 secondes 
+ Marche :  0.43 secondes 
+ Vélo :  3.61 secondes 
+ Transport en commun :  0.33 secondes</code></pre>
 </div>
 </div>
 <p>Une fois les matrices obtenues, nous les enregistrons dans un fichier <code>Rdata</code>.</p>
@@ -2153,7 +2153,7 @@ function handleAnswers(quiz, question, no, correct) {
 
   var quizz_Chap05;
   window.onload = function() {
-    quizz_Chap05 = new Quiz('Chap05', [['1', '2', '3'],['1', '2', '4', '5'],['1', '2', '4'],'2','1','2','1','4','2']);
+    quizz_Chap05 = new Quiz('Chap05', [['1', '2', '3'],['1', '2', '4', '5'],['1', '2', '4'],'2','3','2','1','4','2']);
   };</script><link rel="stylesheet" type="text/css" src="css/quizlib.min.css">
 <div class="card quizlib-question">
 <div class="quizlib-question-title">

@@ -2242,7 +2242,7 @@ Z_{WB} = \frac{O[WB] - E[WB]}{\sqrt{\text{Var}[WB]}}\text{ avec :}
 <div class="sourceCode" id="cb56"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Valeurs permutées</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sample.html">sample</a></span><span class="op">(</span><span class="va">Carres</span><span class="op">$</span><span class="va">CasA</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code> [1] 0 0 1 0 0 0 1 0 0 1 1 0 0 1 0 0 0 0 0 0 0 1 0 0 0 0 0 1 1 0 0 0 0 0 1 0</code></pre>
+<pre><code> [1] 0 0 0 0 0 1 0 0 0 1 1 0 0 1 0 0 0 0 0 0 0 0 0 0 1 1 1 0 0 0 1 1 0 0 0 0</code></pre>
 </div>
 </div>
 </div>
@@ -2363,7 +2363,7 @@ statistic = 1000, p-value = 0.001
 alternative hypothesis: greater
 sample estimates:
     mean of simulation variance of simulation 
-              162.2853               120.8394 
+              162.2823               110.6858 
 
 
     Monte-Carlo simulation of join-count statistic
@@ -2377,7 +2377,7 @@ Join-count statistic for Locataires = 319, rank of observed statistic =
 alternative hypothesis: greater
 sample estimates:
     mean of simulation variance of simulation 
-              214.1101               136.8356 </code></pre>
+              214.4114               132.9979 </code></pre>
 </div>
 </div>
 <p>L’approche d’inférence basée sur les permutations signale aussi que les deux distributions sont significativement autocorrélées spatialement (<em>p</em>&nbsp;=&nbsp;0,001).</p>
@@ -2409,104 +2409,104 @@ sample estimates:
 </tr></thead>
 <tbody>
 <tr class="odd">
-<td style="text-align: center;">0,71</td>
-<td style="text-align: center;">-0,43</td>
+<td style="text-align: center;">0,79</td>
+<td style="text-align: center;">-0,56</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">-0,10</td>
-<td style="text-align: center;">-3,14</td>
+<td style="text-align: center;">1,48</td>
+<td style="text-align: center;">4,90</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">-1,44</td>
-<td style="text-align: center;">-6,69</td>
+<td style="text-align: center;">-4,16</td>
+<td style="text-align: center;">-18,25</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">1,11</td>
-<td style="text-align: center;">1,42</td>
+<td style="text-align: center;">1,58</td>
+<td style="text-align: center;">9,92</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">2,65</td>
-<td style="text-align: center;">9,65</td>
+<td style="text-align: center;">0,03</td>
+<td style="text-align: center;">-2,25</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">-2,27</td>
-<td style="text-align: center;">-9,36</td>
+<td style="text-align: center;">2,77</td>
+<td style="text-align: center;">2,31</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">-0,38</td>
-<td style="text-align: center;">4,06</td>
+<td style="text-align: center;">2,42</td>
+<td style="text-align: center;">6,16</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">-2,36</td>
-<td style="text-align: center;">-9,37</td>
+<td style="text-align: center;">-0,08</td>
+<td style="text-align: center;">-5,05</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">-2,36</td>
-<td style="text-align: center;">-14,16</td>
+<td style="text-align: center;">-2,31</td>
+<td style="text-align: center;">-6,05</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">0,73</td>
-<td style="text-align: center;">-0,72</td>
+<td style="text-align: center;">0,02</td>
+<td style="text-align: center;">2,32</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">0,56</td>
-<td style="text-align: center;">0,07</td>
+<td style="text-align: center;">-1,76</td>
+<td style="text-align: center;">-7,36</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">-1,63</td>
-<td style="text-align: center;">-8,31</td>
+<td style="text-align: center;">-0,82</td>
+<td style="text-align: center;">-3,04</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">-3,26</td>
-<td style="text-align: center;">-11,77</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">5,29</td>
-<td style="text-align: center;">18,39</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">-0,51</td>
-<td style="text-align: center;">-2,01</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">-0,32</td>
-<td style="text-align: center;">-2,76</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">1,35</td>
-<td style="text-align: center;">5,22</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">-2,55</td>
-<td style="text-align: center;">-5,11</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">1,27</td>
-<td style="text-align: center;">2,47</td>
+<td style="text-align: center;">0,28</td>
+<td style="text-align: center;">3,40</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">-0,23</td>
-<td style="text-align: center;">2,30</td>
+<td style="text-align: center;">3,94</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">-3,48</td>
+<td style="text-align: center;">1,03</td>
+<td style="text-align: center;">4,55</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">-3,66</td>
+<td style="text-align: center;">-12,05</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2,14</td>
+<td style="text-align: center;">5,28</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">0,25</td>
+<td style="text-align: center;">0,48</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">2,76</td>
+<td style="text-align: center;">9,60</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">-0,08</td>
+<td style="text-align: center;">-1,61</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">-1,29</td>
+<td style="text-align: center;">-7,83</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">0,30</td>
+<td style="text-align: center;">-0,40</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">-0,87</td>
 <td style="text-align: center;">-3,53</td>
 </tr>
 <tr class="even">
-<td style="text-align: center;">1,08</td>
-<td style="text-align: center;">2,77</td>
+<td style="text-align: center;">-1,47</td>
+<td style="text-align: center;">-1,26</td>
 </tr>
 <tr class="odd">
-<td style="text-align: center;">1,13</td>
-<td style="text-align: center;">10,07</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">-3,02</td>
-<td style="text-align: center;">-5,16</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">-2,26</td>
-<td style="text-align: center;">-3,64</td>
+<td style="text-align: center;">3,18</td>
+<td style="text-align: center;">16,63</td>
 </tr>
 </tbody>
 </table>
@@ -2875,9 +2875,9 @@ Z(G_i^*) = \frac{\bigr[ \Sigma_{j=1}^n w_{ij}x_j \bigr] - \bigr[ (\Sigma_{j=1}^n
 <span><span class="va">AD.DR</span><span class="op">$</span><span class="va">RevMed_localGetis.StarMC999</span> <span class="op">&lt;-</span> <span class="va">localGetis.StarMC999</span></span>
 <span><span class="co"># Définition des intervalles et des noms des classes</span></span>
 <span><span class="va">classes.intervalles</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="op">-</span><span class="cn">Inf</span>, <span class="op">-</span><span class="fl">3.29</span>, <span class="op">-</span><span class="fl">2.58</span>, <span class="op">-</span><span class="fl">1.96</span>, <span class="fl">1.96</span>, <span class="fl">2.58</span>, <span class="fl">3.29</span>, <span class="cn">Inf</span><span class="op">)</span></span>
-<span><span class="va">classes.noms</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Point froid (p = 0,05)"</span>, </span>
+<span><span class="va">classes.noms</span> <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Point froid (p = 0,001)"</span>, </span>
 <span>                 <span class="st">"Point froid (p = 0,01)"</span>, </span>
-<span>                 <span class="st">"Point froid (p = 0,001)"</span>, </span>
+<span>                 <span class="st">"Point froid (p = 0,05)"</span>, </span>
 <span>                 <span class="st">"Non significatif"</span>,</span>
 <span>                 <span class="st">"Point chaud (p = 0,05)"</span>, </span>
 <span>                 <span class="st">"Point chaud (p = 0,01)"</span>, </span>
@@ -2974,26 +2974,26 @@ I_i = \frac{(x_i-\bar{X})\Sigma_{j=1}^n w_{ij}(x_j-\bar{X})}
 <div class="sourceCode" id="cb80"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/summary.html">summary</a></span><span class="op">(</span><span class="va">localMoranI.mc</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>       Ii                E.Ii               Var.Ii               Z.Ii        
- Min.   :-0.90053   Min.   :-0.098761   Min.   :0.0000003   Min.   :-1.9797  
- 1st Qu.: 0.08313   1st Qu.:-0.011657   1st Qu.:0.0374544   1st Qu.: 0.4545  
- Median : 0.49029   Median :-0.001619   Median :0.1332287   Median : 1.4553  
- Mean   : 0.61678   Mean   :-0.004549   Mean   :0.2180818   Mean   : 1.2396  
- 3rd Qu.: 0.97602   3rd Qu.: 0.002404   3rd Qu.:0.2542109   3rd Qu.: 2.1636  
- Max.   : 3.37625   Max.   : 0.036273   Max.   :1.8149677   Max.   : 3.9734  
- Pr(z != E(Ii))      Pr(z != E(Ii)) Sim Pr(folded) Sim      Skewness        
- Min.   :0.0000709   Min.   :0.0020     Min.   :0.0010   Min.   :-0.417949  
- 1st Qu.:0.0304944   1st Qu.:0.0220     1st Qu.:0.0110   1st Qu.:-0.206038  
- Median :0.1223925   Median :0.1240     Median :0.0620   Median :-0.093046  
- Mean   :0.2483943   Mean   :0.2527     Mean   :0.1264   Mean   :-0.006054  
- 3rd Qu.:0.4059281   3rd Qu.:0.4220     3rd Qu.:0.2120   3rd Qu.: 0.220933  
- Max.   :0.9962251   Max.   :0.9880     Max.   :0.4940   Max.   : 0.443463  
+ Min.   :-0.90053   Min.   :-0.060602   Min.   :0.0000002   Min.   :-2.0071  
+ 1st Qu.: 0.08313   1st Qu.:-0.009582   1st Qu.:0.0384774   1st Qu.: 0.4595  
+ Median : 0.49029   Median :-0.001492   Median :0.1338059   Median : 1.4115  
+ Mean   : 0.61678   Mean   :-0.003182   Mean   :0.2176718   Mean   : 1.2387  
+ 3rd Qu.: 0.97602   3rd Qu.: 0.003631   3rd Qu.:0.2659243   3rd Qu.: 2.1448  
+ Max.   : 3.37625   Max.   : 0.076793   Max.   :1.8333592   Max.   : 3.8502  
+ Pr(z != E(Ii))     Pr(z != E(Ii)) Sim Pr(folded) Sim      Skewness       
+ Min.   :0.000118   Min.   :0.0020     Min.   :0.0010   Min.   :-0.41115  
+ 1st Qu.:0.031970   1st Qu.:0.0240     1st Qu.:0.0120   1st Qu.:-0.23013  
+ Median :0.126484   Median :0.1340     Median :0.0670   Median :-0.09598  
+ Mean   :0.249030   Mean   :0.2549     Mean   :0.1275   Mean   :-0.01717  
+ 3rd Qu.:0.389883   3rd Qu.:0.4020     3rd Qu.:0.2010   3rd Qu.: 0.21404  
+ Max.   :0.991627   Max.   :0.9980     Max.   :0.4990   Max.   : 0.43140  
     Kurtosis       
- Min.   :-0.47862  
- 1st Qu.:-0.27188  
- Median :-0.19622  
- Mean   :-0.17559  
- 3rd Qu.:-0.08511  
- Max.   : 0.31106  </code></pre>
+ Min.   :-0.49934  
+ 1st Qu.:-0.27116  
+ Median :-0.17963  
+ Mean   :-0.16986  
+ 3rd Qu.:-0.08581  
+ Max.   : 0.43309  </code></pre>
 </div>
 </div>
 <p>Avec la cartographie du <em>I</em> de Moran local, nous repérons localement l’autocorrélation spatiale positive (valeurs similaires, fortes ou faibles localement) et l’autocorrélation spatiale négative (valeurs dissemblables localement) (<a href="#fig-Chap02CartoIMoranLocal">figure&nbsp;<span>2.28</span></a>).</p>

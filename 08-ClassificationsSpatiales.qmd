@@ -1255,7 +1255,8 @@ Plusieurs variantes du SFCM sont proposées par le *package* `geocmeans` qui off
 
 ```{r}
 #| label: quizChapitre08
-#| echo: true 
+#| echo: false 
+#| eval: true 
 #| message: false 
 #| warning: false 
 #| results: asis

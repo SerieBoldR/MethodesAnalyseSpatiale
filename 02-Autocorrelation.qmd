@@ -2312,9 +2312,9 @@ AD.DR$RevMed_localGetis.MC999 <- localGetis.MC999
 AD.DR$RevMed_localGetis.StarMC999 <- localGetis.StarMC999
 # Définition des intervalles et des noms des classes
 classes.intervalles = c(-Inf, -3.29, -2.58, -1.96, 1.96, 2.58, 3.29, Inf)
-classes.noms = c("Point froid (p = 0,05)", 
+classes.noms = c("Point froid (p = 0,001)", 
                  "Point froid (p = 0,01)", 
-                 "Point froid (p = 0,001)", 
+                 "Point froid (p = 0,05)", 
                  "Non significatif",
                  "Point chaud (p = 0,05)", 
                  "Point chaud (p = 0,01)", 
