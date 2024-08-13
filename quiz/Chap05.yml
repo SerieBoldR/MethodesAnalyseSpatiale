@@ -40,7 +40,7 @@
 
 - label: "Quelle fonction de R5R permet de construire un itinéraire?"
   type: uc
-  response: 3
+  response: 1
   answers:
      - "detailed_itineraries()"
      - "setup_r5()"     
@@ -49,7 +49,7 @@
 
 - label: "Quelle fonction de R5R permet de construire une matrice origine-destination?"
   type: uc
-  response: 2
+  response: 3
   answers:
      - "detailed_itineraries()"
      - "setup_r5()"     

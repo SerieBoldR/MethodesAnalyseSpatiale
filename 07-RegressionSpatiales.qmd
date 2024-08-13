@@ -132,6 +132,7 @@ Avec la fonction `lm()`, il est facile de construire un modèle de régression l
 #| echo: true 
 #| message: false 
 #| eval: true
+#| warning: false
 # Appel des différents packages utilisés dans le chapitre
 library(spdep)
 ## Construction du modèle

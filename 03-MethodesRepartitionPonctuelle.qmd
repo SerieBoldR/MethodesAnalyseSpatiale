@@ -956,10 +956,10 @@ library(spatstat)
 library(ggplot2)
 ## Indice du plus proche voisin : R observé (équation 3.20)
 # le paramètre k indique le nombre de plus proches voisins
-Robs2019 <- mean(nndist(st_coordinates(M2019),k=1))
-Robs2020 <- mean(nndist(st_coordinates(M2020),k=1))
-Robs2021 <- mean(nndist(st_coordinates(M2021),k=1))
-Robs2022 <- mean(nndist(st_coordinates(M2022),k=1))
+Robs2019 <- mean(nndist(st_coordinates(M2019), k=1))
+Robs2020 <- mean(nndist(st_coordinates(M2020), k=1))
+Robs2021 <- mean(nndist(st_coordinates(M2021), k=1))
+Robs2022 <- mean(nndist(st_coordinates(M2022), k=1))
 ## Indice du plus proche voisin : R attendu (distribution aléatoire) (équation 3.21)
 # Attention, il faut spéficier S, la superficie de l'espace d'étude
 Arrondissements <-  st_read(dsn = "data/chap03/Arrondissements.shp", quiet=TRUE)
@@ -1227,7 +1227,7 @@ S <- as.numeric(st_area(st_union(Arrondissements)))
 Sq <- (2*S) / npoints
 # Longueur du carré et du côté de l'hexagone régulier (équation 3.25)
 lq <- sqrt(Sq)
-la <- sqrt( (2*Sq) / (3*sqrt(3)))
+la <- sqrt((2*Sq) / (3*sqrt(3)))
 # Trouver la longueur du côté du carré dans lequel est compris l'hexagone 
 cellsizeHex <- 2 * sqrt(Sq/((3*sqrt(3)/2))) * sqrt(3)/2
 cat("Nombre de points =", npoints,
@@ -1284,12 +1284,12 @@ La figure ci-dessus permet de constater que certains carrés et hexagones n'inte
 RequeteSpatiale <- st_intersects(Carres.sf, 
                                  st_union(Arrondissements), sparse = FALSE)
 Carres.sf$Intersect <- RequeteSpatiale[, 1]
-Carres.sf <- Carres.sf[Carres.sf$Intersect== TRUE, ]
+Carres.sf <- Carres.sf[Carres.sf$Intersect == TRUE, ]
 ## Suppression des hexagones qui n'intersectent pas les quatre arrondissements
 RequeteSpatiale <- st_intersects(Hexagones.sf, 
                                  st_union(Arrondissements), sparse = FALSE)
 Hexagones.sf$Intersect <- RequeteSpatiale[, 1]
-Hexagones.sf <- Hexagones.sf[Hexagones.sf$Intersect== TRUE, ]
+Hexagones.sf <- Hexagones.sf[Hexagones.sf$Intersect == TRUE, ]
 ## Jointure spatiale : compter le nombre de méfaits de 2020 dans les carrés et les hexagones
 Carres.sf$Mefaits2020    = lengths(st_intersects(Carres.sf, M2020))
 Hexagones.sf$Mefaits2020 = lengths(st_intersects(Hexagones.sf, M2020))
@@ -1338,7 +1338,7 @@ Nous pouvons maintenant construire le tableau de fréquences et mettre en œuvre
 #| warning: false
 ## Construction du tableau de fréquences
 TabFreq <- as.data.frame(table(Carres.sf$Mefaits2020))
-names(TabFreq) <- c("Npoints","Fo")
+names(TabFreq) <- c("Npoints", "Fo")
 TabFreq$Npoints <- as.numeric(as.character(TabFreq$Npoints))
 # Calcul pour les fréquences observées (fo)
 TabFreq$Fo.pro <- TabFreq$Fo / sum(TabFreq$Fo)
@@ -1347,8 +1347,8 @@ TabFreq$Fo.proCum <- cumsum(TabFreq$Fo.pro)
 npoints <- sum(TabFreq$Npoints*TabFreq$Fo)
 nquadrats <- sum(TabFreq$Fo)
 Lambda <- npoints / nquadrats
-TabFreq$Ft.pro <- dpois(TabFreq$Npoints, lambda= Lambda)
-TabFreq$Ft.proCum <- ppois(TabFreq$Npoints, lambda= Lambda, lower.tail = TRUE)
+TabFreq$Ft.pro <- dpois(TabFreq$Npoints, lambda = Lambda)
+TabFreq$Ft.proCum <- ppois(TabFreq$Npoints, lambda = Lambda, lower.tail = TRUE)
 TabFreq$Ft <- TabFreq$Ft.pro * TabFreq$Npoints
 # Différences absolues entre les fréquences observées et théoriques cumulées
 TabFreq$Difffoft <- abs(TabFreq$Fo.proCum - TabFreq$Ft.proCum)
