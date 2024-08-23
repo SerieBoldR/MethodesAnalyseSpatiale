@@ -2255,7 +2255,7 @@ summary(localGetis.StarMC999)
 Cartographions ces valeurs et repérons les regroupements de valeurs significativement fortes et faibles avec les statistiques de Getis et Ord (@fig-GetisLocaleClassique et @fig-GetisLocaleMC). Les quatre cartes sont très semblables et permettent de repérer un regroupement de valeurs faibles dans le centre-ville et un autre de valeurs fortes dans l'est de la ville.
 
 ```{r}
-#| echo: false 
+#| echo: true 
 #| message: false 
 #| warning: false
 #| label: fig-GetisLocaleClassique
