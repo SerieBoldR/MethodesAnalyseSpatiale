@@ -116,6 +116,19 @@ Notez que ce dernier fichier est optionnel. Toutefois, pour calculer des trajets
 
 ![Trois types de données nécessaires pour modéliser un réseau dans R5R](images/Chap05/DonneesPourR5R.png){#fig-DonneesReseauR5R width="55%" fig-align="center"}
 
+```{r}
+#| echo: false
+#| message: false 
+#| warning: false 
+#| eval: true
+
+#' un petit bloc invisible pour indiquer la bonne version de la JDK à utiliser lorsque je JG compile le livre
+if(Sys.getenv('JAVA_HOME') == "C:\\Program Files\\Java\\jdk-11"){
+  Sys.setenv(JAVA_HOME='C:/Program Files/Java/jdk-21')
+}
+```
+
+
 #### Extraction d'un fichier OpenStreetMap {#sec-05212}
 
 Pour récupérer un fichier OpenStreetMap (OSM, format *pbf*), nous utilisons deux fonctions du *package* `osmextract` [@osmextractpackage] :
@@ -371,6 +384,17 @@ rJava::.jcall("java.lang.System", "S", "getProperty", "java.version")
 ```
 
 Il est fortement conseillé d'augmenter la mémoire allouée au processus JAVA, surtout si vous souhaitez calculer des matrices origines-destinations de grande taille. Par exemple, la commande `options(java.parameters = "-Xmx2G")` permet d'augmenter la mémoire disponible pour JAVA à deux gigaoctets. Si votre ordinateur ne manque pas de mémoire vive (16, 32 ou 64 gigaoctets), n'hésitez pas à augmenter ce paramètre (par exemple, `options(java.parameters = "-Xmx8G")`).
+
+Si vous avez plusieurs version de la jdk présentent sur votre ordinateur, vous pouvez aussi indiquer **en tout début de script, avant de charger le moindre package** laquelle utiliser avec l'option suivante: 
+
+```{r}
+#| eval: false
+#| message: false 
+Sys.setenv(JAVA_HOME='C:/Program Files/Java/jdk-21')
+```
+
+Notez que vous devez bien sûr adapter le chemin vers votre propre installation de la jdk-21.
+
 :::
 :::
 

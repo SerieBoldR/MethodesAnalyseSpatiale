@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.353">
+<meta name="generator" content="quarto-1.5.57">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Méthodes d’analyse spatiale : un grand bol d’R - 3&nbsp; Méthodes de répartition ponctuelle</title>
+<title>3&nbsp; Méthodes de répartition ponctuelle – Méthodes d’analyse spatiale : un grand bol d’R</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,7 +19,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -30,7 +30,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -55,6 +55,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -96,7 +97,13 @@ div.csl-indent {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "Pas de résultats",
     "search-matching-documents-text": "documents trouvés",
@@ -105,32 +112,59 @@ div.csl-indent {
     "search-more-match-text": "correspondance de plus dans ce document",
     "search-more-matches-text": "correspondances de plus dans ce document",
     "search-clear-button-title": "Effacer",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Annuler",
-    "search-submit-button-title": "Envoyer"
+    "search-submit-button-title": "Envoyer",
+    "search-label": "Recherche"
   }
-}</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><link rel="stylesheet" href="css/quizlib.min.css">
+}</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script><link rel="stylesheet" href="css/quizlib.min.css">
 </head>
 <body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03-MethodesRepartitionPonctuelle.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Méthodes de répartition ponctuelle</span></a></li></ol></nav>
-      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-      </a>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./03-MethodesRepartitionPonctuelle.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Méthodes de répartition ponctuelle</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
       <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
   </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Méthodes d’analyse spatiale : un grand bol d’R</a> 
         <div class="sidebar-tools-main">
-    <a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale" title="Code source" class="quarto-navigation-tool px-1" aria-label="Code source"><i class="bi bi-github"></i></a>
 </div>
     </div>
       </div>
@@ -261,7 +295,7 @@ div.csl-indent {
 </li>
     </ul>
 </div>
-</nav><div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table des matières</h2>
@@ -293,7 +327,7 @@ div.csl-indent {
 </li>
   <li><a href="#sec-035" id="toc-sec-035" class="nav-link" data-scroll-target="#sec-035"><span class="header-section-number">3.5</span> Quiz de révision du chapitre</a></li>
   <li><a href="#sec-036" id="toc-sec-036" class="nav-link" data-scroll-target="#sec-036"><span class="header-section-number">3.6</span> Exercices de révision</a></li>
-  </ul><div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale/issues/new" class="toc-action">Signaler un problème ou<br>formuler une suggestion</a></p></div></div></nav>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale/issues/new" class="toc-action"><i class="bi bi-github"></i>Signaler un problème ou<br>formuler une suggestion</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
@@ -309,6 +343,7 @@ div.csl-indent {
     
   </div>
   
+
 
 </header><p>Dans ce chapitre, nous abordons les méthodes de répartition ponctuelle qui permettent de décrire un semis de points dans un espace géographique donné. En géomatique appliquée, ces méthodes sont fréquemment employées dans le cadre d’études rattachées à des champs disciplinaires variés comme&nbsp;:</p>
 <ul>
@@ -387,12 +422,14 @@ div.csl-indent {
 <section id="sec-031" class="level2" data-number="3.1"><h2 data-number="3.1" class="anchored" data-anchor-id="sec-031">
 <span class="header-section-number">3.1</span> Fréquence et densité des points dans l’espace d’étude</h2>
 <p>La <strong>fréquence</strong> est tout simplement le nombre de points présents dans une région donnée (par exemple, le nombre d’hôpitaux, de stations de métro, d’arbres, etc.). La <strong>densité</strong> est le ratio entre la fréquence et la <em>superficie totale</em> de la région donnée ou la <em>population</em>.</p>
-<p>Par exemple, le <a href="#tbl-TableauMetros">tableau&nbsp;<span>3.1</span></a> renvoie le nombre et la densité des stations de métro (pour 10&nbsp;000&nbsp;habitants) pour trois villes. Interprétez ces chiffres avec prudence, car ils varient en fonction de la taille du territoire retenu pour les trois villes.</p>
+<p>Par exemple, le <a href="#tbl-TableauMetros" class="quarto-xref">tableau&nbsp;<span>3.1</span></a> renvoie le nombre et la densité des stations de métro (pour 10&nbsp;000&nbsp;habitants) pour trois villes. Interprétez ces chiffres avec prudence, car ils varient en fonction de la taille du territoire retenu pour les trois villes.</p>
 <div class="cell">
+<div id="tbl-TableauMetros" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-TableauMetros-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tableau&nbsp;3.1: Fréquence et densité des stations de métro dans trois villes
+</figcaption><div aria-describedby="tbl-TableauMetros-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-TableauMetros" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tableau&nbsp;3.1: Fréquence et densité des stations de métro dans trois villes</caption>
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 20%">
 <col style="width: 13%">
@@ -428,6 +465,8 @@ div.csl-indent {
 </table>
 </div>
 </div>
+</figure>
+</div>
 </div>
 </section><section id="sec-032" class="level2" data-number="3.2"><h2 data-number="3.2" class="anchored" data-anchor-id="sec-032">
 <span class="header-section-number">3.2</span> Analyse centrographique</h2>
@@ -448,7 +487,7 @@ div.csl-indent {
 <p>Les deux principaux paramètres de tendance centrale d’un semis de points sont le centre moyen et le point central qui peuvent être ou non pondérés.</p>
 <section id="sec-03111" class="level4" data-number="3.2.1.1"><h4 data-number="3.2.1.1" class="anchored" data-anchor-id="sec-03111">
 <span class="header-section-number">3.2.1.1</span> Centre moyen</h4>
-<p>Le centre moyen (<span class="math inline">\(cm\)</span>) est le centre de gravité du semis de points et correspond aux valeurs des moyennes arithmétiques des coordonnées géographiques (<a href="#eq-CentreMoyen">équation&nbsp;<span>3.1</span></a>).</p>
+<p>Le centre moyen (<span class="math inline">\(cm\)</span>) est le centre de gravité du semis de points et correspond aux valeurs des moyennes arithmétiques des coordonnées géographiques (<a href="#eq-CentreMoyen" class="quarto-xref">équation&nbsp;<span>3.1</span></a>).</p>
 <p><span id="eq-CentreMoyen"><span class="math display">\[
 (\bar{x}_{cm}, \bar{y}_{cm}) = \Biggl( \frac{\Sigma_{i=1}^n x_i}{n}, \frac{\Sigma_{i=1}^n y_i}{n}\Biggl)\text{ avec :}
 \tag{3.1}\]</span></span></p>
@@ -460,7 +499,7 @@ div.csl-indent {
 <li>
 <span class="math inline">\(x_i\)</span> et <span class="math inline">\(y_j\)</span>, les coordonnées géographiques du point <span class="math inline">\(i\)</span>.</li>
 </ul>
-<p>Il est possible de calculer le centre moyen en pondérant chacun des points du semis avec la valeur d’une variable donnée (<a href="#eq-CentreMoyenPonderee">équation&nbsp;<span>3.2</span></a>). Ainsi, l’importance accordée à chacun des points n’est pas la même. Par exemple, nous pourrions calculer le centre moyen pondéré (<span class="math inline">\(cmp\)</span>) des cliniques médicales d’une ville en pondérant chaque clinique par le nombre de médecins, ou encore le point moyen des hôpitaux pondéré par le nombre de lits. Autre exemple, avec un jeu de données sur les arbres dans une érablière, nous pourrions utiliser une pondération basée sur le diamètre à la hauteur de la poitrine (DHP) afin d’accorder un poids plus important aux arbres de plus «&nbsp;grand volume&nbsp;».</p>
+<p>Il est possible de calculer le centre moyen en pondérant chacun des points du semis avec la valeur d’une variable donnée (<a href="#eq-CentreMoyenPonderee" class="quarto-xref">équation&nbsp;<span>3.2</span></a>). Ainsi, l’importance accordée à chacun des points n’est pas la même. Par exemple, nous pourrions calculer le centre moyen pondéré (<span class="math inline">\(cmp\)</span>) des cliniques médicales d’une ville en pondérant chaque clinique par le nombre de médecins, ou encore le point moyen des hôpitaux pondéré par le nombre de lits. Autre exemple, avec un jeu de données sur les arbres dans une érablière, nous pourrions utiliser une pondération basée sur le diamètre à la hauteur de la poitrine (DHP) afin d’accorder un poids plus important aux arbres de plus «&nbsp;grand volume&nbsp;».</p>
 <div class="bloc_notes">
 <div class="bloc_notes-header">
 <div class="bloc_notes-icon">
@@ -505,7 +544,7 @@ div.csl-indent {
 \tag{3.4}\]</span></span></p>
 </section><section id="sec-03112" class="level4" data-number="3.2.1.2"><h4 data-number="3.2.1.2" class="anchored" data-anchor-id="sec-03112">
 <span class="header-section-number">3.2.1.2</span> Point central</h4>
-<p>Le point central d’un semis de points est celui qui minimise la somme des distances le séparant de tous les autres points (<a href="#eq-PointCentral">équation&nbsp;<span>3.5</span></a>). Tout comme le point moyen, il est aussi possible de calculer le point central pondéré (<a href="#eq-PointCentralW">équation&nbsp;<span>3.6</span></a>).</p>
+<p>Le point central d’un semis de points est celui qui minimise la somme des distances le séparant de tous les autres points (<a href="#eq-PointCentral" class="quarto-xref">équation&nbsp;<span>3.5</span></a>). Tout comme le point moyen, il est aussi possible de calculer le point central pondéré (<a href="#eq-PointCentralW" class="quarto-xref">équation&nbsp;<span>3.6</span></a>).</p>
 <p><span id="eq-PointCentral"><span class="math display">\[
 pc=\text{Min}\Biggl(\Sigma_{i=1}^n \sqrt{(x_i-x_j)^2+(y_i-y_j)^2}\Biggl)\text{; avec }i \ne j
 \tag{3.5}\]</span></span></p>
@@ -530,7 +569,7 @@ pcp=\text{Min}\Biggl(\Sigma_{i=1}^n w_i \sqrt{(x_i-x_j)^2+(y_i-y_j)^2}\Biggl)\te
 <p>Les deux principaux paramètres de dispersion d’un semis de points sont la distance standard et la distance standard pondérée. La dispersion d’un semis de points peut être représentée graphiquement avec une enveloppe convexe, un cercle de rayon de standard ou une ellipse (avec ou sans pondération).</p>
 <section id="sec-03121" class="level4" data-number="3.2.2.1"><h4 data-number="3.2.2.1" class="anchored" data-anchor-id="sec-03121">
 <span class="header-section-number">3.2.2.1</span> Distance standard et distance standard pondérée</h4>
-<p>En statistique univariée, l’écart-type (<a href="#eq-ecartype">équation&nbsp;<span>3.7</span></a>) est une mesure de dispersion bien connue&nbsp;: plus la valeur de l’écart-type est élevée, plus la dispersion des valeurs de la variable autour de la moyenne (<span class="math inline">\(\mu\)</span>) est importante.</p>
+<p>En statistique univariée, l’écart-type (<a href="#eq-ecartype" class="quarto-xref">équation&nbsp;<span>3.7</span></a>) est une mesure de dispersion bien connue&nbsp;: plus la valeur de l’écart-type est élevée, plus la dispersion des valeurs de la variable autour de la moyenne (<span class="math inline">\(\mu\)</span>) est importante.</p>
 <p><span id="eq-ecartype"><span class="math display">\[
 \sigma=\sqrt{\frac{\sum_{i=1}^n (x_{i}-\mu)^2}{n}}
 \tag{3.7}\]</span></span></p>
@@ -546,7 +585,7 @@ pcp=\text{Min}\Biggl(\Sigma_{i=1}^n w_i \sqrt{(x_i-x_j)^2+(y_i-y_j)^2}\Biggl)\te
 </div>
 </div>
 <p><strong>Distance standard (pondérée ou non) des <em>X</em> et des <em>Y</em></strong></p>
-<p>De manière analogue à l’écart-type, nous pouvons calculer la distance standard pour les coordonnées <em>X</em> et pour les coordonnées <em>Y</em> des points, soit l’écart moyen respectif au centre moyen (<a href="#eq-distancestandardxy">équation&nbsp;<span>3.8</span></a>) ou au centre moyen pondéré (<a href="#eq-distancestandardxyw">équation&nbsp;<span>3.9</span></a>).</p>
+<p>De manière analogue à l’écart-type, nous pouvons calculer la distance standard pour les coordonnées <em>X</em> et pour les coordonnées <em>Y</em> des points, soit l’écart moyen respectif au centre moyen (<a href="#eq-distancestandardxy" class="quarto-xref">équation&nbsp;<span>3.8</span></a>) ou au centre moyen pondéré (<a href="#eq-distancestandardxyw" class="quarto-xref">équation&nbsp;<span>3.9</span></a>).</p>
 <p><span id="eq-distancestandardxy"><span class="math display">\[
 \sigma_x=\sqrt{\frac{\sum_{i=1}^n (x_{i}-\bar{x}_{cm})^2}{n}} \text{ et }
 \sigma_y=\sqrt{\frac{\sum_{i=1}^n (y_{i}-\bar{y}_{cm})^2}{n}}
@@ -555,7 +594,7 @@ pcp=\text{Min}\Biggl(\Sigma_{i=1}^n w_i \sqrt{(x_i-x_j)^2+(y_i-y_j)^2}\Biggl)\te
 \sigma_{xw}=\sqrt{\frac{\sum_{i=1}^n w_i(x_{i}-\bar{x}_{cmp})^2}{\sum_{i=1}^n{w_i}}} \text{ et } \sigma_{yw}=\sqrt{\frac{\sum_{i=1}^n w_i(y_{i}-\bar{y}_{cmp})^2}{\sum_{i=1}^n{w_i}}}
 \tag{3.9}\]</span></span></p>
 <p><strong>Distance standard (pondérée ou non)</strong></p>
-<p>Nous pouvons aussi calculer la distance standard (<span class="math inline">\(ds\)</span>) sans pondération (<a href="#eq-distancestandard">équation&nbsp;<span>3.10</span></a>) et avec pondération (<a href="#eq-distancestandardw">équation&nbsp;<span>3.11</span></a>). Plus elle est forte, plus les points sont dispersés autour du centre moyen ou du centre moyen pondéré. Inversement, une faible distance standard indique une concentration de points autour du centre moyen.</p>
+<p>Nous pouvons aussi calculer la distance standard (<span class="math inline">\(ds\)</span>) sans pondération (<a href="#eq-distancestandard" class="quarto-xref">équation&nbsp;<span>3.10</span></a>) et avec pondération (<a href="#eq-distancestandardw" class="quarto-xref">équation&nbsp;<span>3.11</span></a>). Plus elle est forte, plus les points sont dispersés autour du centre moyen ou du centre moyen pondéré. Inversement, une faible distance standard indique une concentration de points autour du centre moyen.</p>
 <p><span id="eq-distancestandard"><span class="math display">\[
 ds=\sqrt{\frac{\sum_{i=1}^n (x_{i}-\bar{x}_{cm})^2}{n} + \frac{\sum_{i=1}^n (y_{i}-\bar{y}_{cm})^2}{n}}
 \tag{3.10}\]</span></span></p>
@@ -573,29 +612,35 @@ ds_w=\sqrt{\frac{\sum_{i=1}^n w_i(x_{i}-\bar{x}_{cmp})^2}{\sum_{i=1}^n w_i} + \f
 <span class="header-section-number">3.2.2.2</span> Représenter la dispersion&nbsp;: cercle de distance standard et ellipse</h4>
 <p>La dispersion d’un semis de points peut être représentée de quatre manières différentes&nbsp;:</p>
 <ol type="1">
-<li><p>Une enveloppe convexe des points décrite à la <a href="01-ManipulationDonneesSpatiales.html#sec-01225">section&nbsp;<span>1.2.2.5</span></a>).</p></li>
-<li><p>Un rectangle centré sur le centre moyen avec les déviations des coordonnées <em>X</em> et <em>Y</em> pondérées ou non (<a href="#eq-distancestandardxy">équation&nbsp;<span>3.8</span></a> et <a href="#eq-distancestandardxyw">équation&nbsp;<span>3.9</span></a> décrites précédemment). Dans le cas de données comprenant l’élévation, la forme géométrique est un parallélépipède rectangle.</p></li>
-<li><p>Un cercle de rayon de distance standard pondérée ou non (<a href="#eq-distancestandard">équation&nbsp;<span>3.10</span></a> et <a href="#eq-distancestandardw">équation&nbsp;<span>3.11</span></a>) décrites précédemment). Dans le cas de données comprenant l’élévation, la forme géométrique est une sphère de rayon de distance standard.</p></li>
+<li><p>Une enveloppe convexe des points décrite à la <a href="01-ManipulationDonneesSpatiales.html#sec-01225" class="quarto-xref">section&nbsp;<span>1.2.2.5</span></a>).</p></li>
+<li><p>Un rectangle centré sur le centre moyen avec les déviations des coordonnées <em>X</em> et <em>Y</em> pondérées ou non (<a href="#eq-distancestandardxy" class="quarto-xref">équation&nbsp;<span>3.8</span></a> et <a href="#eq-distancestandardxyw" class="quarto-xref">équation&nbsp;<span>3.9</span></a> décrites précédemment). Dans le cas de données comprenant l’élévation, la forme géométrique est un parallélépipède rectangle.</p></li>
+<li><p>Un cercle de rayon de distance standard pondérée ou non (<a href="#eq-distancestandard" class="quarto-xref">équation&nbsp;<span>3.10</span></a> et <a href="#eq-distancestandardw" class="quarto-xref">équation&nbsp;<span>3.11</span></a>) décrites précédemment). Dans le cas de données comprenant l’élévation, la forme géométrique est une sphère de rayon de distance standard.</p></li>
 <li><p>Une ellipse de distance standard pondérée ou non. Dans le cas de données comprenant l’élévation, la forme géométrique est un ellipsoïde.</p></li>
 </ol>
-<p><strong>Prenons un jeu de données fictives</strong> pour décrire ces quatre représentations graphiques. Imaginons que nous avons observé le parc de la Laurentie à Sherbrooke pour comprendre son utilisation. Pour collecter des données sur la localisation des personnes utilisatrices, nous aurions pu utiliser un questionnaire dans QField ou ArcGIS&nbsp;Survey&nbsp;123. La <a href="#fig-PointsB">figure&nbsp;<span>3.1</span></a> illustre la localisation de dix personnes (points rouges).</p>
-<div id="fig-PointsB" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap03/CartePointsB.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.1: Données fictives sur des personnes utilisatrices du parc de la Laurentie à Sherbrooke</figcaption></figure>
+<p><strong>Prenons un jeu de données fictives</strong> pour décrire ces quatre représentations graphiques. Imaginons que nous avons observé le parc de la Laurentie à Sherbrooke pour comprendre son utilisation. Pour collecter des données sur la localisation des personnes utilisatrices, nous aurions pu utiliser un questionnaire dans QField ou ArcGIS&nbsp;Survey&nbsp;123. La <a href="#fig-PointsB" class="quarto-xref">figure&nbsp;<span>3.1</span></a> illustre la localisation de dix personnes (points rouges).</p>
+<div id="fig-PointsB" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-PointsB-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap03/CartePointsB.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-PointsB-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.1: Données fictives sur des personnes utilisatrices du parc de la Laurentie à Sherbrooke
+</figcaption></figure>
 </div>
 <p>À partir de ces dix points, nous obtenons&nbsp;:</p>
 <ul>
 <li><p>Les coordonnées du <strong>centre moyen</strong> qui sont égales à -8&nbsp;007&nbsp;869 et 5&nbsp;685&nbsp;921, soit simplement les moyennes des coordonnées <em>X</em> et <em>Y</em> des dix observations.</p></li>
 <li><p>L’<strong>enveloppe convexe des points</strong> qui contient tous les points.</p></li>
-<li><p><strong>Le rectangle construit avec les déviations standards des <em>X</em> et des <em>Y</em></strong> qui est centré sur le centre moyen. À partir de ce point, nous ajoutons à l’est et à l’ouest la valeur de la distance standard des <em>X</em> et au nord et au sud celle des <em>Y</em>. Les valeurs de ces distances standards sont égales à&nbsp;32,60 et 52,20&nbsp;mètres (voir les calculs au <a href="#tbl-DonneesFictivesCasB">tableau&nbsp;<span>3.2</span></a>).</p></li>
-<li><p>La <strong>distance standard</strong> est égale à 61,59&nbsp;mètres (voir les calculs au <a href="#tbl-DonneesFictivesCasB">tableau&nbsp;<span>3.2</span></a>). À partir de cette distance, nous traçons le cercle ayant comme rayon la distance standard.</p></li>
-<li><p>L’<strong>ellipse de déviation de distance standard</strong> (<a href="#fig-ExplicationEllipse">figure&nbsp;<span>3.2</span></a>).</p></li>
+<li><p><strong>Le rectangle construit avec les déviations standards des <em>X</em> et des <em>Y</em></strong> qui est centré sur le centre moyen. À partir de ce point, nous ajoutons à l’est et à l’ouest la valeur de la distance standard des <em>X</em> et au nord et au sud celle des <em>Y</em>. Les valeurs de ces distances standards sont égales à&nbsp;32,60 et 52,20&nbsp;mètres (voir les calculs au <a href="#tbl-DonneesFictivesCasB" class="quarto-xref">tableau&nbsp;<span>3.2</span></a>).</p></li>
+<li><p>La <strong>distance standard</strong> est égale à 61,59&nbsp;mètres (voir les calculs au <a href="#tbl-DonneesFictivesCasB" class="quarto-xref">tableau&nbsp;<span>3.2</span></a>). À partir de cette distance, nous traçons le cercle ayant comme rayon la distance standard.</p></li>
+<li><p>L’<strong>ellipse de déviation de distance standard</strong> (<a href="#fig-ExplicationEllipse" class="quarto-xref">figure&nbsp;<span>3.2</span></a>).</p></li>
 </ul>
 <div class="cell">
+<div id="tbl-DonneesFictivesCasB" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-DonneesFictivesCasB-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tableau&nbsp;3.2: Calcul des distances standards des X et des Y et de la distance standard
+</figcaption><div aria-describedby="tbl-DonneesFictivesCasB-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-DonneesFictivesCasB" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tableau&nbsp;3.2: Calcul des distances standards des X et des Y et de la distance standard</caption>
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 10%">
 <col style="width: 7%">
@@ -731,10 +776,16 @@ ds_w=\sqrt{\frac{\sum_{i=1}^n w_i(x_{i}-\bar{x}_{cmp})^2}{\sum_{i=1}^n w_i} + \f
 </table>
 </div>
 </div>
+</figure>
 </div>
-<div id="fig-ExplicationEllipse" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap03/ExplicationEllipse.png" class="img-fluid figure-img" style="width:35.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.2: Trois éléments composant une ellipse</figcaption></figure>
+</div>
+<div id="fig-ExplicationEllipse" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-ExplicationEllipse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap03/ExplicationEllipse.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:35.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ExplicationEllipse-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.2: Trois éléments composant une ellipse
+</figcaption></figure>
 </div>
 <div class="bloc_attention">
 <div class="bloc_attention-header">
@@ -792,14 +843,22 @@ l_x=2\sigma_x \text{ et }l_y=2\sigma_y \text{ et }S_e=\pi\sigma_x\sigma_y
 <li>
 <strong>Situation D</strong>. Les observations sont concentrées dans la partie nord du parc, excepté deux observations au sud.</li>
 </ul>
-<div id="fig-PointsABCD" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap03/CartePointsABCD.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.3: Données fictives sur des personnes utilisatrices du parc de la Laurentie à Sherbrooke (quatre situations)</figcaption></figure>
+<div id="fig-PointsABCD" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-PointsABCD-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap03/CartePointsABCD.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
 </div>
-<p>Les cercles et les ellipses de distance standard (<span class="math inline">\(ds\)</span>) centrés au centre moyen (<span class="math inline">\(cm\)</span>) sont représentés à la (<a href="#fig-EllipsesCercleABCD">figure&nbsp;<span>3.4</span></a>).</p>
-<div id="fig-EllipsesCercleABCD" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap03/CartePointsABCD_DS.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.4: Ellipse et cercle de distance standard pour les quatre situations</figcaption></figure>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-PointsABCD-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.3: Données fictives sur des personnes utilisatrices du parc de la Laurentie à Sherbrooke (quatre situations)
+</figcaption></figure>
+</div>
+<p>Les cercles et les ellipses de distance standard (<span class="math inline">\(ds\)</span>) centrés au centre moyen (<span class="math inline">\(cm\)</span>) sont représentés à la (<a href="#fig-EllipsesCercleABCD" class="quarto-xref">figure&nbsp;<span>3.4</span></a>).</p>
+<div id="fig-EllipsesCercleABCD" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-EllipsesCercleABCD-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap03/CartePointsABCD_DS.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-EllipsesCercleABCD-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.4: Ellipse et cercle de distance standard pour les quatre situations
+</figcaption></figure>
 </div>
 </section><section id="sec-03123" class="level4" data-number="3.2.2.3"><h4 data-number="3.2.2.3" class="anchored" data-anchor-id="sec-03123">
 <span class="header-section-number">3.2.2.3</span> Comparaison de la dispersion de deux semis de points dans deux régions différentes</h4>
@@ -808,24 +867,28 @@ l_x=2\sigma_x \text{ et }l_y=2\sigma_y \text{ et }S_e=\pi\sigma_x\sigma_y
 </section><section id="sec-03124" class="level4" data-number="3.2.2.4"><h4 data-number="3.2.2.4" class="anchored" data-anchor-id="sec-03124">
 <span class="header-section-number">3.2.2.4</span> Comparaison de la dispersion de deux semis de points dans la même région</h4>
 <p>Pour comparer la distribution spatiale de deux semis de points situés dans la même région, nous comparons leur cercle ou leur ellipse respective (par exemple, des points représentant des accidents l’été versus l’hiver ou encore deux espèces végétales sur le même territoire).</p>
-<p>Une démarche similaire peut être appliquée à deux groupes de population rattachés à des entités polygonales&nbsp;: ils ont la même distribution spatiale si les deux ellipses de distance pondérée se juxtaposent significativement. David W.S. Wong <span class="citation" data-cites="wong1999geostatistics">(<a href="references.html#ref-wong1999geostatistics" role="doc-biblioref">1999</a>)</span> propose d’ailleurs un indice dénommé <em>S</em> basé sur la comparaison des deux ellipses (<a href="#eq-WongIndice2Groupes">équation&nbsp;<span>3.18</span></a>). Le numérateur représente la surface d’intersection entre les deux ellipses tandis que le dénominateur représente leur surface d’union. L’indice varie de 0 à 1, soit respectivement d’une similitude parfaite à une dissemblance la plus grande entre les deux distributions spatiales&nbsp;:</p>
+<p>Une démarche similaire peut être appliquée à deux groupes de population rattachés à des entités polygonales&nbsp;: ils ont la même distribution spatiale si les deux ellipses de distance pondérée se juxtaposent significativement. David W.S. Wong <span class="citation" data-cites="wong1999geostatistics">(<a href="references.html#ref-wong1999geostatistics" role="doc-biblioref">1999</a>)</span> propose d’ailleurs un indice dénommé <em>S</em> basé sur la comparaison des deux ellipses (<a href="#eq-WongIndice2Groupes" class="quarto-xref">équation&nbsp;<span>3.18</span></a>). Le numérateur représente la surface d’intersection entre les deux ellipses tandis que le dénominateur représente leur surface d’union. L’indice varie de 0 à 1, soit respectivement d’une similitude parfaite à une dissemblance la plus grande entre les deux distributions spatiales&nbsp;:</p>
 <ul>
 <li><p>Si deux groupes de population ont des distributions spatiales identiques, les ellipses sont les mêmes et donc <span class="math inline">\(E_i \cap E_j = E_i \cup E_j = 1\)</span> et <span class="math inline">\(S_{ij} = 1 - 1 = 0\)</span>.</p></li>
 <li><p>Si les deux groupes de population ont des distributions spatiales totalement différentes, les ellipses ne se touchent pas, alors <span class="math inline">\(E_i \cap E_j = 0\)</span> et la valeur de <span class="math inline">\(S = 1 - 0 = 1\)</span>.</p></li>
 </ul>
-<p>Bien évidemment, cet indice peut être étendu pour comparer les distributions de plus de deux groupes de population simultanément (<a href="#eq-WongIndiceNGroupes">équation&nbsp;<span>3.19</span></a>).</p>
+<p>Bien évidemment, cet indice peut être étendu pour comparer les distributions de plus de deux groupes de population simultanément (<a href="#eq-WongIndiceNGroupes" class="quarto-xref">équation&nbsp;<span>3.19</span></a>).</p>
 <p><span id="eq-WongIndice2Groupes"><span class="math display">\[
 S_{ij}=1-\frac{E_i \cap E_j}{E_i \cup E_j}
 \tag{3.18}\]</span></span></p>
 <p><span id="eq-WongIndiceNGroupes"><span class="math display">\[
 S=1-\frac{E_1 \cap E_2 \cap E_3 \cap \text{…} \cap E_n}{E_1 \cup E_2 \cup E_3 \cup \text{…} \cup E_n}
 \tag{3.19}\]</span></span></p>
-<p><strong>Voyons un exemple concret</strong>&nbsp;: calculons l’indice de Wong <span class="citation" data-cites="wong1999geostatistics">(<a href="references.html#ref-wong1999geostatistics" role="doc-biblioref">1999</a>)</span> (<a href="#eq-WongIndice2Groupes">équation&nbsp;<span>3.18</span></a>) pour les ellipses de distances standards pondérées par les effectifs de propriétaires et de locataires par secteur de recensement pour la ville de Sherbrooke en 2021 (<a href="#fig-CarteProprioLoctaires">figure&nbsp;<span>3.5</span></a>). D’emblée, nous constatons que les propriétaires ont une distribution plus dispersée que celle des locataires plus présents dans le centre de la ville.</p>
+<p><strong>Voyons un exemple concret</strong>&nbsp;: calculons l’indice de Wong <span class="citation" data-cites="wong1999geostatistics">(<a href="references.html#ref-wong1999geostatistics" role="doc-biblioref">1999</a>)</span> (<a href="#eq-WongIndice2Groupes" class="quarto-xref">équation&nbsp;<span>3.18</span></a>) pour les ellipses de distances standards pondérées par les effectifs de propriétaires et de locataires par secteur de recensement pour la ville de Sherbrooke en 2021 (<a href="#fig-CarteProprioLoctaires" class="quarto-xref">figure&nbsp;<span>3.5</span></a>). D’emblée, nous constatons que les propriétaires ont une distribution plus dispersée que celle des locataires plus présents dans le centre de la ville.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-CarteProprioLoctaires" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-CarteProprioLoctaires-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.5: Propriétaires et locataires dans la ville de Sherbrooke (avec ellipse de distance standard), 2021</figcaption></figure>
+<div id="fig-CarteProprioLoctaires" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CarteProprioLoctaires-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-CarteProprioLoctaires-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-CarteProprioLoctaires-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.5: Propriétaires et locataires dans la ville de Sherbrooke (avec ellipse de distance standard), 2021
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -872,12 +935,16 @@ S=1-\frac{E_1 \cap E_2 \cap E_3 \cap \text{…} \cap E_n}{E_1 \cup E_2 \cup E_3 
 <span><span class="va">xy.2021</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">M2021</span><span class="op">)</span></span>
 <span><span class="va">xy.2022</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">M2022</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Les méfaits par année sont présentés à la <a href="#fig-CarteMefaits">figure&nbsp;<span>3.6</span></a>.</p>
+<p>Les méfaits par année sont présentés à la <a href="#fig-CarteMefaits" class="quarto-xref">figure&nbsp;<span>3.6</span></a>.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-CarteMefaits" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-CarteMefaits-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.6: Localisation des méfaits par année, ville de Sherbrooke, 2021</figcaption></figure>
+<div id="fig-CarteMefaits" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CarteMefaits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-CarteMefaits-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-CarteMefaits-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.6: Localisation des méfaits par année, ville de Sherbrooke, 2021
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -1047,23 +1114,31 @@ Projected CRS: NAD83 / MTQ Lambert
 4  68.52718 SigmaY SigmaX POLYGON ((655473.5 159216, ...  2022</code></pre>
 </div>
 </div>
-<p>Les quatre représentations de la dispersion sont présentées à la <a href="#fig-RepresentationDispersion">figure&nbsp;<span>3.7</span></a>&nbsp;: 1)&nbsp;enveloppe convexe (gris), 2)&nbsp;cercle de distance standard (bleu), 3)&nbsp;rectangle de distance standard sur les X et Y (noir) et 4)&nbsp;ellipse de distance standard (rouge).</p>
+<p>Les quatre représentations de la dispersion sont présentées à la <a href="#fig-RepresentationDispersion" class="quarto-xref">figure&nbsp;<span>3.7</span></a>&nbsp;: 1)&nbsp;enveloppe convexe (gris), 2)&nbsp;cercle de distance standard (bleu), 3)&nbsp;rectangle de distance standard sur les X et Y (noir) et 4)&nbsp;ellipse de distance standard (rouge).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-RepresentationDispersion" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-RepresentationDispersion-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.7: Représentations de la dispersion des méfaits pour les quatre années</figcaption></figure>
+<div id="fig-RepresentationDispersion" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-RepresentationDispersion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-RepresentationDispersion-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-RepresentationDispersion-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.7: Représentations de la dispersion des méfaits pour les quatre années
+</figcaption></figure>
 </div>
 </div>
 </div>
 </section><section id="sec-03132" class="level4" data-number="3.2.3.2"><h4 data-number="3.2.3.2" class="anchored" data-anchor-id="sec-03132">
 <span class="header-section-number">3.2.3.2</span> Calcul de mesures pondérées</h4>
-<p>Pour illustrer le calcul des mesures pondérées, nous utilisons des données sur les effectifs des premier et dernier déciles de revenu après impôt des familles économiques pour les secteurs de recensement de la ville de Sherbrooke en 2021 (<a href="#fig-CartesDecilesPremierDernier">figure&nbsp;<span>3.8</span></a>).</p>
+<p>Pour illustrer le calcul des mesures pondérées, nous utilisons des données sur les effectifs des premier et dernier déciles de revenu après impôt des familles économiques pour les secteurs de recensement de la ville de Sherbrooke en 2021 (<a href="#fig-CartesDecilesPremierDernier" class="quarto-xref">figure&nbsp;<span>3.8</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-CartesDecilesPremierDernier" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-CartesDecilesPremierDernier-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.8: Déciles extrêmes de revenu après impôt des familles économiques</figcaption></figure>
+<div id="fig-CartesDecilesPremierDernier" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CartesDecilesPremierDernier-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-CartesDecilesPremierDernier-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-CartesDecilesPremierDernier-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.8: Déciles extrêmes de revenu après impôt des familles économiques
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -1134,15 +1209,19 @@ Projected CRS: NAD83 / MTQ Lambert
 <span><span class="co"># Combinaison des deux cartes</span></span>
 <span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte1</span>, <span class="va">Carte2</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-MesuresPonderees" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-MesuresPonderees-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.9: Cercles de distance standard et ellipses pondérés</figcaption></figure>
+<div id="fig-MesuresPonderees" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-MesuresPonderees-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-MesuresPonderees-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-MesuresPonderees-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.9: Cercles de distance standard et ellipses pondérés
+</figcaption></figure>
 </div>
 </div>
 </div>
 </section></section></section><section id="sec-033" class="level2" data-number="3.3"><h2 data-number="3.3" class="anchored" data-anchor-id="sec-033">
 <span class="header-section-number">3.3</span> Forme d’un semis de points</h2>
-<p>Étudier la forme d’un semis de points, c’est vouloir décrire l’arrangement spatial et l’espacement des points dans une région donnée. Autrement dit, l’objectif est de répondre à la question suivante&nbsp;: comment se répartissent les points dans une région donnée? Nous distinguons habituellement trois types de distribution spatiale d’un semis de points (<a href="#fig-FormeSemisDePoints3Types">figure&nbsp;<span>3.10</span></a>)&nbsp;:</p>
+<p>Étudier la forme d’un semis de points, c’est vouloir décrire l’arrangement spatial et l’espacement des points dans une région donnée. Autrement dit, l’objectif est de répondre à la question suivante&nbsp;: comment se répartissent les points dans une région donnée? Nous distinguons habituellement trois types de distribution spatiale d’un semis de points (<a href="#fig-FormeSemisDePoints3Types" class="quarto-xref">figure&nbsp;<span>3.10</span></a>)&nbsp;:</p>
 <ol type="1">
 <li>
 <strong>Distribution dispersée</strong> quand les points du semis sont régulièrement espacés.</li>
@@ -1151,9 +1230,13 @@ Projected CRS: NAD83 / MTQ Lambert
 <li>
 <strong>Distribution concentrée</strong> quand il existe des regroupements de points dans une ou plusieurs parties de la région d’étude. Par exemple, les musées et les théâtres sont habituellement concentrés dans les parties centrales des métropoles.</li>
 </ol>
-<div id="fig-FormeSemisDePoints3Types" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap03/FigureTroisTypesDistributions.png" class="img-fluid figure-img" style="width:65.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.10: Trois types de distribution spatiale d’un semis de points</figcaption></figure>
+<div id="fig-FormeSemisDePoints3Types" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-FormeSemisDePoints3Types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap03/FigureTroisTypesDistributions.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-FormeSemisDePoints3Types-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.10: Trois types de distribution spatiale d’un semis de points
+</figcaption></figure>
 </div>
 <div class="bloc_attention">
 <div class="bloc_attention-header">
@@ -1164,8 +1247,8 @@ Projected CRS: NAD83 / MTQ Lambert
 </div>
 <div class="bloc_attention-body">
 <ol type="1">
-<li>Celles basées sur la distance (l’indice du plus proche voisin, fonctions <em>K</em> et <em>L</em> de Ripley) (<a href="#sec-0331">section&nbsp;<span>3.3.1</span></a>).</li>
-<li>Celles basées sur la densité (méthode des quadrats avec différents tests statistiques) (<a href="#sec-0332">section&nbsp;<span>3.3.2</span></a>).</li>
+<li>Celles basées sur la distance (l’indice du plus proche voisin, fonctions <em>K</em> et <em>L</em> de Ripley) (<a href="#sec-0331" class="quarto-xref">section&nbsp;<span>3.3.1</span></a>).</li>
+<li>Celles basées sur la densité (méthode des quadrats avec différents tests statistiques) (<a href="#sec-0332" class="quarto-xref">section&nbsp;<span>3.3.2</span></a>).</li>
 </ol>
 </div>
 </div>
@@ -1173,17 +1256,17 @@ Projected CRS: NAD83 / MTQ Lambert
 <span class="header-section-number">3.3.1</span> Méthode du plus proche voisin</h3>
 <p>Le principe de base de cette méthode est fort simple et se décompose en quatre étapes :</p>
 <ol type="1">
-<li><p>Mesurer, pour chaque point du semis, la distance le séparant du point le plus proche, puis calculer la distance moyenne du point le plus proche (<a href="#eq-PlusProcheVoisinRobs">équation&nbsp;<span>3.20</span></a>).</p></li>
-<li><p>Calculer la moyenne attendue du point le plus proche pour une dispersion aléatoire (<a href="#eq-PlusProcheVoisinR">équation&nbsp;<span>3.22</span></a>).</p></li>
+<li><p>Mesurer, pour chaque point du semis, la distance le séparant du point le plus proche, puis calculer la distance moyenne du point le plus proche (<a href="#eq-PlusProcheVoisinRobs" class="quarto-xref">équation&nbsp;<span>3.20</span></a>).</p></li>
+<li><p>Calculer la moyenne attendue du point le plus proche pour une dispersion aléatoire (<a href="#eq-PlusProcheVoisinR" class="quarto-xref">équation&nbsp;<span>3.22</span></a>).</p></li>
 <li>
-<p>Calculer l’indice du plus proche voisin, soit le ratio entre la distance observée et la distance aléatoire (<a href="#eq-PlusProcheVoisinRExp">équation&nbsp;<span>3.21</span></a>). L’indice <em>R</em> s’interprète alors comme suit&nbsp;:</p>
+<p>Calculer l’indice du plus proche voisin, soit le ratio entre la distance observée et la distance aléatoire (<a href="#eq-PlusProcheVoisinRExp" class="quarto-xref">équation&nbsp;<span>3.21</span></a>). L’indice <em>R</em> s’interprète alors comme suit&nbsp;:</p>
 <ul>
 <li>Si <em>R</em> est égal à 1, la dispersion du semis de points est aléatoire.</li>
 <li>Si <em>R</em> est inférieur à 1, la distribution du semis de points tend vers la concentration (avec une concentration absolue quand <em>R</em>&nbsp;=&nbsp;0; tous les points ont les mêmes coordonnées géographiques).</li>
 <li>Si <em>R</em> est supérieur à 1, la distribution du semis de points tend vers la dispersion.</li>
 </ul>
 </li>
-<li><p>Calculer les valeurs de <em>Z</em> et de <em>p</em> pour déterminer si la valeur de <em>R</em> obtenue est significative (<a href="#eq-PlusProcheVoisinZ">équation&nbsp;<span>3.23</span></a>).</p></li>
+<li><p>Calculer les valeurs de <em>Z</em> et de <em>p</em> pour déterminer si la valeur de <em>R</em> obtenue est significative (<a href="#eq-PlusProcheVoisinZ" class="quarto-xref">équation&nbsp;<span>3.23</span></a>).</p></li>
 </ol>
 <p><span id="eq-PlusProcheVoisinRobs"><span class="math display">\[
 R_{o}= \frac{\sum_{i=1}^n d_i}{n}
@@ -1253,7 +1336,7 @@ Z = \frac{R_o-R_a}{SE} \text{, } SE = \frac{0.26136}{\sqrt{(n^2/S)}} \text{ avec
 </div>
 </div>
 <p><strong>Interprétation des résultats</strong></p>
-<p>Analysons les différentes colonnes du <a href="#tbl-TableauMPPV">tableau&nbsp;<span>3.3</span></a> :</p>
+<p>Analysons les différentes colonnes du <a href="#tbl-TableauMPPV" class="quarto-xref">tableau&nbsp;<span>3.3</span></a> :</p>
 <ul>
 <li><p><strong>points (n)&nbsp;:</strong> il y a respectivement 251, 383, 344 et 220 méfaits pour les années 2019 à 2022.</p></li>
 <li><p><strong><em>R</em></strong> <strong>observé&nbsp;:</strong> en moyenne, un méfait est distant de 252, 184, 227 et 251&nbsp;mètres du méfait le plus proche pour les quatre années.</p></li>
@@ -1262,10 +1345,12 @@ Z = \frac{R_o-R_a}{SE} \text{, } SE = \frac{0.26136}{\sqrt{(n^2/S)}} \text{ avec
 <li><p><strong>valeur de <em>p</em>&nbsp;:</strong> toutes les valeurs sont égales à 0, signalant que les résultats sont significatifs.</p></li>
 </ul>
 <div class="cell">
+<div id="tbl-TableauMPPV" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-TableauMPPV-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tableau&nbsp;3.3: Résultats de la méthode du plus proche voisin pour les méfaits par année
+</figcaption><div aria-describedby="tbl-TableauMPPV-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-TableauMPPV" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tableau&nbsp;3.3: Résultats de la méthode du plus proche voisin pour les méfaits par année</caption>
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <colgroup>
 <col style="width: 6%">
 <col style="width: 11%">
@@ -1333,8 +1418,10 @@ Z = \frac{R_o-R_a}{SE} \text{, } SE = \frac{0.26136}{\sqrt{(n^2/S)}} \text{ avec
 </table>
 </div>
 </div>
+</figure>
 </div>
-<p>Notez qu’il est possible aussi de construire un graphique pour le <em>R</em> observé avec plusieurs voisins, tel que réalisé avec le code ci-dessous avec <em>k</em>&nbsp;=&nbsp;1 à 50 (<a href="#fig-IndicePlusProchVoisin150">figure&nbsp;<span>3.11</span></a>).</p>
+</div>
+<p>Notez qu’il est possible aussi de construire un graphique pour le <em>R</em> observé avec plusieurs voisins, tel que réalisé avec le code ci-dessous avec <em>k</em>&nbsp;=&nbsp;1 à 50 (<a href="#fig-IndicePlusProchVoisin150" class="quarto-xref">figure&nbsp;<span>3.11</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb21"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># k = 1 à 50</span></span>
 <span><span class="va">Robs2019N1_50</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/apply.html">apply</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/pkg/spatstat.geom/man/nndist.html">nndist</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="va">M2019</span><span class="op">)</span>, k<span class="op">=</span><span class="fl">1</span><span class="op">:</span><span class="fl">50</span><span class="op">)</span>, <span class="fl">2</span>, FUN<span class="op">=</span><span class="va">mean</span><span class="op">)</span></span>
@@ -1356,9 +1443,13 @@ Z = \frac{R_o-R_a}{SE} \text{, } SE = \frac{0.26136}{\sqrt{(n^2/S)}} \text{ avec
 <span>     y <span class="op">=</span> <span class="st">"Robs - Distance en mètres"</span>,</span>
 <span>     color <span class="op">=</span> <span class="st">"Année"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-IndicePlusProchVoisin150" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-IndicePlusProchVoisin150-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.11: Distance au plus proche voisin de 1 à 50</figcaption></figure>
+<div id="fig-IndicePlusProchVoisin150" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-IndicePlusProchVoisin150-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-IndicePlusProchVoisin150-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-IndicePlusProchVoisin150-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.11: Distance au plus proche voisin de 1 à 50
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -1373,10 +1464,14 @@ Z = \frac{R_o-R_a}{SE} \text{, } SE = \frac{0.26136}{\sqrt{(n^2/S)}} \text{ avec
 <li>Réaliser des tests statistiques à partir des fréquences observées et théoriques pour qualifier la distribution du semis de points (test de Kolmogorov-Smirnov, test du khi-deux ou méthode Monte-Carlo).</li>
 </ol></section><section id="sec-03252" class="level4" data-number="3.3.2.2"><h4 data-number="3.3.2.2" class="anchored" data-anchor-id="sec-03252">
 <span class="header-section-number">3.3.2.2</span> Forme, distribution et taille des quadrats</h4>
-<p>Il est possible de paramétrer les quadrats selon leur forme, leur distribution et leur taille. Habituellement, la forme retenue pour les quadrats est le carré, mais d’autres formes géométriques peuvent être utilisées comme l’hexagone et plus rarement, le cercle. La distribution des quadrats peut aussi être soit régulière, soit aléatoire (<a href="#fig-FormeQuadrats">figure&nbsp;<span>3.12</span></a>). Notez que dans le cas d’un cercle, le maillage ne peut être qu’irrégulier puisque certains points risqueraient de ne pas être contenus dans un cercle pour un maillage régulier.</p>
-<div id="fig-FormeQuadrats" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap03/FormesQuadrats.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.12: Formes et distributions de quadrats</figcaption></figure>
+<p>Il est possible de paramétrer les quadrats selon leur forme, leur distribution et leur taille. Habituellement, la forme retenue pour les quadrats est le carré, mais d’autres formes géométriques peuvent être utilisées comme l’hexagone et plus rarement, le cercle. La distribution des quadrats peut aussi être soit régulière, soit aléatoire (<a href="#fig-FormeQuadrats" class="quarto-xref">figure&nbsp;<span>3.12</span></a>). Notez que dans le cas d’un cercle, le maillage ne peut être qu’irrégulier puisque certains points risqueraient de ne pas être contenus dans un cercle pour un maillage régulier.</p>
+<div id="fig-FormeQuadrats" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-FormeQuadrats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap03/FormesQuadrats.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-FormeQuadrats-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.12: Formes et distributions de quadrats
+</figcaption></figure>
 </div>
 <p>Bien entendu, les résultats varient selon la taille des quadrats. Par exemple, dans le cas d’une distribution spatiale concentrée d’un semis de points, diminuer la taille des quadrats risque d’augmenter la perception de la dispersion. Certains auteurs proposent alors une formule pour déterminer la superficie optimale du quadrat <span class="citation" data-cites="wong2005statistical mitchel2005esri">(<a href="references.html#ref-wong2005statistical" role="doc-biblioref">Wong et Lee 2005</a>; <a href="references.html#ref-mitchel2005esri" role="doc-biblioref">Mitchel 2005</a>)</span>&nbsp;:</p>
 <p><span id="eq-TailleQuadrat"><span class="math display">\[
@@ -1400,7 +1495,7 @@ l_q = \sqrt{S_q} \text{ et } r_q = \sqrt{\frac{S_q}{\pi}} \text{ et } l_a = \sqr
 <span class="header-section-number">3.3.2.3</span> Tests statistiques</h4>
 <p><strong>Construction du tableau de fréquences observées et théoriques</strong></p>
 <p>Une fois les quadrats créés, nous devons compter le nombre de points compris dans chacun d’eux. Une distribution spatiale concentrée à l’extrême se traduit par la localisation de tous les points du semis d’un seul quadrat, tandis que pour une distribution dispersée maximale se traduit par le fait que tous les quadrats contiennent le même nombre de points. Par la suite, nous construisons un tableau de fréquences.</p>
-<p>Prenons deux situations à la <a href="#fig-FormeQuadratsExemple">figure&nbsp;<span>3.13</span></a>&nbsp;:</p>
+<p>Prenons deux situations à la <a href="#fig-FormeQuadratsExemple" class="quarto-xref">figure&nbsp;<span>3.13</span></a>&nbsp;:</p>
 <ol type="1">
 <li>
 <strong>A. Une distribution dispersée</strong>, puisque les points sont présents dans la plupart des quadrats.</li>
@@ -1411,7 +1506,7 @@ l_q = \sqrt{S_q} \text{ et } r_q = \sqrt{\frac{S_q}{\pi}} \text{ et } l_a = \sqr
 <ul>
 <li><p><strong>Fréquences observées (</strong><span class="math inline">\(f_o\)</span>)&nbsp;: pour la situation&nbsp;A, nous avons 16&nbsp;quadrats qui ne comprennent aucun point, 4&nbsp;quadrats avec 1&nbsp;point, 10&nbsp;quadrats avec 2&nbsp;points et finalement 6&nbsp;quadrats avec 3&nbsp;points. À l’inverse, pour la situation&nbsp;B, 27&nbsp;quadrats sur les 36 ne comprennent aucun point, suggérant ainsi une concentration plus forte!</p></li>
 <li><p><strong>Proportions observées&nbsp;:</strong> simplement les fréquences observées divisées par le nombre total de quadrats (par exemple, <span class="math inline">\(16 / 36 = 0,444\)</span> pour A).</p></li>
-<li><p><strong>Proportions théoriques&nbsp;:</strong> à partir de la loi de probabilité de Poisson (<a href="#eq-QuadratPoisson">équation&nbsp;<span>3.26</span></a>), il est possible de calculer les proportions théoriques que nous devrions avoir si les points étaient distribués aléatoirement. Pas de panique avec la lecture de la formule, nous verrons qu’il existe une fonction pour la calculer facilement dans R. Nous calculons aussi les <strong>proportions théoriques cumulées</strong>.</p></li>
+<li><p><strong>Proportions théoriques&nbsp;:</strong> à partir de la loi de probabilité de Poisson (<a href="#eq-QuadratPoisson" class="quarto-xref">équation&nbsp;<span>3.26</span></a>), il est possible de calculer les proportions théoriques que nous devrions avoir si les points étaient distribués aléatoirement. Pas de panique avec la lecture de la formule, nous verrons qu’il existe une fonction pour la calculer facilement dans R. Nous calculons aussi les <strong>proportions théoriques cumulées</strong>.</p></li>
 <li><p><strong>Fréquences théoriques&nbsp;:</strong> les fréquences théoriques sont simplement les proportions théoriques multipliées par le nombre de quadrats (par exemple, <span class="math inline">\(\text{0,311} \times 36 = \text{11,196}\)</span>).</p></li>
 </ul>
 <p><span id="eq-QuadratPoisson"><span class="math display">\[
@@ -1419,9 +1514,13 @@ p(x = k )= \frac{\lambda^k e^{-\lambda}}{x!}\text{ avec :}
 \tag{3.26}\]</span></span></p>
 <p><span class="math inline">\(\lambda \text{ (lambda)} = n / k\)</span>, soit le nombre moyen de points (<span class="math inline">\(n\)</span>) par quadrat (<span class="math inline">\(k\)</span>); <span class="math inline">\(x\)</span>, le nombre de points dans le quadrat (0, 1, 2, etc.); <span class="math inline">\(!x\)</span>, la factorielle d’un nombre (par exemple, <span class="math inline">\(!3 = 1 \times 2 \times 3 = 6\)</span>); <span class="math inline">\(e\)</span>, la constante de l’Euler, soit <span class="math inline">\(exp(1) = \text{2,718282}\)</span>.</p>
 <p>À partir de ce tableau des fréquences observées et théoriques, nous pouvons calculer les tests de Kolmogorov-Smirnov et du khi-deux.</p>
-<div id="fig-FormeQuadratsExemple" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap03/FormesQuadratsExemple.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.13: Illustrations des tests statistiques sur les quadrats</figcaption></figure>
+<div id="fig-FormeQuadratsExemple" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-FormeQuadratsExemple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap03/FormesQuadratsExemple.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-FormeQuadratsExemple-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.13: Illustrations des tests statistiques sur les quadrats
+</figcaption></figure>
 </div>
 <p><strong>Test statistique de Kolmogorov-Smirnov</strong></p>
 <p>Ce test se décompose en six étapes&nbsp;:</p>
@@ -1429,8 +1528,8 @@ p(x = k )= \frac{\lambda^k e^{-\lambda}}{x!}\text{ avec :}
 <li><p>Formuler l’hypothèse nulle stipulant que les fréquences observées et théoriques ne sont pas statistiquement différentes (<span class="math inline">\(H_0\)</span>).</p></li>
 <li><p>Choisir un seuil de signification pour valider ou réfuter l’hypothèse nulle (par exemple, <span class="math inline">\(\alpha = \text{0,05}\)</span>).</p></li>
 <li><p>Calculer la différence absolue entre les proportions cumulées observées et théoriques.</p></li>
-<li><p>Calculer la statistique <span class="math inline">\(D\)</span>, soit la plus forte valeur des différences absolues entre les fréquences cumulées observées et théoriques (<a href="#eq-DValeurKS">équation&nbsp;<span>3.27</span></a>).</p></li>
-<li><p>Calculer la valeur critique pour une distribution aléatoire avec un seuil de signification <span class="math inline">\(\alpha\)</span> (<a href="#eq-DValeurKSCritique">équation&nbsp;<span>3.28</span></a>).</p></li>
+<li><p>Calculer la statistique <span class="math inline">\(D\)</span>, soit la plus forte valeur des différences absolues entre les fréquences cumulées observées et théoriques (<a href="#eq-DValeurKS" class="quarto-xref">équation&nbsp;<span>3.27</span></a>).</p></li>
+<li><p>Calculer la valeur critique pour une distribution aléatoire avec un seuil de signification <span class="math inline">\(\alpha\)</span> (<a href="#eq-DValeurKSCritique" class="quarto-xref">équation&nbsp;<span>3.28</span></a>).</p></li>
 <li>
 <p>Comparer les valeurs de <span class="math inline">\(D\)</span> et de <span class="math inline">\(D_{\alpha = 0.05}\)</span> :</p>
 <ul>
@@ -1447,7 +1546,7 @@ D = \text{max}\lvert poi_{cumulé} - pti_{cumulé} \rvert
 D_{\alpha = \text{0,05}}= \frac{\text{1,36}}{\sqrt{m}}\text{ avec }
 \tag{3.28}\]</span></span></p>
 <p><span class="math inline">\(m\)</span> étant le nombre total de quadrats; <span class="math inline">\(poi_{cumulé}\)</span> et <span class="math inline">\(pti_{cumulé}\)</span>, les proportions cumulées observées et théoriques.</p>
-<p>Appliquons cette démarche du test de Kolmogorov-Smirnov aux deux distributions de la <a href="#fig-FormeQuadratsExemple">figure&nbsp;<span>3.13</span></a>&nbsp;:</p>
+<p>Appliquons cette démarche du test de Kolmogorov-Smirnov aux deux distributions de la <a href="#fig-FormeQuadratsExemple" class="quarto-xref">figure&nbsp;<span>3.13</span></a>&nbsp;:</p>
 <ul>
 <li><span class="math inline">\(D_{\alpha = \text{0,05}}= \frac{\text{1,36}}{\sqrt{36}}=\text{0,210}\)</span></li>
 <li>pour la situation A, <span class="math inline">\(D = \text{0,133}\)</span>, donc <span class="math inline">\(D &lt; D_{\alpha = \text{0,05}}\)</span>, alors la distribution est significativement dispersée.</li>
@@ -1457,7 +1556,7 @@ D_{\alpha = \text{0,05}}= \frac{\text{1,36}}{\sqrt{m}}\text{ avec }
 <p>Ce test se décompose en quatre étapes&nbsp;:</p>
 <ol type="1">
 <li><p>Formuler l’hypothèse nulle stipulant que la distribution des fréquences observées dans les quadrats suit une distribution de Poisson (<span class="math inline">\(H_0\)</span>).</p></li>
-<li><p>Calculer le khi-deux (<a href="#eq-KhiDeux">équation&nbsp;<span>3.29</span></a>).</p></li>
+<li><p>Calculer le khi-deux (<a href="#eq-KhiDeux" class="quarto-xref">équation&nbsp;<span>3.29</span></a>).</p></li>
 <li><p>Comparer la valeur du khi-deux obtenue avec celle du khi-deux théorique (<span class="math inline">\(\chi^2_{\alpha,dl}\)</span>) avec <span class="math inline">\(k-1\)</span> degrés de liberté (<span class="math inline">\(dl\)</span>) et un seuil de signification <span class="math inline">\(\alpha\)</span> (0,05 par exemple).</p></li>
 <li><p>Si <span class="math inline">\(\chi^2 &gt; \chi^2_{\alpha,dl}\)</span>, alors l’hypothèse nulle est rejetée.</p></li>
 </ol>
@@ -1559,7 +1658,10 @@ Superficie des hexagones = 1913098 Les superficies sont bien égales!</code></pr
 <span>   <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">M2020</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"green"</span>, size<span class="op">=</span><span class="fl">0.15</span><span class="op">)</span><span class="op">+</span></span>
 <span>   <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/unnamed-chunk-20-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <p>La figure ci-dessus permet de constater que certains carrés et hexagones n’intersectent pas l’espace d’étude. Par conséquent, nous les supprimons puis calculons le nombre de points par carré et par hexagone.</p>
@@ -1591,7 +1693,7 @@ Superficie des hexagones = 1913098 Les superficies sont bien égales!</code></pr
 173  23   5   5   3   5   6   1   3   1   2   1   1   1   1   2 </code></pre>
 </div>
 </div>
-<p>Visualisons les résultats à la <a href="#fig-fig2PointsCarresHex">figure&nbsp;<span>3.14</span></a>. Il y a clairement une tendance à la concentration puisque de nombreux quadrats ne contiennent aucun point.</p>
+<p>Visualisons les résultats à la <a href="#fig-fig2PointsCarresHex" class="quarto-xref">figure&nbsp;<span>3.14</span></a>. Il y a clairement une tendance à la concentration puisque de nombreux quadrats ne contiennent aucun point.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb37"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Visualisation</span></span>
 <span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_mode.html">tmap_mode</a></span><span class="op">(</span><span class="st">"plot"</span><span class="op">)</span></span>
@@ -1613,9 +1715,13 @@ Superficie des hexagones = 1913098 Les superficies sont bien égales!</code></pr
 <span>   <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span> </span>
 <span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte1</span>, <span class="va">Carte2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-fig2PointsCarresHex" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-fig2PointsCarresHex-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.14: Nombre de méfaits dans les deux géométries de quadrats</figcaption></figure>
+<div id="fig-fig2PointsCarresHex" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-fig2PointsCarresHex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-fig2PointsCarresHex-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-fig2PointsCarresHex-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.14: Nombre de méfaits dans les deux géométries de quadrats
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -1763,7 +1869,7 @@ Quadrats: 233 tiles (irregular windows)</code></pre>
 <section id="sec-0341" class="level3" data-number="3.4.1"><h3 data-number="3.4.1" class="anchored" data-anchor-id="sec-0341">
 <span class="header-section-number">3.4.1</span> Cartographie de la densité dans une maille irrégulière</h3>
 <p>Une maille irrégulière est habituellement un découpage administratif comme les municipalités régionales de comté (MRC) du Québec ou les arrondissements d’une ville.</p>
-<p>À la <a href="#fig-figDensiteIrreguliere">figure&nbsp;<span>3.15</span></a>, nous avons compté le nombre de méfaits par secteur de recensement pour l’année 2021, puis calculé la densité, soit le nombre de méfaits pour 1000&nbsp;habitants. Les cercles proportionnels permettent ainsi de repérer les secteurs comprenant le plus de méfaits. Comme la population totale varie d’un SR à l’autre, il est préférable de cartographier la densité, soit le nombre de méfaits pour 1000&nbsp;habitants. Notez que pour d’autres jeux de données, il serait plus judicieux d’utiliser la superficie comme dénominateur pour calculer la densité (par exemple, le nombre d’arbres au kilomètre carré ou à l’hectare).</p>
+<p>À la <a href="#fig-figDensiteIrreguliere" class="quarto-xref">figure&nbsp;<span>3.15</span></a>, nous avons compté le nombre de méfaits par secteur de recensement pour l’année 2021, puis calculé la densité, soit le nombre de méfaits pour 1000&nbsp;habitants. Les cercles proportionnels permettent ainsi de repérer les secteurs comprenant le plus de méfaits. Comme la population totale varie d’un SR à l’autre, il est préférable de cartographier la densité, soit le nombre de méfaits pour 1000&nbsp;habitants. Notez que pour d’autres jeux de données, il serait plus judicieux d’utiliser la superficie comme dénominateur pour calculer la densité (par exemple, le nombre d’arbres au kilomètre carré ou à l’hectare).</p>
 <p>En quelques lignes de code, il est très facile de calculer et de cartographier la densité dans un maillage irrégulier.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb57"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Secteurs de recensement (SR) de la ville de Sherbrooke en 2021</span></span>
@@ -1788,9 +1894,13 @@ Quadrats: 233 tiles (irregular windows)</code></pre>
 <span>                     col <span class="op">=</span> <span class="st">"aquamarine3"</span>, title.size <span class="op">=</span> <span class="st">"Nombre"</span>, scale <span class="op">=</span> <span class="fl">1.5</span><span class="op">)</span><span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_scale_bar.html">tm_scale_bar</a></span><span class="op">(</span>text.size <span class="op">=</span> <span class="fl">.5</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">5</span>, <span class="fl">10</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-figDensiteIrreguliere" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-figDensiteIrreguliere-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.15: Densité des méfaits par secteur de recensement, ville de Sherbrooke, 2021</figcaption></figure>
+<div id="fig-figDensiteIrreguliere" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-figDensiteIrreguliere-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-figDensiteIrreguliere-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-figDensiteIrreguliere-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.15: Densité des méfaits par secteur de recensement, ville de Sherbrooke, 2021
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -1798,41 +1908,57 @@ Quadrats: 233 tiles (irregular windows)</code></pre>
 <span class="header-section-number">3.4.2</span> Cartographie de la densité dans une maille régulière</h3>
 <section id="sec-03421" class="level4" data-number="3.4.2.1"><h4 data-number="3.4.2.1" class="anchored" data-anchor-id="sec-03421">
 <span class="header-section-number">3.4.2.1</span> Notion de processus spatial</h4>
-<p>Lorsque nous analysons des évènements ayant eu lieu dans un espace donné, nous pouvons considérer que ces évènements résultent d’un processus spatial que nous ne pouvons pas observer. Ce processus spatial est caractérisé par des points chauds (endroits où des évènements se produisent souvent) et des points froids (endroits où des évènements se produisent rarement). Si nous collectons suffisamment d’évènements (observations), alors leur densité devrait nous renseigner sur ce processus spatial. Puisqu’une image vaut mille mots, examinons un exemple d’un processus spatial à la <a href="#fig-figExempleProcSpat">figure&nbsp;<span>3.16</span></a>.</p>
+<p>Lorsque nous analysons des évènements ayant eu lieu dans un espace donné, nous pouvons considérer que ces évènements résultent d’un processus spatial que nous ne pouvons pas observer. Ce processus spatial est caractérisé par des points chauds (endroits où des évènements se produisent souvent) et des points froids (endroits où des évènements se produisent rarement). Si nous collectons suffisamment d’évènements (observations), alors leur densité devrait nous renseigner sur ce processus spatial. Puisqu’une image vaut mille mots, examinons un exemple d’un processus spatial à la <a href="#fig-figExempleProcSpat" class="quarto-xref">figure&nbsp;<span>3.16</span></a>.</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-figExempleProcSpat" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-figExempleProcSpat-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.16: Exemple d’un processus spatial</figcaption></figure>
+<div id="fig-figExempleProcSpat" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-figExempleProcSpat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-figExempleProcSpat-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-figExempleProcSpat-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.16: Exemple d’un processus spatial
+</figcaption></figure>
 </div>
 </div>
 </div>
-<p>Imaginons que ce processus spatial représente le niveau de risque de se faire attaquer par un écureuil dans un parc urbain délimité ici par les limites de la figure. Dans la réalité, nous ne pouvons pas mesurer directement ce phénomène, mais nous disposons d’un registre des attaques d’écureuils qui ont été enregistrées et spatialisées (<a href="#fig-figExempleProcSpat2">figure&nbsp;<span>3.17</span></a>). Bien entendu, ces données sont fictives! Dans un langage plus technique, il est dit que <strong>les évènements sont des réalisations du processus spatial</strong>.</p>
+<p>Imaginons que ce processus spatial représente le niveau de risque de se faire attaquer par un écureuil dans un parc urbain délimité ici par les limites de la figure. Dans la réalité, nous ne pouvons pas mesurer directement ce phénomène, mais nous disposons d’un registre des attaques d’écureuils qui ont été enregistrées et spatialisées (<a href="#fig-figExempleProcSpat2" class="quarto-xref">figure&nbsp;<span>3.17</span></a>). Bien entendu, ces données sont fictives! Dans un langage plus technique, il est dit que <strong>les évènements sont des réalisations du processus spatial</strong>.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">pts</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/spatstat.random/man/rpoint.html">rpoint</a></span><span class="op">(</span><span class="fl">1500</span>, <span class="va">dens1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">pts</span>, main <span class="op">=</span> <span class="st">"Attaques d'écureuils enregistrées"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-figExempleProcSpat2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-figExempleProcSpat2-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.17: Réalisation du processus spatial</figcaption></figure>
+<div id="fig-figExempleProcSpat2" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-figExempleProcSpat2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-figExempleProcSpat2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-figExempleProcSpat2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.17: Réalisation du processus spatial
+</figcaption></figure>
 </div>
 </div>
 </div>
-<p>Puisque nous disposons d’un grand nombre d’observations, nous pouvons reconstruire le processus spatial qui produit les évènements en appliquant la méthode d’analyse de densité dans une maille régulière (<a href="#fig-figExempleProcSpat3">figure&nbsp;<span>3.18</span></a>).</p>
+<p>Puisque nous disposons d’un grand nombre d’observations, nous pouvons reconstruire le processus spatial qui produit les évènements en appliquant la méthode d’analyse de densité dans une maille régulière (<a href="#fig-figExempleProcSpat3" class="quarto-xref">figure&nbsp;<span>3.18</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-figExempleProcSpat3" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-figExempleProcSpat3-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.18: Reconstruction du processus spatial</figcaption></figure>
+<div id="fig-figExempleProcSpat3" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-figExempleProcSpat3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-figExempleProcSpat3-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-figExempleProcSpat3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.18: Reconstruction du processus spatial
+</figcaption></figure>
 </div>
 </div>
 </div>
-<p>La qualité d’estimation du processus initial dépend ainsi directement du nombre d’évènements dont nous disposons (<a href="#fig-figExempleProcSpat3">figure&nbsp;<span>3.18</span></a>).</p>
+<p>La qualité d’estimation du processus initial dépend ainsi directement du nombre d’évènements dont nous disposons (<a href="#fig-figExempleProcSpat3" class="quarto-xref">figure&nbsp;<span>3.18</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-figExempleProcSpat4" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-figExempleProcSpat4-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.19: Reconstruction du processus spatial</figcaption></figure>
+<div id="fig-figExempleProcSpat4" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-figExempleProcSpat4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-figExempleProcSpat4-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-figExempleProcSpat4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.19: Reconstruction du processus spatial
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -1843,7 +1969,7 @@ Quadrats: 233 tiles (irregular windows)</code></pre>
 <ol type="1">
 <li>Juxtaposer une grille de cellules sur l’espace d’étude, soit les pixels d’une image de <em>n</em> mètres de côté (par exemple, 50&nbsp;mètres).</li>
 <li>Pour chaque pixel, juxtaposer une zone de recherche de <em>n</em> mètres de rayon (1000 mètres par exemple) et calculer le nombre de points présents dans cette zone de recherche.</li>
-<li>Calculer la densité à partir d’une fonction simple (appelée habituellement fonction uniforme) ou d’une fonction de densité (<em>kernel</em>). Pour une fonction simple, nous divisons simplement le nombre de points présents dans la zone de recherche par la superficie de la zone, soit <span class="math inline">\(πr^2\)</span>; cette approche est toutefois peu recommandée puisqu’elle accorde la même pondération à chaque point situé de la zone d’influence! En utilisant une fonction de densité (<em>kernel</em>) (<a href="#eq-KernelDensity">équation&nbsp;<span>3.30</span></a>), nous accordons une pondération à chacun des points compris dans la zone de recherche : plus le point est proche du centre de la cellule, plus son poids est important dans l’estimation de la densité.</li>
+<li>Calculer la densité à partir d’une fonction simple (appelée habituellement fonction uniforme) ou d’une fonction de densité (<em>kernel</em>). Pour une fonction simple, nous divisons simplement le nombre de points présents dans la zone de recherche par la superficie de la zone, soit <span class="math inline">\(πr^2\)</span>; cette approche est toutefois peu recommandée puisqu’elle accorde la même pondération à chaque point situé de la zone d’influence! En utilisant une fonction de densité (<em>kernel</em>) (<a href="#eq-KernelDensity" class="quarto-xref">équation&nbsp;<span>3.30</span></a>), nous accordons une pondération à chacun des points compris dans la zone de recherche : plus le point est proche du centre de la cellule, plus son poids est important dans l’estimation de la densité.</li>
 </ol>
 <p><span id="eq-KernelDensity"><span class="math display">\[
 \lambda(s) = \sum_{i=1}^n \frac{1}{\pi r^2} k\biggl(\frac{d_{si}}{r}\biggl)\text{ avec }
@@ -1858,10 +1984,14 @@ Quadrats: 233 tiles (irregular windows)</code></pre>
 <li>
 <span class="math inline">\(k\)</span>, fonction <em>kernel</em> définissant la pondération à accorder au ratio <span class="math inline">\(\frac{d_{si}}{r}\)</span> quand <span class="math inline">\(0 &lt; d_{si} \leq r\)</span>. Si <span class="math inline">\(d_{si} &gt; r\)</span>, alors <span class="math inline">\(k(d_{si}/r) = 0\)</span>.</li>
 </ul>
-<p>Il existe différentes fonctions <em>kernel</em> pour obtenir les pondérations des points. Telle qu’illustrée à la <a href="#fig-IllustationKernel">figure&nbsp;<span>3.20</span></a>, l’idée générale est que plus la distance entre la localisation et le point augmente (<span class="math inline">\(d_{si}\)</span>), plus la pondération <span class="math inline">\(k(d_{si}/r)\)</span> de l’équation <a href="#eq-KernelDensity">équation&nbsp;<span>3.30</span></a> est faible.</p>
-<div id="fig-IllustationKernel" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap03/IlustratorKernel.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.20: Principe de la fonction <em>kernel</em> pour définir les pondérations des points voisins dans la zone d’influence</figcaption></figure>
+<p>Il existe différentes fonctions <em>kernel</em> pour obtenir les pondérations des points. Telle qu’illustrée à la <a href="#fig-IllustationKernel" class="quarto-xref">figure&nbsp;<span>3.20</span></a>, l’idée générale est que plus la distance entre la localisation et le point augmente (<span class="math inline">\(d_{si}\)</span>), plus la pondération <span class="math inline">\(k(d_{si}/r)\)</span> de l’équation <a href="#eq-KernelDensity" class="quarto-xref">équation&nbsp;<span>3.30</span></a> est faible.</p>
+<div id="fig-IllustationKernel" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-IllustationKernel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap03/IlustratorKernel.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-IllustationKernel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.20: Principe de la fonction <em>kernel</em> pour définir les pondérations des points voisins dans la zone d’influence
+</figcaption></figure>
 </div>
 <div class="bloc_astuce">
 <div class="bloc_astuce-header">
@@ -1875,10 +2005,12 @@ Quadrats: 233 tiles (irregular windows)</code></pre>
 <p><strong>Influence de la forme du noyau (fonction <em>kernel</em>)</strong></p>
 <p>Excepté la fonction uniforme, la plupart des auteurs s’entendent sur le fait que le choix de fonctions <em>kernel</em> a relativement peu d’influence sur le résultat final comparativement au choix du rayon d’influence.</p>
 <div class="cell">
+<div id="tbl-TableauFonctionsKernel" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-TableauFonctionsKernel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tableau&nbsp;3.4: Fonctions <em>kernel</em> disponibles selon différents logiciels
+</figcaption><div aria-describedby="tbl-TableauFonctionsKernel-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-TableauFonctionsKernel" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tableau&nbsp;3.4: Fonctions <em>kernel</em> disponibles selon différents logiciels</caption>
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <thead><tr class="header">
 <th style="text-align: right;">Fonction</th>
 <th style="text-align: center;">QGis</th>
@@ -1939,6 +2071,8 @@ Quadrats: 233 tiles (irregular windows)</code></pre>
 </tbody>
 </table>
 </div>
+</div>
+</figure>
 </div>
 </div>
 </div>
@@ -2040,7 +2174,7 @@ Critère de Cronie et van Lieshout : 1644.489</code></pre>
 <section id="sec-034221" class="level5" data-number="3.4.2.3.1"><h5 data-number="3.4.2.3.1" class="anchored" data-anchor-id="sec-034221">
 <span class="header-section-number">3.4.2.3.1</span> Comparaison des fonctions <em>kernel</em>
 </h5>
-<p>Le paramètre <code>kernel</code> de la fonction <code>density.ppp</code> permet de sélectionner l’une des quatre fonctions <em>kernel</em> (<code>gaussian</code>, <code>quartic</code>, <code>epanechnikov</code> et <code>disc</code>). Pour la dernière, le même poids est attribué aux points compris dans le rayon d’influence; elle correspond ainsi à un <em>kernel</em> uniforme ou simple. Excepté ce dernier <em>kernel</em>, la <a href="#fig-CartoQuatreKernels">figure&nbsp;<span>3.21</span></a> démontre que les résultats sont très semblables d’un <em>kernel</em> à l’autre.</p>
+<p>Le paramètre <code>kernel</code> de la fonction <code>density.ppp</code> permet de sélectionner l’une des quatre fonctions <em>kernel</em> (<code>gaussian</code>, <code>quartic</code>, <code>epanechnikov</code> et <code>disc</code>). Pour la dernière, le même poids est attribué aux points compris dans le rayon d’influence; elle correspond ainsi à un <em>kernel</em> uniforme ou simple. Excepté ce dernier <em>kernel</em>, la <a href="#fig-CartoQuatreKernels" class="quarto-xref">figure&nbsp;<span>3.21</span></a> démontre que les résultats sont très semblables d’un <em>kernel</em> à l’autre.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb64"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Calcul de la KDE avec différentes fonctions kernel</span></span>
 <span><span class="co"># kernel gaussien</span></span>
@@ -2089,15 +2223,19 @@ Critère de Cronie et van Lieshout : 1644.489</code></pre>
 <span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte1</span>, <span class="va">Carte2</span>, <span class="va">Carte3</span>, <span class="va">Carte4</span>,</span>
 <span>             ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-CartoQuatreKernels" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-CartoQuatreKernels-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.21: Comparaison des résultats de la KDE pour différents kernels</figcaption></figure>
+<div id="fig-CartoQuatreKernels" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CartoQuatreKernels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-CartoQuatreKernels-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-CartoQuatreKernels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.21: Comparaison des résultats de la KDE pour différents kernels
+</figcaption></figure>
 </div>
 </div>
 </div>
 </section><section id="sec-034222" class="level5" data-number="3.4.2.3.2"><h5 data-number="3.4.2.3.2" class="anchored" data-anchor-id="sec-034222">
 <span class="header-section-number">3.4.2.3.2</span> Évaluation de l’impact du rayon d’influence</h5>
-<p>Le code R permet de réaliser des KDE avec des rayons de 250, 500, 750 et 1000&nbsp;mètres. La <a href="#fig-CartoQuatreKernels">figure&nbsp;<span>3.21</span></a> démontre bien que plus le rayon est grand, plus la carte est lissée.</p>
+<p>Le code R permet de réaliser des KDE avec des rayons de 250, 500, 750 et 1000&nbsp;mètres. La <a href="#fig-CartoQuatreKernels" class="quarto-xref">figure&nbsp;<span>3.21</span></a> démontre bien que plus le rayon est grand, plus la carte est lissée.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb65"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">kdeQ250</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/spatstat.explore/man/density.ppp.html">density.ppp</a></span><span class="op">(</span><span class="va">AccN2020.ppp</span>, sigma<span class="op">=</span><span class="fl">250</span>,  eps<span class="op">=</span><span class="fl">50</span>, kernel<span class="op">=</span><span class="st">"quartic"</span><span class="op">)</span></span>
 <span><span class="va">kdeQ500</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/spatstat.explore/man/density.ppp.html">density.ppp</a></span><span class="op">(</span><span class="va">AccN2020.ppp</span>, sigma<span class="op">=</span><span class="fl">500</span>,  eps<span class="op">=</span><span class="fl">50</span>, kernel<span class="op">=</span><span class="st">"quartic"</span><span class="op">)</span></span>
@@ -2138,15 +2276,19 @@ Critère de Cronie et van Lieshout : 1644.489</code></pre>
 <span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte1</span>, <span class="va">Carte2</span>, <span class="va">Carte3</span>, <span class="va">Carte4</span>,</span>
 <span>             ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-CartoDistKernels" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-CartoDistKernels-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.22: Comparaison des résultats de la KDE selon le rayon d’influence</figcaption></figure>
+<div id="fig-CartoDistKernels" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CartoDistKernels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-CartoDistKernels-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-CartoDistKernels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.22: Comparaison des résultats de la KDE selon le rayon d’influence
+</figcaption></figure>
 </div>
 </div>
 </div>
 </section><section id="sec-034223" class="level5" data-number="3.4.2.3.3"><h5 data-number="3.4.2.3.3" class="anchored" data-anchor-id="sec-034223">
 <span class="header-section-number">3.4.2.3.3</span> Comparaison entre différentes années</h5>
-<p>Bien entendu, pour un même jeu de données, il est possible de représenter la densité pour différentes années (<a href="#fig-CartoTemporelleKernels">figure&nbsp;<span>3.23</span></a>).</p>
+<p>Bien entendu, pour un même jeu de données, il est possible de représenter la densité pour différentes années (<a href="#fig-CartoTemporelleKernels" class="quarto-xref">figure&nbsp;<span>3.23</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">kde2019</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/spatstat.explore/man/density.ppp.html">density.ppp</a></span><span class="op">(</span><span class="va">AccN2019.ppp</span>, sigma<span class="op">=</span><span class="fl">500</span>, eps<span class="op">=</span><span class="fl">50</span>, kernel<span class="op">=</span><span class="st">"quartic"</span><span class="op">)</span></span>
 <span><span class="va">kde2020</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/spatstat.explore/man/density.ppp.html">density.ppp</a></span><span class="op">(</span><span class="va">AccN2020.ppp</span>, sigma<span class="op">=</span><span class="fl">500</span>, eps<span class="op">=</span><span class="fl">50</span>, kernel<span class="op">=</span><span class="st">"quartic"</span><span class="op">)</span></span>
@@ -2184,9 +2326,13 @@ Critère de Cronie et van Lieshout : 1644.489</code></pre>
 <span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte1</span>, <span class="va">Carte2</span>, <span class="va">Carte3</span>, <span class="va">Carte4</span>,</span>
 <span>             ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-CartoTemporelleKernels" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-CartoTemporelleKernels-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.23: Comparaison des résultats de la KDE pour différentes années</figcaption></figure>
+<div id="fig-CartoTemporelleKernels" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CartoTemporelleKernels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-CartoTemporelleKernels-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-CartoTemporelleKernels-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.23: Comparaison des résultats de la KDE pour différentes années
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -2195,7 +2341,7 @@ Critère de Cronie et van Lieshout : 1644.489</code></pre>
 <section id="sec-03431" class="level4" data-number="3.4.3.1"><h4 data-number="3.4.3.1" class="anchored" data-anchor-id="sec-03431">
 <span class="header-section-number">3.4.3.1</span> Description de la méthode STKDE</h4>
 <p>Dans les sections précédentes, nous avons vu que l’analyse de densité dans une maille régulière avec la méthode KDE consiste à répartir la masse des évènements étudiés dans un certain rayon d’influence (<em>bandwidth</em>) autour de chaque évènement selon une fonction décroissante (<em>kernel</em>).</p>
-<p>Cette méthode peut être étendue assez facilement au contexte spatio-temporel. En effet, lorsque les évènements étudiés sont caractérisés par une date d’occurrence, il est possible de répartir leur masse à la fois dans l’espace et dans le temps. Plus exactement, il s’agit d’un kernel bivarié comprenant une <em>bandwidth</em> spatiale et une <em>bandwidth</em> temporelle. La densité locale est alors estimée avec le produit de la densité spatiale et de la densité temporelle de chaque évènement (<a href="#eq-STKDEDensity">équation&nbsp;<span>3.31</span></a>).</p>
+<p>Cette méthode peut être étendue assez facilement au contexte spatio-temporel. En effet, lorsque les évènements étudiés sont caractérisés par une date d’occurrence, il est possible de répartir leur masse à la fois dans l’espace et dans le temps. Plus exactement, il s’agit d’un kernel bivarié comprenant une <em>bandwidth</em> spatiale et une <em>bandwidth</em> temporelle. La densité locale est alors estimée avec le produit de la densité spatiale et de la densité temporelle de chaque évènement (<a href="#eq-STKDEDensity" class="quarto-xref">équation&nbsp;<span>3.31</span></a>).</p>
 <p><span id="eq-STKDEDensity"><span class="math display">\[
 \lambda(s) = \sum_{i=1}^n \frac{1}{\pi bw_s^2 \times bw_t} k\biggl(\frac{d_{si}}{bw_s}\biggl) k\biggl(\frac{t_{si}}{bw_t}\biggl)\text{ avec }
 \tag{3.31}\]</span></span></p>
@@ -2207,20 +2353,28 @@ Critère de Cronie et van Lieshout : 1644.489</code></pre>
 <li>
 <span class="math inline">\(k\)</span>, fonction <em>kernel</em>.</li>
 </ul>
-<p>La <a href="#fig-ExampleSTKDE">figure&nbsp;<span>3.24</span></a> illustre le principe de la STKDE (<em>Space-Time Kernel Density Estimatation</em>). Un évènement a lieu à un moment spécifique et en un lieu spécifique. Plus nous sommes proches de l’évènement dans le temps et dans l’espace, plus la densité est élevée. Hors du <em>bandwidth</em> dans le temps ou dans l’espace, la densité est nulle.</p>
-<div id="fig-ExampleSTKDE" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap03/SpaceTimeDensity-01.png" class="img-fluid figure-img" style="width:90.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.24: Visualisation de la STKDE</figcaption></figure>
+<p>La <a href="#fig-ExampleSTKDE" class="quarto-xref">figure&nbsp;<span>3.24</span></a> illustre le principe de la STKDE (<em>Space-Time Kernel Density Estimatation</em>). Un évènement a lieu à un moment spécifique et en un lieu spécifique. Plus nous sommes proches de l’évènement dans le temps et dans l’espace, plus la densité est élevée. Hors du <em>bandwidth</em> dans le temps ou dans l’espace, la densité est nulle.</p>
+<div id="fig-ExampleSTKDE" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-ExampleSTKDE-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap03/SpaceTimeDensity-01.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:90.0%">
 </div>
-<p>Une représentation particulièrement efficace de la STKDE est une carte animée permettant de visualiser l’évolution spatiale de la densité dans le temps. À la <a href="#fig-ExampleSTKDEanim">figure&nbsp;<span>3.25</span></a>, nous visualisons la densité spatio-temporelle produite par deux évènements ayant eu lieu à des moments et des localisations différentes.</p>
-<div id="fig-ExampleSTKDEanim" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap03/animated_STKDE.gif" class="img-fluid figure-img" style="width:50.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.25: Visualisation animée de la STKDE</figcaption></figure>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ExampleSTKDE-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.24: Visualisation de la STKDE
+</figcaption></figure>
 </div>
-<p>En résumé, la seule différence avec la KDE et la SKDE est que cette dernière nécessite de déterminer une <em>bandwidth</em> temporelle (en plus de la <em>bandwidth</em> spatiale).</p>
+<p>Une représentation particulièrement efficace de la STKDE est une carte animée permettant de visualiser l’évolution spatiale de la densité dans le temps. À la <a href="#fig-ExampleSTKDEanim" class="quarto-xref">figure&nbsp;<span>3.25</span></a>, nous visualisons la densité spatio-temporelle produite par deux évènements ayant eu lieu à des moments et des localisations différentes.</p>
+<div id="fig-ExampleSTKDEanim" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-ExampleSTKDEanim-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap03/animated_STKDE.gif" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ExampleSTKDEanim-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.25: Visualisation animée de la STKDE
+</figcaption></figure>
+</div>
+<p>En résumé, la seule différence avec la KDE et la STKDE est que cette dernière nécessite de déterminer une <em>bandwidth</em> temporelle (en plus de la <em>bandwidth</em> spatiale).</p>
 </section><section id="sec-03432" class="level4" data-number="3.4.3.2"><h4 data-number="3.4.3.2" class="anchored" data-anchor-id="sec-03432">
 <span class="header-section-number">3.4.3.2</span> Mise en œuvre de la STKDE dans R</h4>
-<p>Pour mettre en œuvre la STKDE sur les données de collisions de la ville de Sherbrooke, nous utilisons le <em>package</em> <code>sparr</code> <span class="citation" data-cites="Packagesparr">(<a href="references.html#ref-Packagesparr" role="doc-biblioref">Davies, Marshall et Hazelton 2018</a>)</span>. À la <a href="#fig-timeCollisions">figure&nbsp;<span>3.26</span></a>, nous visualisons aisément les périodes durant lesquelles les accidents ont été les plus nombreux.</p>
+<p>Pour mettre en œuvre la STKDE sur les données de collisions de la ville de Sherbrooke, nous utilisons le <em>package</em> <code>sparr</code> <span class="citation" data-cites="Packagesparr">(<a href="references.html#ref-Packagesparr" role="doc-biblioref">Davies, Marshall et Hazelton 2018</a>)</span>. À la <a href="#fig-timeCollisions" class="quarto-xref">figure&nbsp;<span>3.26</span></a>, nous visualisons aisément les périodes durant lesquelles les accidents ont été les plus nombreux.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb67"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="http://spatstat.org/">spatstat</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://rspatial.org/">terra</a></span><span class="op">)</span></span>
@@ -2247,9 +2401,13 @@ Critère de Cronie et van Lieshout : 1644.489</code></pre>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/scale_date.html">scale_x_date</a></span><span class="op">(</span>date_breaks <span class="op">=</span> <span class="st">"6 months"</span>, date_labels <span class="op">=</span>  <span class="st">"%b %Y"</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggtheme.html">theme_bw</a></span><span class="op">(</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-timeCollisions" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-timeCollisions-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.26: Distribution temporelle de la densité des accidents</figcaption></figure>
+<div id="fig-timeCollisions" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-timeCollisions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="03-MethodesRepartitionPonctuelle_files/figure-html/fig-timeCollisions-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-timeCollisions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.26: Distribution temporelle de la densité des accidents
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -2272,7 +2430,7 @@ Critère de Cronie et van Lieshout : 1644.489</code></pre>
 736.8287 147.4328 </code></pre>
 </div>
 </div>
-<p>Les valeurs optimales obtenues avec l’approche dite de validation croisée par maximum de vraisemblance sont de 736&nbsp;mètres pour la <em>bandwidth</em> spatiale et 147&nbsp;jours pour la <em>bandwidth</em> temporelle. Cette dernière est vraisemblablement trop grande. Par conséquent, nous utilisons des <em>bandwidths</em> de 750&nbsp;mètres et 14&nbsp;jours. Notez que les valeurs de densité sont multipliées par 10&nbsp;000, car leur étalement dans l’espace et le temps conduit à des valeurs trop petites pour le <em>package</em> <code>tmap</code>. Les résultats sont présentés sous la forme d’une animation à la <a href="#fig-spacetimemapSherb">figure&nbsp;<span>3.27</span></a>.</p>
+<p>Les valeurs optimales obtenues avec l’approche dite de validation croisée par maximum de vraisemblance sont de 736&nbsp;mètres pour la <em>bandwidth</em> spatiale et 147&nbsp;jours pour la <em>bandwidth</em> temporelle. Cette dernière est vraisemblablement trop grande. Par conséquent, nous utilisons des <em>bandwidths</em> de 750&nbsp;mètres et 14&nbsp;jours. Notez que les valeurs de densité sont multipliées par 10&nbsp;000, car leur étalement dans l’espace et le temps conduit à des valeurs trop petites pour le <em>package</em> <code>tmap</code>. Les résultats sont présentés sous la forme d’une animation à la <a href="#fig-spacetimemapSherb" class="quarto-xref">figure&nbsp;<span>3.27</span></a>.</p>
 <div class="cell">
 <div class="sourceCode" id="cb70"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Calcul des valeurs de densités</span></span>
 <span><span class="va">dens_vals</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://tilmandavies.github.io/sparr/reference/spattemp.density.html">spattemp.density</a></span><span class="op">(</span><span class="va">collisions.ppp</span>,</span>
@@ -2311,9 +2469,13 @@ Critère de Cronie et van Lieshout : 1644.489</code></pre>
 <span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_animation.html">tmap_animation</a></span><span class="op">(</span><span class="va">all_maps</span>, filename <span class="op">=</span> <span class="st">"images/Chap03/animated_STKDE_sherbrooke.gif"</span>, </span>
 <span>               width <span class="op">=</span> <span class="fl">500</span>, height <span class="op">=</span> <span class="fl">500</span>, dpi <span class="op">=</span> <span class="fl">150</span>, delay <span class="op">=</span> <span class="fl">25</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="fig-spacetimemapSherb" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap03/animated_STKDE_sherbrooke.gif" class="img-fluid figure-img" style="width:50.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;3.27: Distribution spatio-temporelle de la densité des accidents</figcaption></figure>
+<div id="fig-spacetimemapSherb" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-spacetimemapSherb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap03/animated_STKDE_sherbrooke.gif" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:50.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-spacetimemapSherb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3.27: Distribution spatio-temporelle de la densité des accidents
+</figcaption></figure>
 </div>
 </section></section></section><section id="sec-035" class="level2" data-number="3.5"><h2 data-number="3.5" class="anchored" data-anchor-id="sec-035">
 <span class="header-section-number">3.5</span> Quiz de révision du chapitre</h2>
@@ -2371,13 +2533,12 @@ function handleAnswers(quiz, question, no, correct) {
   };</script><link rel="stylesheet" type="text/css" src="css/quizlib.min.css">
 <div class="card quizlib-question">
 <div class="quizlib-question-title">
-Quelle est la différence entre le centre point et le point central?
+Quelle est la différence entre le centre moyen et le point central?
 </div>
 <div>
-Relisez au besoin la <a href="#sec-03112">section&nbsp;<span>3.2.1.2</span></a>.
+Relisez au besoin la <a href="#sec-03112" class="quarto-xref">section&nbsp;<span>3.2.1.2</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -2403,10 +2564,9 @@ Relisez au besoin la <a href="#sec-03112">section&nbsp;<span>3.2.1.2</span></a>.
 Associer la distance standard à chacun des trois semis de points suivants :
 </div>
 <img src="images/quiz/Chap03_q02.png" alt="" style="width: 50%;display: block;margin-left: auto;margin-right: auto;margin-bottom: 0.5em;margin-top: 0.5em;"><div>
-Relisez au besoin la <a href="#sec-0312">section&nbsp;<span>3.2.2</span></a>.
+Relisez au besoin la <a href="#sec-0312" class="quarto-xref">section&nbsp;<span>3.2.2</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -2440,10 +2600,9 @@ Relisez au besoin la <a href="#sec-0312">section&nbsp;<span>3.2.2</span></a>.
 Quelles sont les quatre principales manières de représenter graphiquement la dispersion d’un semis de points?
 </div>
 <div>
-Relisez au besoin la <a href="#sec-03131">section&nbsp;<span>3.2.3.1</span></a>.
+Relisez au besoin la <a href="#sec-03131" class="quarto-xref">section&nbsp;<span>3.2.3.1</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -2493,10 +2652,9 @@ Relisez au besoin la <a href="#sec-03131">section&nbsp;<span>3.2.3.1</span></a>.
 Quelles sont les trois principales distributions d’un semis de points?
 </div>
 <div>
-Relisez au besoin la <a href="#sec-033">section&nbsp;<span>3.3</span></a>.
+Relisez au besoin la <a href="#sec-033" class="quarto-xref">section&nbsp;<span>3.3</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -2538,10 +2696,9 @@ Relisez au besoin la <a href="#sec-033">section&nbsp;<span>3.3</span></a>.
 À la lecture des résultats de la méthode du plus proche voisin, quelle année a la distribution spatiale la plus concentrée?
 </div>
 <img src="images/quiz/Chap03_q05.jpg" alt="" style="width: 50%;display: block;margin-left: auto;margin-right: auto;margin-bottom: 0.5em;margin-top: 0.5em;"><div>
-Relisez au besoin la <a href="#sec-0331">section&nbsp;<span>3.3.1</span></a>.
+Relisez au besoin la <a href="#sec-0331" class="quarto-xref">section&nbsp;<span>3.3.1</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -2583,10 +2740,9 @@ Relisez au besoin la <a href="#sec-0331">section&nbsp;<span>3.3.1</span></a>.
 En analyse des quadrats, quelles sont les trois principales formes utilisées?
 </div>
 <div>
-Relisez au besoin la <a href="#sec-03231">section&nbsp;<span>3.3.2.1</span></a>.
+Relisez au besoin la <a href="#sec-03231" class="quarto-xref">section&nbsp;<span>3.3.2.1</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -2628,10 +2784,9 @@ Relisez au besoin la <a href="#sec-03231">section&nbsp;<span>3.3.2.1</span></a>.
 Quel est le paramètre influençant le plus les résultats de la méthode KDE?
 </div>
 <div>
-Relisez au besoin la <a href="#sec-03421">section&nbsp;<span>3.4.2.1</span></a>.
+Relisez au besoin la <a href="#sec-03421" class="quarto-xref">section&nbsp;<span>3.4.2.1</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -2657,10 +2812,9 @@ Relisez au besoin la <a href="#sec-03421">section&nbsp;<span>3.4.2.1</span></a>.
 Quelles sont les principales fonctions kernel?
 </div>
 <div>
-Relisez au besoin la <a href="#sec-03421">section&nbsp;<span>3.4.2.1</span></a>.
+Relisez au besoin la <a href="#sec-03421" class="quarto-xref">section&nbsp;<span>3.4.2.1</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -2746,7 +2900,7 @@ Vérifier votre résultat
 <span id="cb71-20"><a href="#cb71-20" aria-hidden="true" tabindex="-1"></a>CercleDS <span class="ot">&lt;-</span> À compléter</span>
 <span id="cb71-21"><a href="#cb71-21" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(CercleDS)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Correction à la <a href="12-Exercices.html#sec-12031">section&nbsp;<span>12.3.1</span></a>.</p>
+<p>Correction à la <a href="12-Exercices.html#sec-12031" class="quarto-xref">section&nbsp;<span>12.3.1</span></a>.</p>
 </div>
 </div>
 <div class="bloc_exercice">
@@ -2783,7 +2937,7 @@ Vérifier votre résultat
 <span id="cb72-22"><a href="#cb72-22" aria-hidden="true" tabindex="-1"></a>             <span class="at">col =</span> <span class="st">"aquamarine3"</span>, <span class="at">title.size =</span> <span class="st">"Nombre"</span>, <span class="at">scale =</span> <span class="fl">1.5</span>)<span class="sc">+</span> </span>
 <span id="cb72-23"><a href="#cb72-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tm_layout</span>(<span class="at">frame =</span> <span class="cn">FALSE</span>)<span class="sc">+</span><span class="fu">tm_scale_bar</span>(<span class="at">text.size =</span> .<span class="dv">5</span>, <span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">5</span>, <span class="dv">10</span>))</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Correction à la <a href="12-Exercices.html#sec-12032">section&nbsp;<span>12.3.2</span></a>.</p>
+<p>Correction à la <a href="12-Exercices.html#sec-12032" class="quarto-xref">section&nbsp;<span>12.3.2</span></a>.</p>
 </div>
 </div>
 <div class="bloc_exercice">
@@ -2833,12 +2987,12 @@ Vérifier votre résultat
 <span id="cb73-35"><a href="#cb73-35" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
 <span id="cb73-36"><a href="#cb73-36" aria-hidden="true" tabindex="-1"></a>  À compléter</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Correction à la <a href="12-Exercices.html#sec-12033">section&nbsp;<span>12.3.3</span></a>.</p>
+<p>Correction à la <a href="12-Exercices.html#sec-12033" class="quarto-xref">section&nbsp;<span>12.3.3</span></a>.</p>
 </div>
 </div>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-RBoldAir" class="csl-entry" role="listitem">
 Apparicio, Philippe et Jérémy Gelb. 2022. <em>Méthodes quantitatives en sciences sociales : un grand bol d’R</em>. FabriqueREL, Licence CC BY-SA. <a href="https://serieboldr.github.io/MethodesQuantitatives/">https://serieboldr.github.io/MethodesQuantitatives/</a>.
 </div>
@@ -2917,18 +3071,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -2960,11 +3103,50 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/serieboldr\.github\.io\/MethodesAnalyseSpatiale\/index\.html");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -2974,8 +3156,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -2987,7 +3178,130 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -3031,6 +3345,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -3056,6 +3371,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -3115,23 +3456,27 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="./02-Autocorrelation.html" class="pagination-link">
+      <a href="./02-Autocorrelation.html" class="pagination-link" aria-label="Autocorrélation spatiale">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Autocorrélation spatiale</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./04-AgregatsSpatiaux.html" class="pagination-link">
+      <a href="./04-AgregatsSpatiaux.html" class="pagination-link" aria-label="Méthodes de détection d'agrégats spatiaux et spatio-temporels">
         <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Méthodes de détection d’agrégats spatiaux et spatio-temporels</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
 <footer class="footer"><div class="nav-footer">
-    <div class="nav-footer-left">Méthodes d’analyse spatiale : un grand bol d’R.</div>   
+    <div class="nav-footer-left">
+<p>Méthodes d’analyse spatiale : un grand bol d’R.</p>
+</div>   
     <div class="nav-footer-center">
       &nbsp;
-    </div>
-    <div class="nav-footer-right">Ce livre a été réalisé avec <a href="https://quarto.org/">Quarto</a>.</div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale/issues/new" class="toc-action"><i class="bi bi-github"></i>Signaler un problème ou<br>formuler une suggestion</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Ce livre a été réalisé avec <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
   </div>
 </footer>
 

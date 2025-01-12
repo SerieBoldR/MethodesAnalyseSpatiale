@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.353">
+<meta name="generator" content="quarto-1.5.57">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Méthodes d’analyse spatiale : un grand bol d’R - 8&nbsp; Méthodes de classification non supervisée spatiale</title>
+<title>8&nbsp; Méthodes de classification non supervisée spatiale – Méthodes d’analyse spatiale : un grand bol d’R</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,7 +19,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -30,7 +30,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -55,6 +55,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -96,7 +97,13 @@ div.csl-indent {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "Pas de résultats",
     "search-matching-documents-text": "documents trouvés",
@@ -105,32 +112,59 @@ div.csl-indent {
     "search-more-match-text": "correspondance de plus dans ce document",
     "search-more-matches-text": "correspondances de plus dans ce document",
     "search-clear-button-title": "Effacer",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Annuler",
-    "search-submit-button-title": "Envoyer"
+    "search-submit-button-title": "Envoyer",
+    "search-label": "Recherche"
   }
-}</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><link rel="stylesheet" href="css/quizlib.min.css">
+}</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script><link rel="stylesheet" href="css/quizlib.min.css">
 </head>
 <body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./08-ClassificationsSpatiales.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Méthodes de classification non supervisée spatiale</span></a></li></ol></nav>
-      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-      </a>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./08-ClassificationsSpatiales.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Méthodes de classification non supervisée spatiale</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
       <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
   </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Méthodes d’analyse spatiale : un grand bol d’R</a> 
         <div class="sidebar-tools-main">
-    <a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale" title="Code source" class="quarto-navigation-tool px-1" aria-label="Code source"><i class="bi bi-github"></i></a>
 </div>
     </div>
       </div>
@@ -261,7 +295,7 @@ div.csl-indent {
 </li>
     </ul>
 </div>
-</nav><div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table des matières</h2>
@@ -285,7 +319,7 @@ div.csl-indent {
 </li>
   <li><a href="#sec-083" id="toc-sec-083" class="nav-link" data-scroll-target="#sec-083"><span class="header-section-number">8.3</span> Quiz de révision du chapitre</a></li>
   <li><a href="#sec-084" id="toc-sec-084" class="nav-link" data-scroll-target="#sec-084"><span class="header-section-number">8.4</span> Exercices de révision</a></li>
-  </ul><div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale/issues/new" class="toc-action">Signaler un problème ou<br>formuler une suggestion</a></p></div></div></nav>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale/issues/new" class="toc-action"><i class="bi bi-github"></i>Signaler un problème ou<br>formuler une suggestion</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
@@ -302,6 +336,7 @@ div.csl-indent {
   </div>
   
 
+
 </header><p>Les méthodes de classification visent à regrouper des observations d’un jeu de données en plusieurs classes en fonction de leurs caractéristiques évaluées à partir de plusieurs variables. Appliquées à une couche spatiale (polygones, points, lignes), il s’agit alors de classifier les unités spatiales sur la base de plusieurs de leurs attributs mesurés à partir de variables. Dans le cadre de ce chapitre, nous abordons deux principales familles de méthodes de classification non supervisée&nbsp;: <strong>celle avec une contrainte spatiale</strong> (algorithmes AZP, SKATER, REDCAP) et <strong>celle avec une dimension spatiale</strong> (<em>ClustGeo</em> et classification floue c-moyennes spatiale).</p>
 <p>Sommairement, les deux dernières méthodes sont des extensions spatiales de la classification ascendante hiérarchique (CAH) et de l’algorithme flou c-moyennes. Par conséquent, la lecture de ce chapitre nécessite de bien maîtriser le fonctionnement de la CAH et des k-moyennes (<em>k-means</em>). Si ce n’est pas le cas, nous vous invitons vivement à lire le <a href="https://serieboldr.github.io/MethodesQuantitatives/13-MethodeClassification.html">chapitre suivant</a> <span class="citation" data-cites="RBoldAir">(<a href="references.html#ref-RBoldAir" role="doc-biblioref">Apparicio et Gelb 2022</a>)</span>.</p>
 <div class="bloc_attention">
@@ -314,7 +349,7 @@ div.csl-indent {
 <div class="bloc_attention-body">
 <p>Il existe de nombreuses méthodes de classification. Nous distinguons habituellement plusieurs familles de méthodes de classification, celles non supervisées versus supervisées et celles strictes versus floues&nbsp;:</p>
 <ul>
-<li><p><strong>Les méthodes de classification non supervisée</strong> «&nbsp;[…] relèvent de la statistique exploratoire multidimensionnelle et permettent de regrouper automatiquement les observations sans avoir de connaissance préalable sur la nature des classes présentes dans l’ensemble de données <span class="citation" data-cites="lebart1995statistique">(<a href="references.html#ref-lebart1995statistique" role="doc-biblioref">Lebart, Morineau et Piron 1995</a>)</span>. Les méthodes les plus connues dans ce domaine sont l’algorithme de Classification ascendante hiérarchique (CAH) et la méthode des k-moyennes (<em>k-means</em>)&nbsp;» <span class="citation" data-cites="ClassificationFloue">(<a href="references.html#ref-ClassificationFloue" role="doc-biblioref">Gelb et Apparicio 2021, 1</a>)</span>. À cela s’ajoutent d’autres méthodes comme les k-médianes <span class="citation" data-cites="jain1988algorithms">(<a href="references.html#ref-jain1988algorithms" role="doc-biblioref">Jain et Dubes 1988</a>)</span> ou encore les k-médoïdes <span class="citation" data-cites="kaufman1990partitioning">(<a href="references.html#ref-kaufman1990partitioning" role="doc-biblioref">Kaufman 1990</a>)</span> et la classification mixte combinant k-moyennes et CAH <span class="citation" data-cites="lebart1995statistique">(<a href="references.html#ref-lebart1995statistique" role="doc-biblioref">Lebart, Morineau et Piron 1995</a>)</span>. Pour regrouper les observations, ces méthodes (CAH, k-moyennes, k-médianes, k-médoïdes, classification mixte) sont basées sur la distance (proximité) entre les observations tandis que d’autres méthodes sont basées sur la densité des observations (algorithmes DBSCAN, HDBSCAN, STDBSCAN, OPTICS abordés à la <a href="04-AgregatsSpatiaux.html#sec-041">section&nbsp;<span>4.1</span></a>).</p></li>
+<li><p><strong>Les méthodes de classification non supervisée</strong> «&nbsp;[…] relèvent de la statistique exploratoire multidimensionnelle et permettent de regrouper automatiquement les observations sans avoir de connaissance préalable sur la nature des classes présentes dans l’ensemble de données <span class="citation" data-cites="lebart1995statistique">(<a href="references.html#ref-lebart1995statistique" role="doc-biblioref">Lebart, Morineau et Piron 1995</a>)</span>. Les méthodes les plus connues dans ce domaine sont l’algorithme de Classification ascendante hiérarchique (CAH) et la méthode des k-moyennes (<em>k-means</em>)&nbsp;» <span class="citation" data-cites="ClassificationFloue">(<a href="references.html#ref-ClassificationFloue" role="doc-biblioref">Gelb et Apparicio 2021, 1</a>)</span>. À cela s’ajoutent d’autres méthodes comme les k-médianes <span class="citation" data-cites="jain1988algorithms">(<a href="references.html#ref-jain1988algorithms" role="doc-biblioref">Jain et Dubes 1988</a>)</span> ou encore les k-médoïdes <span class="citation" data-cites="kaufman1990partitioning">(<a href="references.html#ref-kaufman1990partitioning" role="doc-biblioref">Kaufman 1990</a>)</span> et la classification mixte combinant k-moyennes et CAH <span class="citation" data-cites="lebart1995statistique">(<a href="references.html#ref-lebart1995statistique" role="doc-biblioref">Lebart, Morineau et Piron 1995</a>)</span>. Pour regrouper les observations, ces méthodes (CAH, k-moyennes, k-médianes, k-médoïdes, classification mixte) sont basées sur la distance (proximité) entre les observations tandis que d’autres méthodes sont basées sur la densité des observations (algorithmes DBSCAN, HDBSCAN, STDBSCAN, OPTICS abordés à la <a href="04-AgregatsSpatiaux.html#sec-041" class="quarto-xref">section&nbsp;<span>4.1</span></a>).</p></li>
 <li><p><strong>Les méthodes de classification supervisée</strong> «&nbsp;[…] permettent d’affecter des observations à partir d’un échantillon déjà classifié, souvent appelé classe d’entraînement. Parmi les méthodes supervisées les plus connues, on retrouve les forêts d’arbres décisionnels, les réseaux de neurones artificiels et l’analyse factorielle discriminante&nbsp;» <span class="citation" data-cites="ClassificationFloue">(<a href="references.html#ref-ClassificationFloue" role="doc-biblioref">Gelb et Apparicio 2021, 1</a>)</span>. Plus exactement, ces méthodes visent à apprendre des règles basées sur les attributs des observations pour déterminer à quel groupe chaque observation doit être attribuée. Ces règles peuvent ensuite être utilisées pour déterminer la catégorie de nouvelles observations.</p></li>
 <li><p>Que la classification soit ou non supervisée, «&nbsp;on distingue généralement les <strong>méthodes strictes</strong> (ou de partition) des <strong>méthodes floues</strong>. […] Dans une classification stricte, chaque observation appartient à une seule classe&nbsp;: mathématiquement, l’appartenance à une classe donnée est binaire (0 ou 1), tandis que dans une classification floue, chaque observation a une probabilité d’appartenance variant de 0 à 1 pour chacune des classes&nbsp;» <span class="citation" data-cites="ClassificationFloue">(<a href="references.html#ref-ClassificationFloue" role="doc-biblioref">Gelb et Apparicio 2021, 1‑2</a>)</span>.</p></li>
 </ul>
@@ -376,25 +411,33 @@ div.csl-indent {
 </div>
 <section id="sec-081" class="level2" data-number="8.1"><h2 data-number="8.1" class="anchored" data-anchor-id="sec-081">
 <span class="header-section-number">8.1</span> Méthodes de classification non supervisée avec contrainte spatiale</h2>
-<p>Nous avons vu que l’objectif d’une méthode non supervisée appliquée à des données spatiales est de regrouper en <em>n</em> classes les unités spatiales d’une couche géographique. Prenons l’exemple de quatre variables environnementales cartographiées à la <a href="#fig-figVarEnv">figure&nbsp;<span>8.1</span></a> pour les IRIS de la ville de Lyon, dont trois considérées comme des nuisances (bruit, dioxyde d’azote et particules fines) et une considérée comme avantageuse (végétation).</p>
+<p>Nous avons vu que l’objectif d’une méthode non supervisée appliquée à des données spatiales est de regrouper en <em>n</em> classes les unités spatiales d’une couche géographique. Prenons l’exemple de quatre variables environnementales cartographiées à la <a href="#fig-figVarEnv" class="quarto-xref">figure&nbsp;<span>8.1</span></a> pour les IRIS de la ville de Lyon, dont trois considérées comme des nuisances (bruit, dioxyde d’azote et particules fines) et une considérée comme avantageuse (végétation).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-figVarEnv" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-figVarEnv-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.1: Cartographie des variables environnementales</figcaption></figure>
+<div id="fig-figVarEnv" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-figVarEnv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-figVarEnv-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-figVarEnv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.1: Cartographie des variables environnementales
+</figcaption></figure>
 </div>
 </div>
 </div>
 <p>Il est possible de regrouper les unités spatiales avec ou sans contrainte spatiale&nbsp;:</p>
 <ul>
-<li><p><strong>Sans contrainte spatiale</strong>, nous cherchons à regrouper les IRIS (unités spatiales) avec des valeurs similaires pour les quatre variables retenues (L<sub>den</sub>, NO<sub>2</sub>, PM<sub>2,5</sub> et pourcentage de canopée). Cette approche est illustrée à la <a href="#fig-figKmeansSkater">figure&nbsp;<span>8.2</span></a> (a) avec l’algorithme k-moyennes (<em>k-means</em> en anglais) avec cinq classes.</p></li>
-<li><p><strong>Avec contrainte spatiale</strong>, nous cherchons à regrouper les IRIS (unités spatiales) avec des valeurs similaires pour les quatre variables retenues, tout en nous assurant que les regroupements forment des régions avec une absence de mitage. Cette approche est illustrée à la <a href="#fig-figKmeansSkater">figure&nbsp;<span>8.2</span></a> (b) avec l’algorithme SKATER (<em>Spatial ’K’luster Analysis by Tree Edge Removal</em>) avec cinq classes. Autrement dit, l’objectif des méthodes de classification non supervisée avec contrainte spatiale est d’agréger <em>n</em>&nbsp;unités spatiales en <em>m</em>&nbsp;régions non discontinues (avec <em>n</em>&nbsp;&lt;&nbsp;<em>m</em>) et cohérentes du point de vue de leurs attributs <span class="citation" data-cites="openshaw1995algorithms">(<a href="references.html#ref-openshaw1995algorithms" role="doc-biblioref">Openshaw et Rao 1995, 428</a>)</span>.</p></li>
+<li><p><strong>Sans contrainte spatiale</strong>, nous cherchons à regrouper les IRIS (unités spatiales) avec des valeurs similaires pour les quatre variables retenues (L<sub>den</sub>, NO<sub>2</sub>, PM<sub>2,5</sub> et pourcentage de canopée). Cette approche est illustrée à la <a href="#fig-figKmeansSkater" class="quarto-xref">figure&nbsp;<span>8.2</span></a> (a) avec l’algorithme k-moyennes (<em>k-means</em> en anglais) avec cinq classes.</p></li>
+<li><p><strong>Avec contrainte spatiale</strong>, nous cherchons à regrouper les IRIS (unités spatiales) avec des valeurs similaires pour les quatre variables retenues, tout en nous assurant que les regroupements forment des régions avec une absence de mitage. Cette approche est illustrée à la <a href="#fig-figKmeansSkater" class="quarto-xref">figure&nbsp;<span>8.2</span></a> (b) avec l’algorithme SKATER (<em>Spatial ’K’luster Analysis by Tree Edge Removal</em>) avec cinq classes. Autrement dit, l’objectif des méthodes de classification non supervisée avec contrainte spatiale est d’agréger <em>n</em>&nbsp;unités spatiales en <em>m</em>&nbsp;régions non discontinues (avec <em>n</em>&nbsp;&lt;&nbsp;<em>m</em>) et cohérentes du point de vue de leurs attributs <span class="citation" data-cites="openshaw1995algorithms">(<a href="references.html#ref-openshaw1995algorithms" role="doc-biblioref">Openshaw et Rao 1995, 428</a>)</span>.</p></li>
 </ul>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-figKmeansSkater" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-figKmeansSkater-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.2: Classification non supervisée avec et sans contrainte spatiale</figcaption></figure>
+<div id="fig-figKmeansSkater" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-figKmeansSkater-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-figKmeansSkater-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-figKmeansSkater-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.2: Classification non supervisée avec et sans contrainte spatiale
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -451,7 +494,7 @@ div.csl-indent {
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">Azp_sa</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">azp.sa</span><span class="op">$</span><span class="va">Clusters</span><span class="op">)</span></span>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">Azp_tab</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">azp.tab</span><span class="op">$</span><span class="va">Clusters</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Cartographions les résultats des trois algorithmes AZP (<a href="#fig-CartoAZP">figure&nbsp;<span>8.3</span></a>).</p>
+<p>Cartographions les résultats des trois algorithmes AZP (<a href="#fig-CartoAZP" class="quarto-xref">figure&nbsp;<span>8.3</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Cartographie des résultats</span></span>
 <span><span class="va">Carte.AZP1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
@@ -474,9 +517,13 @@ div.csl-indent {
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte.AZP1</span>, <span class="va">Carte.AZP2</span>, <span class="va">Carte.AZP3</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-CartoAZP" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-CartoAZP-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.3: Regroupements des 505 IRIS en cinq régions selon les trois algorithmes AZP</figcaption></figure>
+<div id="fig-CartoAZP" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CartoAZP-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-CartoAZP-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-CartoAZP-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.3: Regroupements des 505 IRIS en cinq régions selon les trois algorithmes AZP
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -553,16 +600,18 @@ AZP-TABU :  0.428</code></pre>
 5       5 48.32861 17.74683 12.84853   31.68364</code></pre>
 </div>
 </div>
-<p>Les résultats finaux de l’AZP-SA sont présentés au <a href="#tbl-dataAZPsa">tableau&nbsp;<span>8.1</span></a> et à la <a href="#fig-CartoAZPsa">figure&nbsp;<span>8.4</span></a>. L’analyse conjointe du tableau et de la carte permet ainsi d’interpréter chacune des classes. En guise d’exemple, nous pouvons conclure que&nbsp;:</p>
+<p>Les résultats finaux de l’AZP-SA sont présentés au <a href="#tbl-dataAZPsa" class="quarto-xref">tableau&nbsp;<span>8.1</span></a> et à la <a href="#fig-CartoAZPsa" class="quarto-xref">figure&nbsp;<span>8.4</span></a>. L’analyse conjointe du tableau et de la carte permet ainsi d’interpréter chacune des classes. En guise d’exemple, nous pouvons conclure que&nbsp;:</p>
 <ul>
 <li><p><strong>La région 1</strong> comprend 221&nbsp;IRIS localisés au centre de la ville de Lyon et caractérisés par des niveaux moyens élevés de bruit (57,4), de dioxyde d’azote (35) et de particules fines (18,8) élevés et un faible pourcentage de canopée (14,4&nbsp;%).</p></li>
 <li><p>Par contre, <strong>la région 2</strong> comprend 107&nbsp;IRIS localisés à l’extrême ouest de la ville et caractérisés par les plus faibles niveaux de polluants (51,1, 20,5 et 14,2) et une forte moyenne pour la canopée (28,7&nbsp;%).</p></li>
 </ul>
 <div class="cell">
+<div id="tbl-dataAZPsa" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-dataAZPsa-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tableau&nbsp;8.1: Valeurs moyennes des variables pour les cinq régions obtenues par l’AZP-SA
+</figcaption><div aria-describedby="tbl-dataAZPsa-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-dataAZPsa" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tableau&nbsp;8.1: Valeurs moyennes des variables pour les cinq régions obtenues par l’AZP-SA</caption>
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <thead><tr class="header">
 <th style="text-align: center;">Région</th>
 <th style="text-align: center;">Lden</th>
@@ -616,16 +665,22 @@ AZP-TABU :  0.428</code></pre>
 </table>
 </div>
 </div>
+</figure>
+</div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-CartoAZPsa" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-CartoAZPsa-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.4: Regroupement des IRIS en cinq régions selon l’AZP-TABU</figcaption></figure>
+<div id="fig-CartoAZPsa" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CartoAZPsa-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-CartoAZPsa-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-CartoAZPsa-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.4: Regroupement des IRIS en cinq régions selon l’AZP-TABU
+</figcaption></figure>
 </div>
 </div>
 </div>
-<p>Nous avons vu que pour les algorithmes AZP, il faut spécifier le nombre de régions. Nous l’avons fixé arbitrairement à&nbsp;5. Comme pour n’importe quelle méthode de classification non supervisée, déterminer le nombre de classes optimal est une étape cruciale qui peut s’appuyer sur différentes techniques, dont la méthode du coude basée sur l’inertie expliquée (ici le ratio entre les variances interrégionale et totale), l’indicateur de silhouette et la méthode GAP. Pour une description détaillée de ces méthodes, consultez la <a href="https://serieboldr.github.io/MethodesQuantitatives/13-MethodeClassification.html#sec-1332">section suivante</a> <span class="citation" data-cites="RBoldAir">(<a href="references.html#ref-RBoldAir" role="doc-biblioref">Apparicio et Gelb 2022</a>)</span>. Le code ci-dessous permet de réaliser un graphique avec les valeurs du ratio (inertie expliquée) obtenues avec l’algorithme AZP-TABU calculé pour 2 à 10 régions. À la lecture de la <a href="#fig-AZPCoude">figure&nbsp;<span>8.5</span></a>, nous observons deux ruptures (coudes) très nettes à 5 et 8.</p>
+<p>Nous avons vu que pour les algorithmes AZP, il faut spécifier le nombre de régions. Nous l’avons fixé arbitrairement à&nbsp;5. Comme pour n’importe quelle méthode de classification non supervisée, déterminer le nombre de classes optimal est une étape cruciale qui peut s’appuyer sur différentes techniques, dont la méthode du coude basée sur l’inertie expliquée (ici le ratio entre les variances interrégionale et totale), l’indicateur de silhouette et la méthode GAP. Pour une description détaillée de ces méthodes, consultez la <a href="https://serieboldr.github.io/MethodesQuantitatives/13-MethodeClassification.html#sec-1332">section suivante</a> <span class="citation" data-cites="RBoldAir">(<a href="references.html#ref-RBoldAir" role="doc-biblioref">Apparicio et Gelb 2022</a>)</span>. Le code ci-dessous permet de réaliser un graphique avec les valeurs du ratio (inertie expliquée) obtenues avec l’algorithme AZP-TABU calculé pour 2 à 10 régions. À la lecture de la <a href="#fig-AZPCoude" class="quarto-xref">figure&nbsp;<span>8.5</span></a>, nous observons deux ruptures (coudes) très nettes à 5 et 8.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="va">nregions</span> <span class="op">&lt;-</span> <span class="fl">2</span><span class="op">:</span><span class="fl">10</span></span>
@@ -645,9 +700,13 @@ AZP-TABU :  0.428</code></pre>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x <span class="op">=</span> <span class="va">k</span>, y <span class="op">=</span> <span class="va">ratio</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span> </span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>x <span class="op">=</span> <span class="st">"Nombre de régions"</span>, y <span class="op">=</span> <span class="st">"Inertie expliquée (%)"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-AZPCoude" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-AZPCoude-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.5: Méthode du coude reposant sur l’inertie expliquée pour l’AZP-TABU</figcaption></figure>
+<div id="fig-AZPCoude" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-AZPCoude-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-AZPCoude-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-AZPCoude-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.5: Méthode du coude reposant sur l’inertie expliquée pour l’AZP-TABU
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -709,7 +768,7 @@ AZP-TABU :  0.428</code></pre>
 [3,]   46    7 1.3665949</code></pre>
 </div>
 </div>
-<p>Le code ci-dessous permet de visualiser le graphe de connectivité et l’arbre couvrant de poids minimal (<a href="#fig-ArbreMinimum">figure&nbsp;<span>8.6</span></a>).</p>
+<p>Le code ci-dessous permet de visualiser le graphe de connectivité et l’arbre couvrant de poids minimal (<a href="#fig-ArbreMinimum" class="quarto-xref">figure&nbsp;<span>8.6</span></a>).</p>
 <div class="cell">
 <div class="sourceCode" id="cb25"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Visualisation du graphe de connectivité </span></span>
 <span><span class="va">coords</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_coordinates.html">st_coordinates</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/geos_unary.html">st_centroid</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">)</span></span>
@@ -719,9 +778,13 @@ AZP-TABU :  0.428</code></pre>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="fu"><a href="https://r-spatial.github.io/sf/reference/st_geometry.html">st_geometry</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span>, border<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span>, col<span class="op">=</span><span class="st">"wheat"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html">plot</a></span><span class="op">(</span><span class="va">Lyon.mst</span>, <span class="va">coords</span>, col<span class="op">=</span><span class="st">"blue"</span>, cex.lab<span class="op">=</span><span class="fl">0.7</span>, add<span class="op">=</span><span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<div id="fig-ArbreMinimum" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap08/ArbreMinimum.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.6: Graphe de connectivité et arbre couvrant de poids minimal</figcaption></figure>
+<div id="fig-ArbreMinimum" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-ArbreMinimum-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap08/ArbreMinimum.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ArbreMinimum-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.6: Graphe de connectivité et arbre couvrant de poids minimal
+</figcaption></figure>
 </div>
 <p>Le code ci-dessous permet de réaliser une classification SKATER avec cinq régions avec le <em>package</em> <code>spdep</code>.</p>
 <div class="cell">
@@ -735,7 +798,7 @@ AZP-TABU :  0.428</code></pre>
 <div class="cell-output cell-output-stdout">
 <pre><code>
   1   2   3   4   5 
- 48 215  89  57  97 </code></pre>
+436  11  43   7   9 </code></pre>
 </div>
 </div>
 <p>Toutefois, il est plus simple d’utiliser la fonction <code>skater</code> de <code>rgeoda</code> qui ne nécessite pas de créer au préalable l’arbre couvrant de poids minimal.</p>
@@ -755,7 +818,7 @@ AZP-TABU :  0.428</code></pre>
 248 125  51  48  34 </code></pre>
 </div>
 </div>
-<p>La <a href="#fig-SkaterAB">figure&nbsp;<span>8.7</span></a> démontre que les résultats obtenus sont légèrement différents avec les deux <em>packages</em>.</p>
+<p>La <a href="#fig-SkaterAB" class="quarto-xref">figure&nbsp;<span>8.7</span></a> démontre que les résultats obtenus sont légèrement différents avec les deux <em>packages</em>.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">LyonIris</span><span class="op">$</span><span class="va">skater5spdep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">skater5.spdep</span><span class="op">$</span><span class="va">groups</span><span class="op">)</span></span>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">skater5rgeoda</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">skater5.rgeoda</span><span class="op">$</span><span class="va">Clusters</span><span class="op">)</span></span>
@@ -774,9 +837,13 @@ AZP-TABU :  0.428</code></pre>
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte.SkaterA</span>, <span class="va">Carte.SkaterB</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-SkaterAB" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-SkaterAB-1.png" class="img-fluid figure-img" style="width:85.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.7: Résultats de l’algorithme SKATER avec cinq classes obtenus avec les <em>packages</em> <code>spdep</code> et <code>rgeoda</code></figcaption></figure>
+<div id="fig-SkaterAB" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-SkaterAB-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-SkaterAB-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:85.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-SkaterAB-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.7: Résultats de l’algorithme SKATER avec cinq classes obtenus avec les <em>packages</em> <code>spdep</code> et <code>rgeoda</code>
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -818,7 +885,7 @@ AZP-TABU :  0.428</code></pre>
 <li><p>Ordre complet et saut minimal (<em>Full-order and Single-linkage</em>).</p></li>
 <li><p>Ordre complet et critère de Ward (<em>Full-order and Ward-linkage</em>).</p></li>
 </ul>
-<p>Le code ci-dessous permet de calculer les cinq versions de l’algorithmes REDCAP avec cinq régions et de comparer leurs résultats à partir du ratio (entre les variances interrégionale et totale) et du nombre d’observations par région.</p>
+<p>Le code ci-dessous permet de calculer les cinq versions de l’algorithmes REDCAP avec cinq régions et de comparer leurs résultats à partir du ratio (entre les variances interrégionale et totale) et du nombre d’observations par région. Ce ratio représente la part de la variance intra-groupe dans la variance totale des données. Plus ce ratio est grand, meilleure est la classification car elle résume une plus grande partie de la variance totale.</p>
 <div class="cell">
 <div class="sourceCode" id="cb32"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/geodacenter/rgeoda/">rgeoda</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
@@ -866,7 +933,7 @@ AZP-TABU :  0.428</code></pre>
 5     fullorder-wardlinkage 0.5185455 166 134 120 51 35</code></pre>
 </div>
 </div>
-<p>À la lecture des valeurs du ratio ci-dessous, la meilleure classification serait celle obtenue avec un ordre complet et le critère de Ward. Cartographions les résultats des quatre versions de l’algorithme RECAP avec un ordre complet (<a href="#fig-CartoREDCAP">figure&nbsp;<span>8.8</span></a>).</p>
+<p>À la lecture des valeurs du ratio ci-dessus, la meilleure classification serait celle obtenue avec un ordre complet et le critère de Ward. Cartographions les résultats des quatre versions de l’algorithme RECAP avec un ordre complet (<a href="#fig-CartoREDCAP" class="quarto-xref">figure&nbsp;<span>8.8</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb34"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Ajout des champs dans la couche</span></span>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">RC5.FOcompletelinkage</span>  <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">redcap5.B</span><span class="op">$</span><span class="va">Clusters</span><span class="op">)</span></span>
@@ -900,9 +967,13 @@ AZP-TABU :  0.428</code></pre>
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte.RCb</span>, <span class="va">Carte.RCc</span>, <span class="va">Carte.RCd</span>, <span class="va">Carte.RCe</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-CartoREDCAP" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-CartoREDCAP-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.8: Regroupements des 505 IRIS en cinq régions selon les quatre versions de l’algorithme REDCAP avec un lien complet</figcaption></figure>
+<div id="fig-CartoREDCAP" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CartoREDCAP-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-CartoREDCAP-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-CartoREDCAP-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.8: Regroupements des 505 IRIS en cinq régions selon les quatre versions de l’algorithme REDCAP avec un lien complet
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -949,7 +1020,7 @@ AZP-TABU :  0.428</code></pre>
 <p>Pour une description détaillée de la CAH, consultez la <a href="https://serieboldr.github.io/MethodesQuantitatives/13-MethodeClassification.html#sec-133">section suivante</a> <span class="citation" data-cites="RBoldAir">(<a href="references.html#ref-RBoldAir" role="doc-biblioref">Apparicio et Gelb 2022</a>)</span>.</p>
 </div>
 </div>
-<p>Le code ci-dessous permet de construire l’arbre de classification selon le critère de Ward à partir de la matrice sémantique (<a href="#fig-Dendrogramme">figure&nbsp;<span>8.9</span></a>).</p>
+<p>Le code ci-dessous permet de construire l’arbre de classification selon le critère de Ward à partir de la matrice sémantique (<a href="#fig-Dendrogramme" class="quarto-xref">figure&nbsp;<span>8.9</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb35"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Variables pour la CAH</span></span>
 <span><span class="va">VarsEnv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Lden"</span>, <span class="st">"NO2"</span>, <span class="st">"PM25"</span>, <span class="st">"VegHautPrt"</span><span class="op">)</span></span>
@@ -967,13 +1038,17 @@ AZP-TABU :  0.428</code></pre>
 <span>     sub <span class="op">=</span> <span class="st">""</span>, ylab <span class="op">=</span> <span class="st">"Hauteur"</span>, xlab <span class="op">=</span> <span class="st">""</span></span>
 <span>     <span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-Dendrogramme" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-Dendrogramme-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.9: Arbre de classification (dendrogramme)</figcaption></figure>
+<div id="fig-Dendrogramme" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-Dendrogramme-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-Dendrogramme-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-Dendrogramme-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.9: Arbre de classification (dendrogramme)
+</figcaption></figure>
 </div>
 </div>
 </div>
-<p>À la lecture de la <a href="#fig-CAHCoude">figure&nbsp;<span>8.10</span></a>, nous ne détectons pas de seuils marqués dans l’inertie expliquée en fonction du nombre de groupes. Par conséquent, nous fixons arbitrairement le nombre de groupes à 5.</p>
+<p>À la lecture de la <a href="#fig-CAHCoude" class="quarto-xref">figure&nbsp;<span>8.10</span></a>, nous ne détectons pas de seuils marqués dans l’inertie expliquée en fonction du nombre de groupes. Par conséquent, nous fixons arbitrairement le nombre de groupes à 5.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb36"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://ggplot2.tidyverse.org">ggplot2</a></span><span class="op">)</span></span>
 <span><span class="co"># Fonction pour l'inertie expliquée par les classes</span></span>
@@ -994,9 +1069,13 @@ AZP-TABU :  0.428</code></pre>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_point.html">geom_point</a></span><span class="op">(</span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/aes.html">aes</a></span><span class="op">(</span>x<span class="op">=</span><span class="va">NGroupes</span>,y<span class="op">=</span><span class="va">Inertie</span><span class="op">)</span>, color <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span> <span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/labs.html">labs</a></span><span class="op">(</span>y <span class="op">=</span> <span class="st">"Inertie expliquée"</span>, x <span class="op">=</span> <span class="st">"Nombre de groupes"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-CAHCoude" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-CAHCoude-1.png" class="img-fluid figure-img" style="width:65.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.10: Méthode du coude reposant sur l’inertie expliquée pour CAH</figcaption></figure>
+<div id="fig-CAHCoude" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CAHCoude-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-CAHCoude-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-CAHCoude-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.10: Méthode du coude reposant sur l’inertie expliquée pour CAH
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -1007,7 +1086,10 @@ AZP-TABU :  0.428</code></pre>
 <span>     xlab <span class="op">=</span> <span class="st">""</span>, ylab <span class="op">=</span> <span class="st">""</span>, sub <span class="op">=</span> <span class="st">""</span>, axes <span class="op">=</span> <span class="cn">FALSE</span>, hang <span class="op">=</span> <span class="op">-</span><span class="fl">1</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/stats/rect.hclust.html">rect.hclust</a></span><span class="op">(</span><span class="va">Arbre</span>, <span class="fl">5</span>, border <span class="op">=</span> <span class="st">"red"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-22-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode" id="cb38"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Coupure de l'arbre à cinq classes</span></span>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">CAH5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/stats/cutree.html">cutree</a></span><span class="op">(</span><span class="va">Arbre</span>, k<span class="op">=</span><span class="fl">5</span><span class="op">)</span><span class="op">)</span></span>
@@ -1029,7 +1111,7 @@ AZP-TABU :  0.428</code></pre>
 5    5 55.08405 34.17193 18.90686   13.44716</code></pre>
 </div>
 </div>
-<p>Les résultats de la CAH sont cartographiés à la <a href="#fig-CAHCarto">figure&nbsp;<span>8.11</span></a> tandis que le nombre d’observations et les valeurs moyennes des classes sont reportés au tableau @tbl-dataCAHtab.</p>
+<p>Les résultats de la CAH sont cartographiés à la <a href="#fig-CAHCarto" class="quarto-xref">figure&nbsp;<span>8.11</span></a> tandis que le nombre d’observations et les valeurs moyennes des classes sont reportés au tableau <a href="#tbl-dataCAHtab" class="quarto-xref">tableau&nbsp;<span>8.2</span></a>.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-tmap.github.io/tmap/">tmap</a></span><span class="op">)</span></span>
 <span><span class="co">## Cartographie des résultats</span></span>
@@ -1041,17 +1123,23 @@ AZP-TABU :  0.428</code></pre>
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">Carte.CAH5</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-CAHCarto" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-CAHCarto-1.png" class="img-fluid figure-img" style="width:65.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.11: CAH avec le critère de Ward avec cinq classes</figcaption></figure>
+<div id="fig-CAHCarto" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CAHCarto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-CAHCarto-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-CAHCarto-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.11: CAH avec le critère de Ward avec cinq classes
+</figcaption></figure>
 </div>
 </div>
 </div>
 <div class="cell">
+<div id="tbl-dataCAHtab" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-dataCAHtab-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tableau&nbsp;8.2: Valeurs moyennes des variables pour les cinq classes obtenues avec la CAH
+</figcaption><div aria-describedby="tbl-dataCAHtab-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-dataCAHtab" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tableau&nbsp;8.2: Valeurs moyennes des variables pour les cinq classes obtenues avec la CAH</caption>
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <thead><tr class="header">
 <th style="text-align: center;">Classe</th>
 <th style="text-align: center;">Lden</th>
@@ -1105,6 +1193,8 @@ AZP-TABU :  0.428</code></pre>
 </table>
 </div>
 </div>
+</figure>
+</div>
 </div>
 </section><section id="sec-08213" class="level4" data-number="8.2.1.3"><h4 data-number="8.2.1.3" class="anchored" data-anchor-id="sec-08213">
 <span class="header-section-number">8.2.1.3</span> Calcul de la méthode <em>ClustGeo</em>
@@ -1128,7 +1218,7 @@ AZP-TABU :  0.428</code></pre>
 <span><span class="va">Matrice.Spatiale</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="va">xy</span>, method <span class="op">=</span> <span class="st">"euclidean"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>Optimisation de la valeur de</strong> <span class="math inline">\(\alpha\)</span></p>
-<p>Pour la méthode <em>ClustGeo</em> (avec k&nbsp;=&nbsp;5), nous évaluons l’impact du paramètre α pour des valeurs de 0 à 1, avec un saut de 0,05. Pour ce faire, nous utilisons la fonction <code>choicealpha</code> du <em>package</em> <code>ClustGeo</code>. À la lecture de la <a href="#fig-GraphAlpha">figure&nbsp;<span>8.12</span></a>, nous constatons que&nbsp;:</p>
+<p>Pour la méthode <em>ClustGeo</em> (avec k&nbsp;=&nbsp;5), nous évaluons l’impact du paramètre α pour des valeurs de 0 à 1, avec un saut de 0,05. Pour ce faire, nous utilisons la fonction <code>choicealpha</code> du <em>package</em> <code>ClustGeo</code>. À la lecture de la <a href="#fig-GraphAlpha" class="quarto-xref">figure&nbsp;<span>8.12</span></a>, nous constatons que&nbsp;:</p>
 <ul>
 <li><p>Plus la valeur de <span class="math inline">\(\alpha\)</span> augmente, plus l’inertie expliquée par la matrice sémantique diminue (trait noir) et inversement, plus l’inertie expliquée par la matrice spatiale est forte.</p></li>
 <li><p>Avec <span class="math inline">\(\alpha = \text{0,30}\)</span>, l’inertie expliquée par la matrice spatiale est de 50&nbsp;% pour une perte d’inertie expliquée par la matrice sémantique de seulement 7&nbsp;%. Avec <span class="math inline">\(\alpha = \text{0,35}\)</span>, nous constatons une chute importante de l’inertie sémantique expliquée. Par conséquent, nous retenons la valeur de 0,30 pour la méthode <em>ClustGeo</em>. Ce choix donne un excellent compromis entre la préservation de l’inertie expliquée des données attributaires et la cohérence spatiale de la classification finale.</p></li>
@@ -1152,9 +1242,13 @@ AZP-TABU :  0.428</code></pre>
 <span>       x <span class="op">=</span> <span class="st">"Paramètre alpha"</span>,</span>
 <span>       subtitle <span class="op">=</span> <span class="st">"Matrice sémantique (noir) et matrice spatiale (rouge)"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-GraphAlpha" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-GraphAlpha-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.12: Impact des deux matrices dans la classification</figcaption></figure>
+<div id="fig-GraphAlpha" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-GraphAlpha-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-GraphAlpha-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-GraphAlpha-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.12: Impact des deux matrices dans la classification
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -1193,17 +1287,23 @@ AZP-TABU :  0.428</code></pre>
 <span>                      main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">Carte.ClusteGeo</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-GraphAlpha2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-GraphAlpha2-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.13: Classification ClustGeo avec alpha = 0,30</figcaption></figure>
+<div id="fig-GraphAlpha2" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-GraphAlpha2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-GraphAlpha2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-GraphAlpha2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.13: Classification ClustGeo avec alpha = 0,30
+</figcaption></figure>
 </div>
 </div>
 </div>
 <div class="cell">
+<div id="tbl-dataClusteGeotab" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure"><figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-dataClusteGeotab-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Tableau&nbsp;8.3: Valeurs moyennes des variables pour cinq classes obtenues par la méthode ClustGeo (alpha = 0,30)
+</figcaption><div aria-describedby="tbl-dataClusteGeotab-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="tbl-dataClusteGeotab" class="anchored">
-<table class="table table-sm table-striped small">
-<caption>Tableau&nbsp;8.3: Valeurs moyennes des variables pour cinq classes obtenues par la méthode ClustGeo (alpha = 0,30)</caption>
+<table class="do-not-create-environment cell caption-top table table-sm table-striped small">
 <thead><tr class="header">
 <th style="text-align: center;">Classe</th>
 <th style="text-align: center;">Lden</th>
@@ -1257,14 +1357,20 @@ AZP-TABU :  0.428</code></pre>
 </table>
 </div>
 </div>
+</figure>
 </div>
-<p>La comparaison des typologies obtenues avec la CAH et la ClusteGeo démontre clairement que l’introduction d’une matrice spatiale dans la classification <em>ClustGeo</em> génère des classes qui sont moins discontinues spatialement (<a href="#fig-ComparaisonCAHClusteo">figure&nbsp;<span>8.14</span></a>).</p>
+</div>
+<p>La comparaison des typologies obtenues avec la CAH et la ClusteGeo démontre clairement que l’introduction d’une matrice spatiale dans la classification <em>ClustGeo</em> génère des classes qui sont moins discontinues spatialement (<a href="#fig-ComparaisonCAHClusteo" class="quarto-xref">figure&nbsp;<span>8.14</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte.CAH5</span>, <span class="va">Carte.ClusteGeo</span>, nrow <span class="op">=</span> <span class="fl">1</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-ComparaisonCAHClusteo" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-ComparaisonCAHClusteo-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.14: Impact des deux matrices dans la classification</figcaption></figure>
+<div id="fig-ComparaisonCAHClusteo" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-ComparaisonCAHClusteo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-ComparaisonCAHClusteo-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ComparaisonCAHClusteo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.14: Impact des deux matrices dans la classification
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -1282,15 +1388,15 @@ AZP-TABU :  0.428</code></pre>
 <p><strong>Retour sur une variable spatialement décalée et la classification k-moyennes</strong></p>
 </div>
 <div class="bloc_attention-body">
-<p>La notion de variable spatialement décalée a été abordée au chapitre&nbsp;2 (<a href="02-Autocorrelation.html#fig-Chap02FigureVariableSpatialementDecalee">figure&nbsp;<span>2.29</span></a>). Pour une description détaillée de la classification k-moyennes, consultez la <a href="https://serieboldr.github.io/MethodesQuantitatives/13-MethodeClassification.html#sec-134">section suivante</a> <span class="citation" data-cites="RBoldAir">(<a href="references.html#ref-RBoldAir" role="doc-biblioref">Apparicio et Gelb 2022</a>)</span>.</p>
+<p>La notion de variable spatialement décalée a été abordée au chapitre&nbsp;2 (<a href="02-Autocorrelation.html#fig-Chap02FigureVariableSpatialementDecalee" class="quarto-xref">figure&nbsp;<span>2.29</span></a>). Pour une description détaillée de la classification k-moyennes, consultez la <a href="https://serieboldr.github.io/MethodesQuantitatives/13-MethodeClassification.html#sec-134">section suivante</a> <span class="citation" data-cites="RBoldAir">(<a href="references.html#ref-RBoldAir" role="doc-biblioref">Apparicio et Gelb 2022</a>)</span>.</p>
 </div>
 </div>
 <section id="sec-08221" class="level4" data-number="8.2.2.1"><h4 data-number="8.2.2.1" class="anchored" data-anchor-id="sec-08221">
 <span class="header-section-number">8.2.2.1</span> Calcul de la classification c-moyennes floue classique (<em>fuzzy c-means</em>)</h4>
-<p>À des fins de comparaison avec la CAH, nous proposons de calculer une classification c-moyennes floue classique (<em>fuzzy c-means</em>) avec cinq classes (<em>k</em>&nbsp;=&nbsp;5). Puis, pour déterminer la valeur optimale de <em>m</em> (soit le degré de logique floue), nous calculons l’inertie expliquée et l’indice de silhouette pour des valeurs de <em>m</em> variant de 1,1 à 3 (avec un incrément de 0,1). Les résultats de ces deux indicateurs, présentés à la <a href="#fig-GraphCmeans">figure&nbsp;<span>8.15</span></a>, signalent que&nbsp;:</p>
+<p>À des fins de comparaison avec la CAH, nous proposons de calculer une classification c-moyennes floue classique (<em>fuzzy c-means</em>) avec cinq classes (<em>k</em>&nbsp;=&nbsp;5). Puis, pour déterminer la valeur optimale de <em>m</em> (soit le degré de logique floue), nous calculons l’inertie expliquée et l’indice de silhouette pour des valeurs de <em>m</em> variant de 1,1 à 3 (avec un incrément de 0,1). Les résultats de ces deux indicateurs, présentés à la <a href="#fig-GraphCmeans" class="quarto-xref">figure&nbsp;<span>8.15</span></a>, signalent que&nbsp;:</p>
 <ul>
-<li>Plus le paramètre <em>m</em> augmente, plus l’inertie expliquée diminue (<a href="#fig-GraphCmeans">figure&nbsp;<span>8.15</span></a>, a).</li>
-<li>La valeur de l’indice de silhouette est maximale avec <em>m</em>&nbsp;=&nbsp;1,8 (<a href="#fig-GraphCmeans">figure&nbsp;<span>8.15</span></a>, b).</li>
+<li>Plus le paramètre <em>m</em> augmente, plus l’inertie expliquée diminue (<a href="#fig-GraphCmeans" class="quarto-xref">figure&nbsp;<span>8.15</span></a>, a).</li>
+<li>La valeur de l’indice de silhouette est maximale avec <em>m</em>&nbsp;=&nbsp;1,8 (<a href="#fig-GraphCmeans" class="quarto-xref">figure&nbsp;<span>8.15</span></a>, b).</li>
 </ul>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/JeremyGelb/geocmeans">geocmeans</a></span><span class="op">)</span></span>
@@ -1328,13 +1434,17 @@ AZP-TABU :  0.428</code></pre>
 <span><span class="co"># Combinaison des deux graphiques dans la figure</span></span>
 <span><span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html">ggarrange</a></span><span class="op">(</span><span class="va">G1</span>, <span class="va">G2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-GraphCmeans" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-GraphCmeans-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.15: Évaluation de la qualité de la classification FCM avec cinq classes selon le degré de flou (m)</figcaption></figure>
+<div id="fig-GraphCmeans" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-GraphCmeans-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-GraphCmeans-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-GraphCmeans-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.15: Évaluation de la qualité de la classification FCM avec cinq classes selon le degré de flou (m)
+</figcaption></figure>
 </div>
 </div>
 </div>
-<p>Réalisons la classification c-moyennes floue et cartographions les probabilités d’appartenance à chacune des classes (<a href="#fig-FigureCmeansProb">figure&nbsp;<span>8.16</span></a>), puis l’appartenance à une classe (<a href="#fig-FigureCmeansCluster">figure&nbsp;<span>8.17</span></a>).</p>
+<p>Réalisons la classification c-moyennes floue et cartographions les probabilités d’appartenance à chacune des classes (<a href="#fig-FigureCmeansProb" class="quarto-xref">figure&nbsp;<span>8.16</span></a>), puis l’appartenance à une classe (<a href="#fig-FigureCmeansCluster" class="quarto-xref">figure&nbsp;<span>8.17</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb54"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Classification du c-moyennes </span></span>
 <span><span class="va">FCM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/geocmeans/man/CMeans.html">CMeans</a></span><span class="op">(</span><span class="va">DataZscore</span>, k <span class="op">=</span> <span class="fl">5</span>, m <span class="op">=</span> <span class="fl">1.8</span>, tol <span class="op">=</span> <span class="fl">0.0001</span>, verbose <span class="op">=</span> <span class="cn">FALSE</span>, seed <span class="op">=</span> <span class="fl">456</span><span class="op">)</span></span>
@@ -1367,18 +1477,26 @@ $Explained.inertia
 </div>
 <div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Cartes.FCM</span><span class="op">$</span><span class="va">ProbaMaps</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-FigureCmeansProb" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureCmeansProb-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.16: Cartographie des probabilités d’appartenance aux cinq classes avec la classification c-moyennes</figcaption></figure>
+<div id="fig-FigureCmeansProb" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-FigureCmeansProb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureCmeansProb-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-FigureCmeansProb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.16: Cartographie des probabilités d’appartenance aux cinq classes avec la classification c-moyennes
+</figcaption></figure>
 </div>
 </div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb59"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Cartes.FCM</span><span class="op">$</span><span class="va">ClusterPlot</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-FigureCmeansCluster" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureCmeansCluster-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.17: Cartographie des classes issues de la classification c-moyennes</figcaption></figure>
+<div id="fig-FigureCmeansCluster" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-FigureCmeansCluster-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureCmeansCluster-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-FigureCmeansCluster-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.17: Cartographie des classes issues de la classification c-moyennes
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -1417,13 +1535,17 @@ $Explained.inertia
 <span></span>
 <span><span class="fu"><a href="https://rpkgs.datanovia.com/ggpubr/reference/ggarrange.html">ggarrange</a></span><span class="op">(</span><span class="va">graph1</span>, <span class="va">graph2</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-SFCMChoiceAlpha" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-SFCMChoiceAlpha-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.18: Comparaison de différentes valeurs d’alpha pour le SFCM</figcaption></figure>
+<div id="fig-SFCMChoiceAlpha" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-SFCMChoiceAlpha-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-SFCMChoiceAlpha-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-SFCMChoiceAlpha-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.18: Comparaison de différentes valeurs d’alpha pour le SFCM
+</figcaption></figure>
 </div>
 </div>
 </div>
-<p>La <a href="#fig-SFCMChoiceAlpha">figure&nbsp;<span>8.18</span></a> démontre que l’augmentation d’<em>alpha</em> a pour effet de réduire la qualité sémantique de la classification (indice de silhouette), mais aussi de limiter l’inconsistance spatiale des résultats produits. Nous constatons aussi que l’augmentation d’<em>alpha</em> a un effet quasiment linéaire sur la dégradation de l’indice de silhouette et un effet curvilinéaire sur l’inconsistance spatiale. Cette dernière est donc plus impactée par les premières augmentations d’<em>alpha</em>. Nous proposons ici de retenir une solution avec <span class="math inline">\(\alpha\)</span>&nbsp;=&nbsp;0,55, car elle correspond à une baisse relativement faible de l’indice de silhouette (0,55 versus 0,50) pour une augmentation importante de la cohérence spatiale des résultats (0,39 versus 0,22).</p>
+<p>La <a href="#fig-SFCMChoiceAlpha" class="quarto-xref">figure&nbsp;<span>8.18</span></a> démontre que l’augmentation d’<em>alpha</em> a pour effet de réduire la qualité sémantique de la classification (indice de silhouette), mais aussi de limiter l’inconsistance spatiale des résultats produits. Nous constatons aussi que l’augmentation d’<em>alpha</em> a un effet quasiment linéaire sur la dégradation de l’indice de silhouette et un effet curvilinéaire sur l’inconsistance spatiale. Cette dernière est donc plus impactée par les premières augmentations d’<em>alpha</em>. Nous proposons ici de retenir une solution avec <span class="math inline">\(\alpha\)</span>&nbsp;=&nbsp;0,55, car elle correspond à une baisse relativement faible de l’indice de silhouette (0,55 versus 0,50) pour une augmentation importante de la cohérence spatiale des résultats (0,39 versus 0,22).</p>
 <div class="cell">
 <div class="sourceCode" id="cb63"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co"># Calcul du SFCM</span></span>
 <span><span class="va">SFCM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/geocmeans/man/SFCMeans.html">SFCMeans</a></span><span class="op">(</span><span class="va">DataZscore</span>, <span class="va">WMat</span>, </span>
@@ -1457,60 +1579,84 @@ $Explained.inertia
 </div>
 </div>
 <p><strong>Cartographie des probabilités d’appartenance à chaque classe</strong></p>
-<p>La cartographie des probabilité d’appartenance pour chacune des cinq classes est présentée aux figures <a href="#fig-FigureSFCMProb1"><span>8.19</span></a>, <a href="#fig-FigureSFCMProb2"><span>8.20</span></a>, <a href="#fig-FigureSFCMProb3"><span>8.21</span></a>, <a href="#fig-FigureSFCMProb4"><span>8.22</span></a> et <a href="#fig-FigureSFCMProb4"><span>8.22</span></a>.</p>
+<p>La cartographie des probabilité d’appartenance pour chacune des cinq classes est présentée aux figures <a href="#fig-FigureSFCMProb1" class="quarto-xref"><span>8.19</span></a>, <a href="#fig-FigureSFCMProb2" class="quarto-xref"><span>8.20</span></a>, <a href="#fig-FigureSFCMProb3" class="quarto-xref"><span>8.21</span></a>, <a href="#fig-FigureSFCMProb4" class="quarto-xref"><span>8.22</span></a> et <a href="#fig-FigureSFCMProb4" class="quarto-xref"><span>8.22</span></a>.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb66"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Cartes.SFCM</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/geocmeans/man/mapClusters.html">mapClusters</a></span><span class="op">(</span><span class="va">LyonIris</span>, <span class="va">SFCM</span><span class="op">$</span><span class="va">Belongings</span>, undecided <span class="op">=</span> <span class="fl">0.45</span><span class="op">)</span></span>
 <span><span class="va">Cartes.SFCM</span><span class="op">$</span><span class="va">ProbaMaps</span><span class="op">[[</span><span class="fl">1</span><span class="op">]</span><span class="op">]</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-FigureSFCMProb1" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureSFCMProb1-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.19: Cartographie des probabilités d’appartenance issues de la classification SFCM (classe 1)</figcaption></figure>
+<div id="fig-FigureSFCMProb1" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-FigureSFCMProb1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureSFCMProb1-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-FigureSFCMProb1-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.19: Cartographie des probabilités d’appartenance issues de la classification SFCM (classe 1)
+</figcaption></figure>
 </div>
 </div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb67"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Cartes.SFCM</span><span class="op">$</span><span class="va">ProbaMaps</span><span class="op">[[</span><span class="fl">2</span><span class="op">]</span><span class="op">]</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-FigureSFCMProb2" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureSFCMProb2-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.20: Cartographie des probabilités d’appartenance issues de la classification SFCM (classe 2)</figcaption></figure>
+<div id="fig-FigureSFCMProb2" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-FigureSFCMProb2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureSFCMProb2-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-FigureSFCMProb2-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.20: Cartographie des probabilités d’appartenance issues de la classification SFCM (classe 2)
+</figcaption></figure>
 </div>
 </div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb68"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Cartes.SFCM</span><span class="op">$</span><span class="va">ProbaMaps</span><span class="op">[[</span><span class="fl">3</span><span class="op">]</span><span class="op">]</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-FigureSFCMProb3" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureSFCMProb3-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.21: Cartographie des probabilités d’appartenance issues de la classification SFCM (classe 3)</figcaption></figure>
+<div id="fig-FigureSFCMProb3" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-FigureSFCMProb3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureSFCMProb3-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-FigureSFCMProb3-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.21: Cartographie des probabilités d’appartenance issues de la classification SFCM (classe 3)
+</figcaption></figure>
 </div>
 </div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb69"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Cartes.SFCM</span><span class="op">$</span><span class="va">ProbaMaps</span><span class="op">[[</span><span class="fl">4</span><span class="op">]</span><span class="op">]</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-FigureSFCMProb4" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureSFCMProb4-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.22: Cartographie des probabilités d’appartenance issues de la classification SFCM (classe 4)</figcaption></figure>
+<div id="fig-FigureSFCMProb4" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-FigureSFCMProb4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureSFCMProb4-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-FigureSFCMProb4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.22: Cartographie des probabilités d’appartenance issues de la classification SFCM (classe 4)
+</figcaption></figure>
 </div>
 </div>
 </div>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb70"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Cartes.SFCM</span><span class="op">$</span><span class="va">ProbaMaps</span><span class="op">[[</span><span class="fl">5</span><span class="op">]</span><span class="op">]</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-FigureSFCMProb5" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureSFCMProb5-1.png" class="img-fluid figure-img" style="width:100.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.23: Cartographie des probabilités d’appartenance issues de la classification SFCM (classe 5)</figcaption></figure>
+<div id="fig-FigureSFCMProb5" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-FigureSFCMProb5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureSFCMProb5-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:100.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-FigureSFCMProb5-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.23: Cartographie des probabilités d’appartenance issues de la classification SFCM (classe 5)
+</figcaption></figure>
 </div>
 </div>
 </div>
-<p><strong>Cartographie des probabilités d’appartenance à chaque classe du SFCM (<a href="#fig-FigureSFCMCluster">figure&nbsp;<span>8.24</span></a>)</strong></p>
+<p><strong>Cartographie des probabilités d’appartenance à chaque classe du SFCM (<a href="#fig-FigureSFCMCluster" class="quarto-xref">figure&nbsp;<span>8.24</span></a>)</strong></p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb71"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">Cartes.SFCM</span><span class="op">$</span><span class="va">ClusterPlot</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-FigureSFCMCluster" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureSFCMCluster-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;8.24: Cartographie des classes issues de la classification SFCM</figcaption></figure>
+<div id="fig-FigureSFCMCluster" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-FigureSFCMCluster-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="08-ClassificationsSpatiales_files/figure-html/fig-FigureSFCMCluster-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-FigureSFCMCluster-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.24: Cartographie des classes issues de la classification SFCM
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -1524,22 +1670,40 @@ $Explained.inertia
 <span>                            <span class="st">"royalblue"</span>, </span>
 <span>                            <span class="st">"blueviolet"</span><span class="op">)</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-43-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output-display">
-<p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-43-2.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-43-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output-display">
-<p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-43-3.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-43-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output-display">
-<p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-43-4.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-43-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output-display">
-<p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-43-5.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-43-5.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="cell-output-display">
-<p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-43-6.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="08-ClassificationsSpatiales_files/figure-html/unnamed-chunk-43-6.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 <div class="bloc_aller_loin">
@@ -1617,10 +1781,9 @@ function handleAnswers(quiz, question, no, correct) {
 Quelles sont les méthodes de classification non supervisée avec une contrainte spatiale?
 </div>
 <div>
-Relisez l’introduction du <a href="#sec-chap08">chapitre&nbsp;<span>8</span></a>.
+Relisez l’introduction du <a href="#sec-chap08" class="quarto-xref">chapitre&nbsp;<span>8</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -1670,10 +1833,9 @@ Relisez l’introduction du <a href="#sec-chap08">chapitre&nbsp;<span>8</span></
 Quelles sont les méthodes de classification non supervisée avec une dimensions spatiale?
 </div>
 <div>
-Relisez l’introduction de la <a href="#sec-chap08">section&nbsp;<span>8</span></a>.
+Relisez l’introduction de la <a href="#sec-chap08" class="quarto-xref">section&nbsp;<span>8</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -1723,10 +1885,9 @@ Relisez l’introduction de la <a href="#sec-chap08">section&nbsp;<span>8</span>
 La classification ascendante hiérarchique et la classification le k-moyennes sont des méthodes de classification non supervisée qui ne prennent pas en compte l’espace :
 </div>
 <div>
-Relisez au besoin la <a href="#sec-chap08">section&nbsp;<span>8</span></a>.
+Relisez au besoin la <a href="#sec-chap08" class="quarto-xref">section&nbsp;<span>8</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -1752,10 +1913,9 @@ Relisez au besoin la <a href="#sec-chap08">section&nbsp;<span>8</span></a>.
 Une méthode de classification avec contrainte spatiale produit des régions non discontinues (sans mitage spatial) :
 </div>
 <div>
-Relisez au besoin la <a href="#sec-081">section&nbsp;<span>8.1</span></a>.
+Relisez au besoin la <a href="#sec-081" class="quarto-xref">section&nbsp;<span>8.1</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -1781,10 +1941,9 @@ Relisez au besoin la <a href="#sec-081">section&nbsp;<span>8.1</span></a>.
 L’algorithme SKATER est basé sur :
 </div>
 <div>
-Relisez au besoin la <a href="#sec-0812">section&nbsp;<span>8.1.2</span></a>.
+Relisez au besoin la <a href="#sec-0812" class="quarto-xref">section&nbsp;<span>8.1.2</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -1818,10 +1977,9 @@ Relisez au besoin la <a href="#sec-0812">section&nbsp;<span>8.1.2</span></a>.
 La méthode ClustGeo est basée sur deux matrices :
 </div>
 <div>
-Relisez au besoin la <a href="#sec-0821">section&nbsp;<span>8.2.1</span></a>.
+Relisez au besoin la <a href="#sec-0821" class="quarto-xref">section&nbsp;<span>8.2.1</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -1855,10 +2013,9 @@ Relisez au besoin la <a href="#sec-0821">section&nbsp;<span>8.2.1</span></a>.
 La méthode c-moyennes spatiale floue est :
 </div>
 <div>
-Relisez au besoin la <a href="#sec-0812">section&nbsp;<span>8.1.2</span></a>.
+Relisez au besoin la <a href="#sec-0822" class="quarto-xref">section&nbsp;<span>8.2.2</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -1892,10 +2049,9 @@ Relisez au besoin la <a href="#sec-0812">section&nbsp;<span>8.1.2</span></a>.
 Le paramètre alpha de la méthode ClustGeo permet de définir le poids accordé à la matrice spatiale. Son intervalle de variation est de :
 </div>
 <div>
-Relisez le deuxième encadré à la <a href="#sec-08211">section&nbsp;<span>8.2.1.1</span></a>.
+Relisez le deuxième encadré à la <a href="#sec-08211" class="quarto-xref">section&nbsp;<span>8.2.1.1</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -1921,10 +2077,9 @@ Relisez le deuxième encadré à la <a href="#sec-08211">section&nbsp;<span>8.2.
 Le paramètre alpha de la classification c-moyennes spatiale floue permet de définir le poids accordé à la matrice spatialement décalée. Son intervalle de variation est de :
 </div>
 <div>
-Relisez le deuxième encadré à la <a href="#sec-08211">section&nbsp;<span>8.2.1.1</span></a>.
+Relisez la <a href="#sec-08222" class="quarto-xref">section&nbsp;<span>8.2.2.2</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -2000,12 +2155,12 @@ Vérifier votre résultat
 <span id="cb73-35"><a href="#cb73-35" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb73-36"><a href="#cb73-36" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_arrange</span>(à compléter)</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Correction à la <a href="12-Exercices.html#sec-12081">section&nbsp;<span>12.8.1</span></a>.</p>
+<p>Correction à la <a href="12-Exercices.html#sec-12081" class="quarto-xref">section&nbsp;<span>12.8.1</span></a>.</p>
 </div>
 </div>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-RBoldAir" class="csl-entry" role="listitem">
 Apparicio, Philippe et Jérémy Gelb. 2022. <em>Méthodes quantitatives en sciences sociales : un grand bol d’R</em>. FabriqueREL, Licence CC BY-SA. <a href="https://serieboldr.github.io/MethodesQuantitatives/">https://serieboldr.github.io/MethodesQuantitatives/</a>.
 </div>
@@ -2084,18 +2239,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -2127,11 +2271,50 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/serieboldr\.github\.io\/MethodesAnalyseSpatiale\/index\.html");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -2141,8 +2324,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -2154,7 +2346,130 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -2198,6 +2513,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -2223,6 +2539,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -2282,23 +2624,27 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="./07-RegressionSpatiales.html" class="pagination-link">
+      <a href="./07-RegressionSpatiales.html" class="pagination-link" aria-label="Introduction aux modèles de régression spatiale">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Introduction aux modèles de régression spatiale</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./09-EchantillonnageSpatial.html" class="pagination-link">
+      <a href="./09-EchantillonnageSpatial.html" class="pagination-link" aria-label="Méthodes d'échantillonnage spatial">
         <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Méthodes d’échantillonnage spatial</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
 <footer class="footer"><div class="nav-footer">
-    <div class="nav-footer-left">Méthodes d’analyse spatiale : un grand bol d’R.</div>   
+    <div class="nav-footer-left">
+<p>Méthodes d’analyse spatiale : un grand bol d’R.</p>
+</div>   
     <div class="nav-footer-center">
       &nbsp;
-    </div>
-    <div class="nav-footer-right">Ce livre a été réalisé avec <a href="https://quarto.org/">Quarto</a>.</div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale/issues/new" class="toc-action"><i class="bi bi-github"></i>Signaler un problème ou<br>formuler une suggestion</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Ce livre a été réalisé avec <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
   </div>
 </footer>
 

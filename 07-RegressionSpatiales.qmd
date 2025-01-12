@@ -355,6 +355,8 @@ Tout comme le modèle SLX vu précédemment, la formulation du modèle SAR-LAG i
 3. De même, les voisines des maisons $j$, les maisons $k$ vont aussi être impactées par le changement de prix des maisons $j$ et ainsi de suite de voisins en voisins.
 4. Au final, la maison $i$ verra son prix augmenter encore plus, car le prix de ses voisines aura augmenté par effet de rétroaction.
 
+Notez que puisque $-1 < \rho < 1$, l'effet de déversement décroit à mesure qu'il se transmet de voisins en voisins jusqu'à disparaitre, un peu à l'image d'une onde se propageant sur une surface d'eau.
+
 Ce processus de propagation est appelé l'effet d'entraînement ou de débordement (*spillover*) en économétrie. 
 
 L'effet original de l'augmentation de la taille du jardin sur la maison $i$, combiné à l'augmentation par rétroaction, est appelé l'effet direct. L'effet cumulé de l'augmentation de la taille du jardin sur toutes les autres maisons ($\neq i$) est appelé l'effet indirect. La somme des effets indirects et des directs est appelée effets totaux.
@@ -371,14 +373,12 @@ impacts(Modele.SAR, listw = W.Rook, R = 999)
 summary(impacts(Modele.SAR, listw = W.Rook, R = 999), zstats = TRUE, short = TRUE)
 ```
 
-L'interprétation des effets directs se rapproche de celle des coefficients classiques. Ainsi, selon ce modèle, l'augmentation du niveau de vie médian de 1000 € dans un IRIS est associée avec une diminution moyenne de la concentration de dioxyde d'azote de 0,14 dans cet IRIS. L'effet total est de -0.82, indiquant qu'en moyenne, l'augmentation de 1000 € du niveau de vie médian dans un IRIS est associée avec une diminution moyenne de 0,82 de la concentration de dioxyde d'azote dans l'ensemble des IRIS. Au final, l'effet indirect est simplement la différence entre l'effet total et l'effet direct. Nous pouvons constater ici que les effets indirects sont plus importants que les effets directs.
+L'interprétation des effets directs se rapproche de celle des coefficients classiques. Ainsi, selon ce modèle, l'augmentation du niveau de vie médian de 1000 € dans un IRIS est associée avec une diminution moyenne de la concentration de dioxyde d'azote de 0,14 dans cet IRIS. L'effet total est de -0.82, indiquant qu'en moyenne, l'augmentation de 1000 € du niveau de vie médian dans un IRIS est associée avec une diminution totale de 0,82 de la concentration de dioxyde d'azote dans l'ensemble des IRIS. Au final, l'effet indirect est simplement la différence entre l'effet total et l'effet direct. Nous pouvons constater ici que les effets indirects sont plus importants que les effets directs.
 
 :::
 :::
 
 **Dépendance spatiale du modèle SAR?**
-
-Ce modèle a-t-il corrigé le problème de dépendance spatiale du modèle de régression linéaire classique? Avec une valeur du *I* de Moran de -0,014 (*p* = 0,654), les résidus ne sont plus spatialement autocorrélés (@fig-figCartoResSAR).
 
 ```{r}
 #| echo: true 
@@ -391,7 +391,8 @@ Ce modèle a-t-il corrigé le problème de dépendance spatiale du modèle de r�
 #| out-width: 85%
 
 ## Autocorrélation spatiale des résidus
-moran.mc(resid(Modele.SAR), W.Rook, nsim=999)
+test <- moran.mc(resid(Modele.SAR), W.Rook, nsim=999)
+print(test)
 ## Cartographie des résidus
 LyonIris$SAR.Residus <- resid(Modele.SAR)
 tm_shape(LyonIris)+
@@ -401,6 +402,9 @@ tm_shape(LyonIris)+
   tm_layout(frame=FALSE) + 
   tm_scale_bar(breaks = c(0,5))
 ```
+Ce modèle a-t-il corrigé le problème de dépendance spatiale du modèle de régression linéaire classique? Avec une valeur du *I* de Moran de `{r} round(as.numeric(test$statistic),3)` (*p* = `{r} round(as.numeric(test$p.value),3)`), les résidus ne sont plus spatialement autocorrélés (@fig-figCartoResSAR).
+
+
 
 #### Modèle SEM : autocorrélation spatiale sur le terme d'erreur {#sec-07123}
 
@@ -439,15 +443,17 @@ Dans les résultats ci-dessus, la valeur de *lambda* est de 0,91 (LR = 613, *p
 
 **Dépendance spatiale du modèle SEM?**
 
-Ce modèle a-t-il corrigé le problème de dépendance spatiale du modèle de régression linéaire classique? Avec une valeur du *I* de Moran de -0,013 (*p* = 0,614), les résidus ne sont plus spatialement autocorrélés.
-
 ```{r}
 #| echo: true 
 #| message: false 
 #| eval: true
 ## Autocorrélation spatiale des résidus
-moran.mc(resid(Modele.SEM), W.Rook, nsim=999)
+test <- moran.mc(resid(Modele.SEM), W.Rook, nsim=999)
+print(test)
 ```
+
+
+Ce modèle a-t-il corrigé le problème de dépendance spatiale du modèle de régression linéaire classique? Avec une valeur du *I* de Moran de `{r} round(as.numeric(test$statistic),3)` (*p* = `{r} round(as.numeric(test$p.value),3)`), les résidus ne sont plus spatialement autocorrélés.
 
 #### Modèle SDM : autocorrélation spatiale sur la variable dépendante et les variables indépendantes {#sec-07124}
 
@@ -498,14 +504,20 @@ impacts(Modele.DurbinSpatial, listw = W.Rook, R = 999)
 summary(impacts(Modele.DurbinSpatial, listw = W.Rook, R = 999), zstats = TRUE, short = TRUE)
 ```
 
+Notez que les effets ci-dessus sont différents de ceux que nous avions obtenus pour le simple modèle SAR-LAG car les effets des variables *X* laguées entrainent également des effets de déversement qui viennent se combiner aux effets de déversement du terme *Wy*.
+
 **Dépendance spatiale du modèle SDM?**
 
 ```{r}
 #| echo: true 
 #| message: false 
 #| eval: true
-moran.mc(resid(Modele.DurbinSpatial), W.Rook, nsim=999)
+test <- moran.mc(resid(Modele.DurbinSpatial), W.Rook, nsim=999)
+print(test)
 ```
+
+Ce modèle a-t-il corrigé le problème de dépendance spatiale du modèle de régression linéaire classique? Avec une valeur du *I* de Moran de `{r} round(as.numeric(test$statistic),3)` (*p* = `{r} round(as.numeric(test$p.value),3)`), les résidus ne sont plus spatialement autocorrélés.
+
 
 #### Modèle SDEM : autocorrélation spatiale sur les variables indépendantes et sur le terme d'erreur {#sec-07125}
 
@@ -557,14 +569,16 @@ summary(impacts(Modele.DurbinErreur, listw = W.Rook, R = 999), zstats = TRUE, sh
 
 **Dépendance spatiale du modèle SDEM?**
 
-Avec une valeur du *I* de Moran de -0,010 (*p* = 0,619), les résidus du modèle SDEM ne sont pas spatialement autocorrélés.
-
 ```{r}
 #| echo: true 
 #| message: false 
 #| eval: true
-moran.mc(resid(Modele.DurbinErreur), W.Rook, nsim=999)
+test <- moran.mc(resid(Modele.DurbinErreur), W.Rook, nsim=999)
+print(test)
 ```
+
+Avec une valeur du *I* de Moran de `{r} round(as.numeric(test$statistic),3)` (*p* = `{r} round(as.numeric(test$p.value),3)`), les résidus du modèle SDEM ne sont pas spatialement autocorrélés.
+
 
 ### Quel modèle choisir? {#sec-0713}
 
@@ -577,16 +591,19 @@ L'utilisation des tests du multiplicateur de Lagrange (simple et robuste) a ét�
 3.  Si les valeurs de `LMerr` ou `RLMerr` sont non significatives (*p* \> 0,05), alors le recours au modèle SEM n'est pas nécessaire.
 4.  Si les valeurs de `RLMlag` et `RLMerr` sont significatives (*p* \< 0,001), nous choisissons le modèle ayant la plus forte statistique.
 
-Dans les résultats ci-dessous, nous ne retenons pas le modèle SEM car la valeur de 0,740 pour le `RLMerr` n'est pas significative (*p* = 0,3898). Par contre, les valeurs de `LMlag` et de `RLMlag` (555 et 123) sont significatives, ce qui justifie la sélection du modèle SAR.
 
 ```{r}
 #| echo: true 
 #| message: false 
 #| eval: true
-summary(lm.LMtests(model = Modele.MCO,
+lag_test <- lm.LMtests(model = Modele.MCO,
                    listw = W.Rook,
-                   test = c("LMlag","LMerr","RLMlag","RLMerr")))
+                   test = c("LMlag","LMerr","RLMlag","RLMerr"))
+summary(lag_test)
 ```
+
+
+Dans les résultats ci-dessous, nous ne retenons pas le modèle SEM car la valeur de `{r} round(as.numeric(lag_test$adjRSerr$statistic),3)` pour le `adjRSerr` n'est pas significative (*p* = `{r} round(as.numeric(lag_test$adjRSerr$p.value),3)`). En revanche, les valeurs de `RSlag` et de `adjRSlag` (`{r} round(as.numeric(lag_test$RSlag$statistic),0)` et `RLMlag` (`{r} round(as.numeric(lag_test$adjRSlag$statistic),0)`) sont significatives, ce qui justifie la sélection du modèle SAR.
 
 #### Comparaison des modèles mixtes et non mixtes {#sec-07132}
 

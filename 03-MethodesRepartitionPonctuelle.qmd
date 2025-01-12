@@ -1949,7 +1949,7 @@ Une représentation particulièrement efficace de la STKDE est une carte animée
 
 ![Visualisation animée de la STKDE](images/Chap03/animated_STKDE.gif){#fig-ExampleSTKDEanim width="50%" fig-align="center"}
 
-En résumé, la seule différence avec la KDE et la SKDE est que cette dernière nécessite de déterminer une *bandwidth* temporelle (en plus de la *bandwidth* spatiale).
+En résumé, la seule différence avec la KDE et la STKDE est que cette dernière nécessite de déterminer une *bandwidth* temporelle (en plus de la *bandwidth* spatiale).
 
 #### Mise en œuvre de la STKDE dans R {#sec-03432}
 

@@ -2,11 +2,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.353">
+<meta name="generator" content="quarto-1.5.57">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <meta name="author" content="Philippe Apparicio">
 <meta name="author" content="Jérémy Gelb">
-<meta name="dcterms.date" content="2024-08-13">
+<meta name="dcterms.date" content="2025-01-12">
 <title>Méthodes d’analyse spatiale : un grand bol d’R</title>
 <style>
 code{white-space: pre-wrap;}
@@ -22,7 +22,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -33,7 +33,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -79,7 +79,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "Pas de résultats",
     "search-matching-documents-text": "documents trouvés",
@@ -88,8 +94,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-more-match-text": "correspondance de plus dans ce document",
     "search-more-matches-text": "correspondances de plus dans ce document",
     "search-clear-button-title": "Effacer",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Annuler",
-    "search-submit-button-title": "Envoyer"
+    "search-submit-button-title": "Envoyer",
+    "search-label": "Recherche"
   }
 }</script><link rel="stylesheet" href="css/quizlib.min.css">
 </head>
@@ -97,23 +105,23 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Préface</a></li></ol></nav>
-      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-      </a>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./index.html">Préface</a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
       <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
   </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Méthodes d’analyse spatiale : un grand bol d’R</a> 
         <div class="sidebar-tools-main">
-    <a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale" title="Code source" class="quarto-navigation-tool px-1" aria-label="Code source"><i class="bi bi-github"></i></a>
 </div>
     </div>
       </div>
@@ -244,7 +252,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </li>
     </ul>
 </div>
-</nav><div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table des matières</h2>
@@ -261,7 +269,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#sect006" id="toc-sect006" class="nav-link" data-scroll-target="#sect006">Remerciements</a></li>
   </ul>
 </li>
-  </ul><div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale/issues/new" class="toc-action">Signaler un problème ou<br>formuler une suggestion</a></p></div></div></nav>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale/issues/new" class="toc-action"><i class="bi bi-github"></i>Signaler un problème ou<br>formuler une suggestion</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
@@ -276,24 +284,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div class="quarto-title-meta-contents">
     <p class="author"><a href="https://www.usherbrooke.ca/recherche/fr/specialistes/details/philippe.apparicio">Philippe Apparicio</a> </p>
   </div>
-    <div class="quarto-title-meta-contents">
+  <div class="quarto-title-meta-contents">
         <p class="affiliation">
             <a href="https://www.usherbrooke.ca/geomatique/">
             Département de géomatique appliquée<br>Université de Sherbrooke
             </a>
           </p>
       </div>
-      <div class="quarto-title-meta-contents">
+    <div class="quarto-title-meta-contents">
     <p class="author"><a href="https://scholar.google.com/citations?user=oFofDScAAAAJ&amp;hl=fr">Jérémy Gelb</a> </p>
   </div>
-    <div class="quarto-title-meta-contents">
+  <div class="quarto-title-meta-contents">
         <p class="affiliation">
             <a href="https://www.artm.quebec/">
             Autorité régionale de transport métropolitain
             </a>
           </p>
       </div>
-    </div>
+  </div>
 
 <div class="quarto-title-meta">
 
@@ -301,13 +309,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Date de publication</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">2024-08-13</p>
+      <p class="date">2025-01-12</p>
     </div>
   </div>
   
     
   </div>
   
+
 
 </header><p><img src="images/introduction/Couverture_16_01-01.png" title="Méthodes d’analyse spatiale : un grand bol d’R" class="quarto-cover-image img-fluid"></p>
 <p><strong>Résumé&nbsp;:</strong> Ce livre vise à décrire une panoplie de méthodes d’analyse spatiale avec le logiciel ouvert R. Le contenu est pensé pour être accessible à tous et toutes, même à ceux et celles n’ayant presque aucune base en analyse de données spatiales ou en statistiques. La philosophie de ce livre est de donner toutes les clefs de compréhension et de mise en œuvre des méthodes abordées dans R. La présentation des méthodes est basée sur une approche compréhensive et intuitive plutôt que mathématique, sans pour autant négliger la rigueur statistique.</p>
@@ -318,13 +327,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>© Philippe Apparicio et Jérémy Gelb.</p>
 <p><strong>Pour citer cet ouvrage&nbsp;:</strong> Apparicio P. et J. Gelb (2024). <em>Méthodes d’analyse spatiales&nbsp;: un grand bol d’R</em>. Université de Sherbrooke, Département de géomatique appliquée. fabriqueREL. Licence CC&nbsp;BY-SA. <br><br></p>
 <div class="quarto-figure quarto-figure-left">
-<figure class="figure"><p><img src="images/introduction/CouvertureP2.png" class="img-fluid figure-img" style="width:80.0%"></p>
+<figure class="figure"><p><img src="images/introduction/CouvertureP2.png" class="img-fluid quarto-figure quarto-figure-left figure-img" style="width:80.0%"></p>
 </figure>
 </div>
 <section id="préface" class="level1 unnumbered"><h1 class="unnumbered">Préface</h1>
 <section id="sect001" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="sect001">Un manuel sous la forme d’une ressource éducative libre</h2>
 <p><strong>Pourquoi un manuel sous licence libre?</strong></p>
-<p>Les logiciels libres sont aujourd’hui très répandus. Comparativement aux logiciels propriétaires, l’accès au code source permet à quiconque de l’utiliser, de le modifier, de le dupliquer et de le partager. Le logiciel R, dans lequel sont mises en œuvre les méthodes d’analyse spatiale décrites dans ce livre, est d’ailleurs à la fois un langage de programmation et un logiciel libre (sous la licence publique générale <a href="https://fr.wikipedia.org/wiki/Licence_publique_g%C3%A9n%C3%A9rale_GNU">GNU GPL2</a>). Par analogie aux logiciels libres, il existe aussi des <strong>ressources éducatives libres (REL)</strong> «&nbsp;dont la licence accorde les permissions désignées par les 5R (<strong>Retenir — Réutiliser — Réviser — Remixer — Redistribuer</strong>) et donc permet nécessairement la modification&nbsp;» (<a href="https://fabriquerel.org/rel/"><strong><em>fabriqueREL</em></strong></a>). La licence de ce livre, CC BY-SA (<a href="#fig-Licence">figure&nbsp;<span>1</span></a>), permet donc de&nbsp;:</p>
+<p>Les logiciels libres sont aujourd’hui très répandus. Comparativement aux logiciels propriétaires, l’accès au code source permet à quiconque de l’utiliser, de le modifier, de le dupliquer et de le partager. Le logiciel R, dans lequel sont mises en œuvre les méthodes d’analyse spatiale décrites dans ce livre, est d’ailleurs à la fois un langage de programmation et un logiciel libre (sous la licence publique générale <a href="https://fr.wikipedia.org/wiki/Licence_publique_g%C3%A9n%C3%A9rale_GNU">GNU GPL2</a>). Par analogie aux logiciels libres, il existe aussi des <strong>ressources éducatives libres (REL)</strong> «&nbsp;dont la licence accorde les permissions désignées par les 5R (<strong>Retenir — Réutiliser — Réviser — Remixer — Redistribuer</strong>) et donc permet nécessairement la modification&nbsp;» (<a href="https://fabriquerel.org/rel/"><strong><em>fabriqueREL</em></strong></a>). La licence de ce livre, CC BY-SA (<a href="#fig-Licence" class="quarto-xref">figure&nbsp;<span>1</span></a>), permet donc de&nbsp;:</p>
 <ul>
 <li><p><strong>Retenir</strong>, c’est-à-dire télécharger et imprimer gratuitement le livre. Notez qu’il aurait été plutôt surprenant d’écrire un livre payant sur un logiciel libre et donc gratuit. Aussi, nous aurions été très embarrassés que des personnes étudiantes avec des ressources financières limitées doivent payer pour avoir accès au livre, sans pour autant savoir préalablement si le contenu est réellement adapté à leurs besoins.</p></li>
 <li><p><strong>Réutiliser</strong>, c’est-à-dire utiliser la totalité ou une section du livre sans limitation et sans compensation financière. Cela permet ainsi à d’autres personnes enseignantes de l’utiliser dans le cadre d’activités pédagogiques.</p></li>
@@ -332,14 +341,18 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <li><p><strong>Remixer</strong>, c’est-à-dire «&nbsp;combiner la ressource avec d’autres ressources dont la licence le permet aussi pour créer une nouvelle ressource intégrée&nbsp;» (<a href="https://fabriquerel.org/rel/"><strong><em>fabriqueREL</em></strong></a>).</p></li>
 <li><p><strong>Redistribuer</strong>, c’est-à-dire distribuer, en totalité ou en partie le manuel ou une version révisée sur d’autres canaux que le site Web du livre (par exemple, sur le site Moodle de votre université ou en faire une version imprimée).</p></li>
 </ul>
-<p>La licence de ce livre, CC BY-SA (<a href="#fig-Licence">figure&nbsp;<span>1</span></a>), oblige donc à&nbsp;:</p>
+<p>La licence de ce livre, CC BY-SA (<a href="#fig-Licence" class="quarto-xref">figure&nbsp;<span>1</span></a>), oblige donc à&nbsp;:</p>
 <ul>
 <li><p>Attribuer la paternité de l’auteur dans vos versions dérivées, ainsi qu’une mention concernant les grandes modifications apportées, en utilisant la formulation suivante&nbsp;: Apparicio Philippe et Jérémy Gelb (2024). <em>Méthodes d’analyses spatiales&nbsp;: un grand bol d’R</em>. Université de Sherbrooke. fabriqueREL. Licence CC&nbsp;BY-SA.</p></li>
 <li><p>Utiliser la même licence ou une licence similaire à toutes versions dérivées.</p></li>
 </ul>
-<div id="fig-Licence" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/introduction/Licence.JPG" class="img-fluid figure-img" style="width:80.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;1: Licence Creative Commons du livre</figcaption></figure>
+<div id="fig-Licence" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-Licence-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/introduction/Licence.JPG" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:80.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-Licence-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Licence Creative Commons du livre
+</figcaption></figure>
 </div>
 <div class="bloc_astuce">
 <div class="bloc_astuce-header">
@@ -445,10 +458,14 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section><section id="sect003" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="sect003">Comment utiliser les données du livre pour reproduire les exemples?</h2>
 <p>Ce livre comprend des exemples détaillés et appliqués dans R pour chacune des méthodes abordées. Ces exemples se basent sur des jeux de données structurés et mis à disposition avec le livre. Ils sont disponibles sur le <em>repo github</em> dans le sous-dossier <code>data</code>, à l’adresse <a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale/tree/main/data" class="uri">https://github.com/SerieBoldR/MethodesAnalyseSpatiale/tree/main/data</a>.</p>
-<p>Une autre option est de télécharger le <em>repo</em> complet du livre directement sur <em>github</em> (<a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale" class="uri">https://github.com/SerieBoldR/MethodesAnalyseSpatiale</a>) en cliquant sur le bouton <code>Code</code>, puis le bouton <code>Download ZIP</code> (<a href="#fig-downloaffromgit">figure&nbsp;<span>2</span></a>). Les données se trouvent alors dans le sous-dossier nommé <code>data</code>.</p>
-<div id="fig-downloaffromgit" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/introduction/download_github.png" class="img-fluid figure-img" style="width:40.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;2: Téléchargement de l’intégralité du livre</figcaption></figure>
+<p>Une autre option est de télécharger le <em>repo</em> complet du livre directement sur <em>github</em> (<a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale" class="uri">https://github.com/SerieBoldR/MethodesAnalyseSpatiale</a>) en cliquant sur le bouton <code>Code</code>, puis le bouton <code>Download ZIP</code> (<a href="#fig-downloaffromgit" class="quarto-xref">figure&nbsp;<span>2</span></a>). Les données se trouvent alors dans le sous-dossier nommé <code>data</code>.</p>
+<div id="fig-downloaffromgit" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-downloaffromgit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/introduction/download_github.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:40.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-downloaffromgit-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Téléchargement de l’intégralité du livre
+</figcaption></figure>
 </div>
 </section><section id="sect004" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="sect004">Liste des <em>packages</em> utilisés</h2>
 <p>Dans ce livre, nous utilisons de nombreux <em>packages</em> R que vous pouvez installer avec le code ci-dessous.</p>
@@ -467,11 +484,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </section><section id="sect005" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="sect005">Structure du livre</h2>
 <p>Le livre est organisé autour de cinq grandes parties.</p>
-<p><strong>Partie 1. Données spatiales et R.</strong> Dans cette première partie, nous voyons comment importer, manipuler, cartographier et exporter des données spatiales dans R, principalement avec les <em>packages</em> <code>sf</code> pour les données vectorielles, <code>terra</code> pour les données matricielles (images) et <code>tmap</code> pour la cartographie (<a href="01-ManipulationDonneesSpatiales.html">chapitre&nbsp;<span>1</span></a>). Maîtriser les notions abordées dans ce chapitre constitue une étape préalable et indispensable à tout projet d’analyse spatiale. D’une part, avant d’analyser des données spatiales, il convient de les structurer (importation et manipulation) et de les explorer (cartographie). D’autre part, une fois la ou les méthodes d’analyse spatiale mises en œuvre, il convient de cartographier les résultats finaux et de les exporter au besoin dans un format de données géographiques (shapefile (<code>shp</code>), GeoPackage (<code>GPKG</code>), GeoJSON (<code>geojson</code>), sqlite (<code>sqlite</code>), GeoTiff, etc.).</p>
-<p><strong>Partie 2. Autocorrélation spatiale</strong>. L’autocorrélation spatiale est une notion fondamentale en analyse spatiale permettant de vérifier si les entités proches ou voisines ont tendance à être (dis)semblables en fonction d’un phénomène donné. Dans le <a href="02-Autocorrelation.html">chapitre&nbsp;<span>2</span></a>, nous décrivons une panoplie de méthodes permettant de définir des matrices de pondération spatiale qui sont utilisées pour évaluer la dépendance spatiale d’une ou de plusieurs variables, soit les mesures d’autocorrélation spatiale globale et locale. La compréhension de la notion de dépendance spatiale et des différentes mesures d’autocorrélation spatiale est primordiale puisqu’elles sont largement mobilisées dans d’autres méthodes d’analyses spatiales décrites dans les chapitres suivants, notamment les régressions spatiales (<a href="07-RegressionSpatiales.html">chapitre&nbsp;<span>7</span></a>) et les méthodes de classification spatiale (<a href="08-ClassificationsSpatiales.html">chapitre&nbsp;<span>8</span></a>).</p>
-<p><strong>Partie 3. Méthodes de répartition ponctuelle et de détections d’agrégats spatiaux.</strong> Cette troisième partie comprend deux chapitres. Dans le <a href="03-MethodesRepartitionPonctuelle.html">chapitre&nbsp;<span>3</span></a>, nous abordons les principales méthodes qui permettent de décrire un semis de points dans un espace géographique donné&nbsp;: fréquence et densité des points, analyse centrographique, arrangement spatial du semis de points (méthode du plus proche voisin, méthode des quadrats), cartographie de la densité (notamment l’estimation de la densité par noyau). Dans le <a href="04-AgregatsSpatiaux.html">chapitre&nbsp;<span>4</span></a>, nous abordons deux familles de méthodes de détection d’agrégats spatiaux et spatio-temporels qui s’appliquent à des géométries différentes&nbsp;: les méthodes de classification basées sur la densité des points (couche de points), principalement les algorithmes DBSCAN et ST-DBSCAN, et les méthodes de balayage de Kulldorff (couche de polygones).</p>
-<p><strong>Partie 4. Analyses de données avec des réseaux de transport</strong>. Cette quatrième partie comprend aussi deux chapitres. Dans le <a href="05-AnalyseReseau.html">chapitre&nbsp;<span>5</span></a>, nous voyons comment construire un réseau multimode (voiture, marche, vélo, transport en commun) afin de calculer différentes mesures d’accessibilité spatiale dans R avec le <em>package</em> <code>R5R</code>. Dans le <a href="06-AnalyseReseauEvenements.html">chapitre&nbsp;<span>6</span></a>, nous décrivons plusieurs méthodes permettant de décrire la distribution spatiale d’évènements localisés sur un réseau de rues avec le <em>package</em> <code>spNetwork</code>.</p>
-<p><strong>Partie 5. Méthodes de régression spatiale et de classification spatiale</strong>. Cette cinquième et dernière partie comprend deux chapitres. Le <a href="07-RegressionSpatiales.html">chapitre&nbsp;<span>7</span></a> est consacré à plusieurs méthodes de régression intégrant l’espace&nbsp;: modèles d’économétrie spatiale, modèles généralisés additifs (GAM) avec une <em>spline</em> bivariée sur les coordonnées géographiques, régressions géographiquement pondérées. Dans le <a href="08-ClassificationsSpatiales.html">chapitre&nbsp;<span>8</span></a>, nous décrivons des méthodes permettant de regrouper des entités spatiales d’une région en plusieurs classes en fonction de leurs caractéristiques évaluées à partir de plusieurs variables. Nous distinguons deux types de méthodes de classification non supervisée spatiale&nbsp;: les méthodes de classification non supervisée avec contrainte spatiale visant à regrouper des entités spatiales en plusieurs régions avec une absence de mitage (algorithmes AZP, SKATER, REDCAP, etc.); les méthodes de classification non supervisée avec une dimension spatiale (méthode <em>ClustGeo</em> et classification floue c-moyennes spatiale).</p>
+<p><strong>Partie 1. Données spatiales et R.</strong> Dans cette première partie, nous voyons comment importer, manipuler, cartographier et exporter des données spatiales dans R, principalement avec les <em>packages</em> <code>sf</code> pour les données vectorielles, <code>terra</code> pour les données matricielles (images) et <code>tmap</code> pour la cartographie (<a href="01-ManipulationDonneesSpatiales.html" class="quarto-xref">chapitre&nbsp;<span>1&nbsp; Manipulation des données spatiales dans&nbsp;R</span></a>). Maîtriser les notions abordées dans ce chapitre constitue une étape préalable et indispensable à tout projet d’analyse spatiale. D’une part, avant d’analyser des données spatiales, il convient de les structurer (importation et manipulation) et de les explorer (cartographie). D’autre part, une fois la ou les méthodes d’analyse spatiale mises en œuvre, il convient de cartographier les résultats finaux et de les exporter au besoin dans un format de données géographiques (shapefile (<code>shp</code>), GeoPackage (<code>GPKG</code>), GeoJSON (<code>geojson</code>), sqlite (<code>sqlite</code>), GeoTiff, etc.).</p>
+<p><strong>Partie 2. Autocorrélation spatiale</strong>. L’autocorrélation spatiale est une notion fondamentale en analyse spatiale permettant de vérifier si les entités proches ou voisines ont tendance à être (dis)semblables en fonction d’un phénomène donné. Dans le <a href="02-Autocorrelation.html" class="quarto-xref">chapitre&nbsp;<span>2&nbsp; Autocorrélation spatiale</span></a>, nous décrivons une panoplie de méthodes permettant de définir des matrices de pondération spatiale qui sont utilisées pour évaluer la dépendance spatiale d’une ou de plusieurs variables, soit les mesures d’autocorrélation spatiale globale et locale. La compréhension de la notion de dépendance spatiale et des différentes mesures d’autocorrélation spatiale est primordiale puisqu’elles sont largement mobilisées dans d’autres méthodes d’analyses spatiales décrites dans les chapitres suivants, notamment les régressions spatiales (<a href="07-RegressionSpatiales.html" class="quarto-xref">chapitre&nbsp;<span>7&nbsp; Introduction aux modèles de régression spatiale</span></a>) et les méthodes de classification spatiale (<a href="08-ClassificationsSpatiales.html" class="quarto-xref">chapitre&nbsp;<span>8&nbsp; Méthodes de classification non supervisée spatiale</span></a>).</p>
+<p><strong>Partie 3. Méthodes de répartition ponctuelle et de détections d’agrégats spatiaux.</strong> Cette troisième partie comprend deux chapitres. Dans le <a href="03-MethodesRepartitionPonctuelle.html" class="quarto-xref">chapitre&nbsp;<span>3&nbsp; Méthodes de répartition ponctuelle</span></a>, nous abordons les principales méthodes qui permettent de décrire un semis de points dans un espace géographique donné&nbsp;: fréquence et densité des points, analyse centrographique, arrangement spatial du semis de points (méthode du plus proche voisin, méthode des quadrats), cartographie de la densité (notamment l’estimation de la densité par noyau). Dans le <a href="04-AgregatsSpatiaux.html" class="quarto-xref">chapitre&nbsp;<span>4&nbsp; Méthodes de détection d’agrégats spatiaux et spatio-temporels</span></a>, nous abordons deux familles de méthodes de détection d’agrégats spatiaux et spatio-temporels qui s’appliquent à des géométries différentes&nbsp;: les méthodes de classification basées sur la densité des points (couche de points), principalement les algorithmes DBSCAN et ST-DBSCAN, et les méthodes de balayage de Kulldorff (couche de polygones).</p>
+<p><strong>Partie 4. Analyses de données avec des réseaux de transport</strong>. Cette quatrième partie comprend aussi deux chapitres. Dans le <a href="05-AnalyseReseau.html" class="quarto-xref">chapitre&nbsp;<span>5&nbsp; Mesures d’accessibilité spatiale selon différents modes de transport</span></a>, nous voyons comment construire un réseau multimode (voiture, marche, vélo, transport en commun) afin de calculer différentes mesures d’accessibilité spatiale dans R avec le <em>package</em> <code>R5R</code>. Dans le <a href="06-AnalyseReseauEvenements.html" class="quarto-xref">chapitre&nbsp;<span>6&nbsp; Analyses d’évènements localisés sur un réseau</span></a>, nous décrivons plusieurs méthodes permettant de décrire la distribution spatiale d’évènements localisés sur un réseau de rues avec le <em>package</em> <code>spNetwork</code>.</p>
+<p><strong>Partie 5. Méthodes de régression spatiale et de classification spatiale</strong>. Cette cinquième et dernière partie comprend deux chapitres. Le <a href="07-RegressionSpatiales.html" class="quarto-xref">chapitre&nbsp;<span>7&nbsp; Introduction aux modèles de régression spatiale</span></a> est consacré à plusieurs méthodes de régression intégrant l’espace&nbsp;: modèles d’économétrie spatiale, modèles généralisés additifs (GAM) avec une <em>spline</em> bivariée sur les coordonnées géographiques, régressions géographiquement pondérées. Dans le <a href="08-ClassificationsSpatiales.html" class="quarto-xref">chapitre&nbsp;<span>8&nbsp; Méthodes de classification non supervisée spatiale</span></a>, nous décrivons des méthodes permettant de regrouper des entités spatiales d’une région en plusieurs classes en fonction de leurs caractéristiques évaluées à partir de plusieurs variables. Nous distinguons deux types de méthodes de classification non supervisée spatiale&nbsp;: les méthodes de classification non supervisée avec contrainte spatiale visant à regrouper des entités spatiales en plusieurs régions avec une absence de mitage (algorithmes AZP, SKATER, REDCAP, etc.); les méthodes de classification non supervisée avec une dimension spatiale (méthode <em>ClustGeo</em> et classification floue c-moyennes spatiale).</p>
 </section><section id="sect006" class="level2 unnumbered"><h2 class="unnumbered anchored" data-anchor-id="sect006">Remerciements</h2>
 <p>De nombreuses personnes ont contribué à l’élaboration de ce manuel.</p>
 <p>Ce projet a bénéficié du soutien pédagogique et financier de la <a href="https://fabriquerel.org/"><strong><em>fabriqueREL</em></strong></a> (ressources éducatives libres). Les différentes rencontres avec le comité de suivi nous ont permis de comprendre l’univers des ressources éducatives libres (REL) et notamment leurs <a href="https://fabriquerel.org/rel/">fameux 5R</a> (Retenir — Réutiliser — Réviser — Remixer — Redistribuer), de mieux définir le besoin pédagogique visé par ce manuel, d’identifier des ressources pédagogiques et des outils pertinents pour son élaboration. Ainsi, nous remercions chaleureusement les membres de la <em>fabriqueREL</em> pour leur soutien inconditionnel&nbsp;:</p>
@@ -527,18 +544,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -570,11 +576,50 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/serieboldr\.github\.io\/MethodesAnalyseSpatiale\/index\.html");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -584,8 +629,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -597,7 +651,130 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -641,6 +818,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -666,6 +844,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -727,18 +931,22 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./00-auteurs.html" class="pagination-link">
+      <a href="./00-auteurs.html" class="pagination-link" aria-label="À propos des auteurs">
         <span class="nav-page-text">À propos des auteurs</span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
 <footer class="footer"><div class="nav-footer">
-    <div class="nav-footer-left">Méthodes d’analyse spatiale : un grand bol d’R.</div>   
+    <div class="nav-footer-left">
+<p>Méthodes d’analyse spatiale : un grand bol d’R.</p>
+</div>   
     <div class="nav-footer-center">
       &nbsp;
-    </div>
-    <div class="nav-footer-right">Ce livre a été réalisé avec <a href="https://quarto.org/">Quarto</a>.</div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale/issues/new" class="toc-action"><i class="bi bi-github"></i>Signaler un problème ou<br>formuler une suggestion</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Ce livre a été réalisé avec <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
   </div>
 </footer>
 

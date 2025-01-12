@@ -558,7 +558,7 @@ Les différentes versions de l'algorithme REDCAP (*Regionalization with dynamica
 
 -   Ordre complet et critère de Ward (*Full-order and Ward-linkage*).
 
-Le code ci-dessous permet de calculer les cinq versions de l'algorithmes REDCAP avec cinq régions et de comparer leurs résultats à partir du ratio (entre les variances interrégionale et totale) et du nombre d'observations par région.
+Le code ci-dessous permet de calculer les cinq versions de l'algorithmes REDCAP avec cinq régions et de comparer leurs résultats à partir du ratio (entre les variances interrégionale et totale) et du nombre d'observations par région. Ce ratio représente la part de la variance intra-groupe dans la variance totale des données. Plus ce ratio est grand, meilleure est la classification car elle résume une plus grande partie de la variance totale. 
 
 ```{r}
 #| echo: true 
@@ -603,7 +603,7 @@ Ratios <- cbind(Ratios, Nobs)
 Ratios
 ```
 
-À la lecture des valeurs du ratio ci-dessous, la meilleure classification serait celle obtenue avec un ordre complet et le critère de Ward. Cartographions les résultats des quatre versions de l'algorithme RECAP avec un ordre complet (@fig-CartoREDCAP).
+À la lecture des valeurs du ratio ci-dessus, la meilleure classification serait celle obtenue avec un ordre complet et le critère de Ward. Cartographions les résultats des quatre versions de l'algorithme RECAP avec un ordre complet (@fig-CartoREDCAP).
 
 ```{r}
 #| echo: true 
@@ -776,7 +776,7 @@ table(LyonIris$CAH5)
 aggregate(cbind(Lden,NO2,PM25,VegHautPrt) ~ CAH5, data = st_drop_geometry(LyonIris), FUN = mean)
 ```
 
-Les résultats de la CAH sont cartographiés à la @fig-CAHCarto tandis que le nombre d'observations et les valeurs moyennes des classes sont reportés au tableau \@tbl-dataCAHtab.
+Les résultats de la CAH sont cartographiés à la @fig-CAHCarto tandis que le nombre d'observations et les valeurs moyennes des classes sont reportés au tableau @tbl-dataCAHtab.
 
 ```{r}
 #| echo: true 

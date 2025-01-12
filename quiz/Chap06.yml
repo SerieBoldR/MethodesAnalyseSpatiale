@@ -42,7 +42,7 @@
      - "Calculer une somme des densités spatiales et temporelles des évènements le long du réseau."
      - "Calculer le produit des densités spatiales et temporelles des évènements le long du réseau."
      - "Calculer l'intégrale des densités spatiales et temporelles des évènements le long du réseau."
-  help: "Relisez au besoin la [section @sec-0621]."
+  help: "Relisez au besoin la [section @sec-0623]."
 
 - label: "Pour une TNKDE, il est uniquement possible de calculer des densités selon une bandwidth fixe."
   type: uc

@@ -61,7 +61,7 @@
      - "Une matrice sémantique calculée sur p variables caractérisant les unités spatiales (D0)."
      - "Une matrice spatiale calculée à partir des distances euclidiennes entre les unités spatiales (D1)."
      - "Une matrice spatialement décalée de la matrice sémantique original (Ds)."
-  help: "Relisez au besoin la [section @sec-0812]."
+  help: "Relisez au besoin la [section @sec-0822]."
 
 - label: "Le paramètre alpha de la méthode ClustGeo permet de définir le poids accordé à la matrice spatiale. Son intervalle de variation est de :"
   type: uc
@@ -77,4 +77,4 @@
   answers:
      - "0 à 1."
      - "0 à l'infini." 
-  help: "Relisez le deuxième encadré à la [section @sec-08211]."
+  help: "Relisez la [section @sec-08222]."

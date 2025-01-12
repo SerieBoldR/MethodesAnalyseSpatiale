@@ -36,7 +36,7 @@
      - "detailed_itineraries()"
      - "setup_r5()"     
      - "travel_time_matrix()"
-  help: "Relisez au besoin la [section @sec-0523]."
+  help: "Relisez au besoin la [section @sec-0522]."
 
 - label: "Quelle fonction de R5R permet de construire un itinéraire?"
   type: uc
@@ -54,7 +54,7 @@
      - "detailed_itineraries()"
      - "setup_r5()"     
      - "travel_time_matrix()"
-  help: "Relisez au besoin la [section @sec-0523]."
+  help: "Relisez au besoin la [section @sec-0525]."
 
 - label: "Pour évaluer l'accessibilité selon la conceptualisation de la proximité immédiate, quelle mesure d'accessibilité utilisez-vous?"
   type: uc

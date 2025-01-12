@@ -10,7 +10,8 @@
 rm(list = ls())
 
 # Ne oublier de changer l'auteur avant de lancer le program "PA" ou "JG"
-author <- "PA"
+#author <- "PA"
+author <- "JG"
 
 #________________________________________________________________________________
 # DEFINITION DES CHEMINS VERS LES DEUX DOSSIERS PRINCIPAUX
@@ -26,6 +27,19 @@ if(author == "PA"){
 
 setwd(book_dir)
 
+
+#________________________________________________________________________________
+# Etape 0 : vérifier l'installation des packages nécessaires
+
+library(renv)
+deps <- dependencies()
+all_pkgs <- unique(deps$Package)
+missing_pkg <- setdiff(all_pkgs, rownames(installed.packages()))
+
+print("INSTALLING THE FOLLOWING MISSING PACKAGES : ")
+print(missing_pkg)
+
+install.packages(missing_pkg)  
 
 #________________________________________________________________________________
 # Etape 1 : compresser chacun des fichiers .rda

@@ -2,9 +2,9 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.353">
+<meta name="generator" content="quarto-1.5.57">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-<title>Méthodes d’analyse spatiale : un grand bol d’R - 4&nbsp; Méthodes de détection d’agrégats spatiaux et spatio-temporels</title>
+<title>4&nbsp; Méthodes de détection d’agrégats spatiaux et spatio-temporels – Méthodes d’analyse spatiale : un grand bol d’R</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -19,7 +19,7 @@ ul.task-list li input[type="checkbox"] {
 }
 /* CSS for syntax highlighting */
 pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span { line-height: 1.25; }
 pre > code.sourceCode > span:empty { height: 1.2em; }
 .sourceCode { overflow: visible; }
 code.sourceCode > span { color: inherit; text-decoration: inherit; }
@@ -30,7 +30,7 @@ div.sourceCode { overflow: auto; }
 }
 @media print {
 pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
 }
 pre.numberSource code
   { counter-reset: source-line 0; }
@@ -55,6 +55,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 div.csl-bib-body { }
 div.csl-entry {
   clear: both;
+  margin-bottom: 0em;
 }
 .hanging-indent div.csl-entry {
   margin-left:2em;
@@ -96,7 +97,13 @@ div.csl-indent {
   "collapse-after": 3,
   "panel-placement": "start",
   "type": "textbox",
-  "limit": 20,
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
   "language": {
     "search-no-results-text": "Pas de résultats",
     "search-matching-documents-text": "documents trouvés",
@@ -105,32 +112,59 @@ div.csl-indent {
     "search-more-match-text": "correspondance de plus dans ce document",
     "search-more-matches-text": "correspondances de plus dans ce document",
     "search-clear-button-title": "Effacer",
+    "search-text-placeholder": "",
     "search-detached-cancel-button-title": "Annuler",
-    "search-submit-button-title": "Envoyer"
+    "search-submit-button-title": "Envoyer",
+    "search-label": "Recherche"
   }
-}</script><script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><link rel="stylesheet" href="css/quizlib.min.css">
+}</script><script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script><script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script><script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN") {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script><link rel="stylesheet" href="css/quizlib.min.css">
 </head>
 <body class="nav-sidebar floating">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top"><nav class="quarto-secondary-nav"><div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04-AgregatsSpatiaux.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Méthodes de détection d'agrégats spatiaux et spatio-temporels</span></a></li></ol></nav>
-      <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-      </a>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./04-AgregatsSpatiaux.html"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Méthodes de détection d’agrégats spatiaux et spatio-temporels</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Basculer la barre latérale" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
       <button type="button" class="btn quarto-search-button" aria-label="Recherche" onclick="window.quartoOpenSearch();">
         <i class="bi bi-search"></i>
       </button>
     </div>
   </nav></header><!-- content --><div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto"><div class="pt-lg-2 mt-2 text-left sidebar-header">
     <div class="sidebar-title mb-0 py-0">
       <a href="./">Méthodes d’analyse spatiale : un grand bol d’R</a> 
         <div class="sidebar-tools-main">
-    <a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale" title="Code source" class="quarto-navigation-tool px-1" aria-label="Code source"><i class="bi bi-github"></i></a>
 </div>
     </div>
       </div>
@@ -261,7 +295,7 @@ div.csl-indent {
 </li>
     </ul>
 </div>
-</nav><div id="quarto-sidebar-glass" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass"></div>
+</nav><div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active"><h2 id="toc-title">Table des matières</h2>
@@ -285,7 +319,7 @@ div.csl-indent {
 </li>
   <li><a href="#sec-044" id="toc-sec-044" class="nav-link" data-scroll-target="#sec-044"><span class="header-section-number">4.3</span> Quiz de révision du chapitre</a></li>
   <li><a href="#sec-045" id="toc-sec-045" class="nav-link" data-scroll-target="#sec-045"><span class="header-section-number">4.4</span> Exercices de révision</a></li>
-  </ul><div class="toc-actions"><div><i class="bi bi-github"></i></div><div class="action-links"><p><a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale/issues/new" class="toc-action">Signaler un problème ou<br>formuler une suggestion</a></p></div></div></nav>
+  </ul><div class="toc-actions"><ul><li><a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale/issues/new" class="toc-action"><i class="bi bi-github"></i>Signaler un problème ou<br>formuler une suggestion</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content"><header id="title-block-header" class="quarto-title-block default"><div class="quarto-title">
@@ -301,6 +335,7 @@ div.csl-indent {
     
   </div>
   
+
 
 </header><p>Dans ce chapitre, nous abordons deux familles de méthodes de détection d’agrégats spatiaux et spatio-temporels qui s’appliquent à des géométries différentes&nbsp;: les méthodes de classification basées sur la densité des points (couche de points), principalement les algorithmes DBSCAN <span class="citation" data-cites="DBSCAN1996">(<a href="references.html#ref-DBSCAN1996" role="doc-biblioref">Ester et al. 1996</a>)</span> et ST-DBSCAN <span class="citation" data-cites="birant2007st">(<a href="references.html#ref-birant2007st" role="doc-biblioref">Birant et Kut 2007</a>)</span>, et les méthodes de balayage de Kulldorff <span class="citation" data-cites="kulldorff1997spatial">(<a href="references.html#ref-kulldorff1997spatial" role="doc-biblioref">1997</a>)</span> (couche polygonale).</p>
 <div class="bloc_package">
@@ -347,7 +382,7 @@ div.csl-indent {
 <p><strong>Pourquoi utiliser DBSCAN ?</strong></p>
 </div>
 <div class="bloc_objectif-body">
-<p>Dans le chapitre précédent, portant sur les <em>méthodes de répartition ponctuelles</em>, nous avons abordé la méthode KDE permettant de cartographier la densité de points dans une maille régulière (<a href="03-MethodesRepartitionPonctuelle.html#sec-0342">section&nbsp;<span>3.4.2</span></a>). La carte de chaleur obtenue avec la KDE représente les valeurs de densité (variable continue) pour les pixels couvrant le territoire à l’étude.</p>
+<p>Dans le chapitre précédent, portant sur les <em>méthodes de répartition ponctuelles</em>, nous avons abordé la méthode KDE permettant de cartographier la densité de points dans une maille régulière (<a href="03-MethodesRepartitionPonctuelle.html#sec-0342" class="quarto-xref">section&nbsp;<span>3.4.2</span></a>). La carte de chaleur obtenue avec la KDE représente les valeurs de densité (variable continue) pour les pixels couvrant le territoire à l’étude.</p>
 <p>Avec l’algorithme DBSCAN <span class="citation" data-cites="DBSCAN1996">(<a href="references.html#ref-DBSCAN1996" role="doc-biblioref">Ester et al. 1996</a>)</span>, l’objectif est différent&nbsp;: il s’agit d’<strong>identifier des agrégats spatiaux d’évènements ponctuels dans un territoire donné</strong> (par exemple, des cas de maladies, d’accidents, d’espèces fauniques ou végétales, de crimes, etc.). Autrement dit, il s’agit d’identifier plusieurs régions du territoire à l’étude dans lesquelles la densité de points est forte.</p>
 <p>Concrètement, si la méthode KDE renvoie une variable continue pour l’ensemble du territoire, l’algorithme DBSCAN renvoie une variable qualitative uniquement pour les points du jeu de données.</p>
 </div>
@@ -355,21 +390,29 @@ div.csl-indent {
 <section id="sec-04111" class="level4" data-number="4.1.1.1"><h4 data-number="4.1.1.1" class="anchored" data-anchor-id="sec-04111">
 <span class="header-section-number">4.1.1.1</span> Fonctionnement de DBSCAN</h4>
 <p>DBSCAN (<em><strong>D</strong>ensity-<strong>B</strong>ased <strong>S</strong>patial <strong>C</strong>lustering of <strong>A</strong>pplications with <strong>N</strong>oise</em>) est un algorithme de classification non supervisée qui regroupe des observations en fonction de <strong>leur densité</strong> dans un espace à deux, trois ou <em>n</em> dimensions <span class="citation" data-cites="DBSCAN1996">(<a href="references.html#ref-DBSCAN1996" role="doc-biblioref">Ester et al. 1996</a>)</span>. Comme pour toute autre méthode de classification non supervisée, ces dimensions sont des variables. Par conséquent, en appliquant DBSCAN sur les coordonnées géographiques d’entités ponctuelles 2D (<em>x</em>, <em>y</em>) ou 3D (<em>x</em>, <em>y</em>, <em>z</em>), nous classifions les points du jeu de données.</p>
-<p>Prenons un jeu de données fictives (<a href="#fig-DonnesFictivesDBSCAN">figure&nbsp;<span>4.1</span></a>, a). À l’œil nu, nous identifions clairement cinq régions distinctes avec une forte densité de points et des zones de faible densité; ces dernières étant représentées par les points noirs avec DBSCAN (<a href="#fig-DonnesFictivesDBSCAN">figure&nbsp;<span>4.1</span></a>, b).</p>
+<p>Prenons un jeu de données fictives (<a href="#fig-DonnesFictivesDBSCAN" class="quarto-xref">figure&nbsp;<span>4.1</span></a>, a). À l’œil nu, nous identifions clairement cinq régions distinctes avec une forte densité de points et des zones de faible densité; ces dernières étant représentées par les points noirs avec DBSCAN (<a href="#fig-DonnesFictivesDBSCAN" class="quarto-xref">figure&nbsp;<span>4.1</span></a>, b).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-DonnesFictivesDBSCAN" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="04-AgregatsSpatiaux_files/figure-html/fig-DonnesFictivesDBSCAN-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.1: Jeu de données fictives et classification DBSCAN avec cinq classes</figcaption></figure>
+<div id="fig-DonnesFictivesDBSCAN" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-DonnesFictivesDBSCAN-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="04-AgregatsSpatiaux_files/figure-html/fig-DonnesFictivesDBSCAN-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-DonnesFictivesDBSCAN-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.1: Jeu de données fictives et classification DBSCAN avec cinq classes
+</figcaption></figure>
 </div>
 </div>
 </div>
-<p>L’intérêt majeur de l’algorithme DBSCAN est qu’il est basé sur la <strong>densité des points</strong> et non sur la <strong>distance entre les points</strong> comme les algorithmes classiques de classification non supervisée que sont les k-moyennes, k-médianes, k-médoïdes ou la classification ascendante hiérarchique. Tel qu’illustré à la <a href="#fig-AutresMethodesClassifNonSuperv">figure&nbsp;<span>4.2</span></a>, l’utilisation de la distance pour identifier cinq groupes de points renvoie des résultats peu convaincants. D’une part, tous les points appartiennent à une classe, sans séparer les régions de fortes et de faibles densités. D’autre part, les algorithmes classiques basés sur la distance ne parviennent pas à bien identifier les deux agrégats circulaires (bleu et rouge à la <a href="#fig-DonnesFictivesDBSCAN">figure&nbsp;<span>4.1</span></a>, b) et parfois linéaires (vert et mauve à la <a href="#fig-DonnesFictivesDBSCAN">figure&nbsp;<span>4.1</span></a>, b).</p>
+<p>L’intérêt majeur de l’algorithme DBSCAN est qu’il est basé sur la <strong>densité des points</strong> et non sur la <strong>distance entre les points</strong> comme les algorithmes classiques de classification non supervisée que sont les k-moyennes, k-médianes, k-médoïdes ou la classification ascendante hiérarchique. Tel qu’illustré à la <a href="#fig-AutresMethodesClassifNonSuperv" class="quarto-xref">figure&nbsp;<span>4.2</span></a>, l’utilisation de la distance pour identifier cinq groupes de points renvoie des résultats peu convaincants. D’une part, tous les points appartiennent à une classe, sans séparer les régions de fortes et de faibles densités. D’autre part, les algorithmes classiques basés sur la distance ne parviennent pas à bien identifier les deux agrégats circulaires (bleu et rouge à la <a href="#fig-DonnesFictivesDBSCAN" class="quarto-xref">figure&nbsp;<span>4.1</span></a>, b) et parfois linéaires (vert et mauve à la <a href="#fig-DonnesFictivesDBSCAN" class="quarto-xref">figure&nbsp;<span>4.1</span></a>, b).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-AutresMethodesClassifNonSuperv" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="04-AgregatsSpatiaux_files/figure-html/fig-AutresMethodesClassifNonSuperv-1.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.2: Classification avec d’autres algorithmes basés sur la distance</figcaption></figure>
+<div id="fig-AutresMethodesClassifNonSuperv" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-AutresMethodesClassifNonSuperv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="04-AgregatsSpatiaux_files/figure-html/fig-AutresMethodesClassifNonSuperv-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-AutresMethodesClassifNonSuperv-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.2: Classification avec d’autres algorithmes basés sur la distance
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -389,15 +432,19 @@ div.csl-indent {
 <p>Comparativement à d’autres méthodes de classification non supervisées comme les k-moyennes, k-médianes et k-médoïdes, DBSCAN ne requiert pas de spécifier le nombre de classes à identifier dans le jeu de données. Autrement dit, appliqué à des géométries ponctuelles, l’algorithme DBSCAN détecte autant d’agrégats spatiaux que nécessaire en fonction des valeurs des deux paramètres (<span class="math inline">\(\epsilon\)</span> et <span class="math inline">\(MinPts\)</span>).</p>
 </div>
 </div>
-<p>À la <a href="#fig-TypesPointsDBSCAN">figure&nbsp;<span>4.3</span></a>, nous appliquons l’algorithme DBSCAN à un semis de points avec un rayon de recherche de 500&nbsp;mètres (<span class="math inline">\(\epsilon=500\)</span>) et un nombre minimum de cinq points (<span class="math inline">\(MinPts = 5\)</span>). Dans un premier temps, l’algorithme distingue trois types de points&nbsp;:</p>
+<p>À la <a href="#fig-TypesPointsDBSCAN" class="quarto-xref">figure&nbsp;<span>4.3</span></a>, nous appliquons l’algorithme DBSCAN à un semis de points avec un rayon de recherche de 500&nbsp;mètres (<span class="math inline">\(\epsilon=500\)</span>) et un nombre minimum de cinq points (<span class="math inline">\(MinPts = 5\)</span>). Dans un premier temps, l’algorithme distingue trois types de points&nbsp;:</p>
 <ol type="1">
 <li>Des <strong>points centraux</strong> (<em>core points</em> en anglais) qui ont au moins cinq points (incluant eux-mêmes) dans un rayon de 500&nbsp;mètres (points rouges).</li>
 <li>Des <strong>points frontières</strong> (<em>border points</em>) qui ont moins de cinq points (incluant eux-mêmes) dans un rayon de 500&nbsp;mètres, mais qui sont inclus dans la zone tampon de 500&nbsp;mètres d’un point central (points bleus).</li>
 <li>Des <strong>points aberrants</strong> (<em>noise points</em>) qui ont moins de cinq points (incluant eux-mêmes) dans un rayon de 500&nbsp;mètres et qui ne sont pas inclus dans la zone tampon d’un point central (points noirs).</li>
 </ol>
-<div id="fig-TypesPointsDBSCAN" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap04/DbscanTypesPoints.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.3: Trois types de points identifiés par l’algorithme DBSCAN</figcaption></figure>
+<div id="fig-TypesPointsDBSCAN" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-TypesPointsDBSCAN-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap04/DbscanTypesPoints.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-TypesPointsDBSCAN-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.3: Trois types de points identifiés par l’algorithme DBSCAN
+</figcaption></figure>
 </div>
 <p>Par la suite, les étapes de l’algorithme sont les suivantes&nbsp;:</p>
 <ul>
@@ -418,24 +465,32 @@ div.csl-indent {
 </ul>
 </li>
 </ul>
-<p>Nous obtenons ainsi <em>k</em> agrégats (valeurs de 1 à <em>k</em>) tandis que les points aberrants sont affectés à la même classe (valeur de 0 habituellement). Appliqué au semis de points, DBSCAN a détecté deux agrégats et quatre points aberrants (<a href="#fig-ResultatsDBSCAN">figure&nbsp;<span>4.4</span></a>).</p>
-<div id="fig-ResultatsDBSCAN" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap04/DbscanResultats.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.4: Résultats de l’algorithme DBSCAN</figcaption></figure>
+<p>Nous obtenons ainsi <em>k</em> agrégats (valeurs de 1 à <em>k</em>) tandis que les points aberrants sont affectés à la même classe (valeur de 0 habituellement). Appliqué au semis de points, DBSCAN a détecté deux agrégats et quatre points aberrants (<a href="#fig-ResultatsDBSCAN" class="quarto-xref">figure&nbsp;<span>4.4</span></a>).</p>
+<div id="fig-ResultatsDBSCAN" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-ResultatsDBSCAN-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap04/DbscanResultats.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ResultatsDBSCAN-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.4: Résultats de l’algorithme DBSCAN
+</figcaption></figure>
 </div>
 </section><section id="sec-04112" class="level4" data-number="4.1.1.2"><h4 data-number="4.1.1.2" class="anchored" data-anchor-id="sec-04112">
 <span class="header-section-number">4.1.1.2</span> Sensibilité et optimisation des paramètres de DBSCAN</h4>
 <p>Les résultats de l’algorithme de DBSCAN varient en fonction de ses deux paramètres, soit le rayon de recherche (<span class="math inline">\(\epsilon\)</span>) et le nombre minimum de points (<span class="math inline">\(MinPts\)</span>).</p>
 <p>Concernant le paramètre <span class="math inline">\(\epsilon\)</span>, plus sa valeur est réduite, plus le nombre de points identifiés comme aberrants est important. Inversement, plus elle est grande, plus le nombre d’agrégats diminue. En guise d’illustration, faisons varier la valeur du rayon en maintenant à cinq le nombre minimum de points&nbsp;:</p>
 <ul>
-<li><p>Avec un rayon de 250&nbsp;mètres, cinq agrégats sont identifiés tandis que 29&nbsp;points sont considérés comme du bruit (<a href="#fig-VariationResultatsDBSCAN">figure&nbsp;<span>4.5</span></a>, a).</p></li>
-<li><p>Avec un rayon de 500&nbsp;mètres, la solution est plus optimale avec deux agrégats et cinq points aberrants (<a href="#fig-VariationResultatsDBSCAN">figure&nbsp;<span>4.5</span></a>, b).</p></li>
-<li><p>Avec un rayon de 1000&nbsp;mètres, deux agrégats sont aussi identifiés. Par contre, il ne reste plus qu’un point aberrant. Par conséquent, quatre points qui, à l’œil nu, sont très éloignés d’un agrégat y sont pourtant affectés (<a href="#fig-VariationResultatsDBSCAN">figure&nbsp;<span>4.5</span></a>, c).</p></li>
-<li><p>Avec un rayon de 1500&nbsp;mètres, tous les points sont affectés à un et un seul agrégat (<a href="#fig-VariationResultatsDBSCAN">figure&nbsp;<span>4.5</span></a>, d).</p></li>
+<li><p>Avec un rayon de 250&nbsp;mètres, cinq agrégats sont identifiés tandis que 29&nbsp;points sont considérés comme du bruit (<a href="#fig-VariationResultatsDBSCAN" class="quarto-xref">figure&nbsp;<span>4.5</span></a>, a).</p></li>
+<li><p>Avec un rayon de 500&nbsp;mètres, la solution est plus optimale avec deux agrégats et cinq points aberrants (<a href="#fig-VariationResultatsDBSCAN" class="quarto-xref">figure&nbsp;<span>4.5</span></a>, b).</p></li>
+<li><p>Avec un rayon de 1000&nbsp;mètres, deux agrégats sont aussi identifiés. Par contre, il ne reste plus qu’un point aberrant. Par conséquent, quatre points qui, à l’œil nu, sont très éloignés d’un agrégat y sont pourtant affectés (<a href="#fig-VariationResultatsDBSCAN" class="quarto-xref">figure&nbsp;<span>4.5</span></a>, c).</p></li>
+<li><p>Avec un rayon de 1500&nbsp;mètres, tous les points sont affectés à un et un seul agrégat (<a href="#fig-VariationResultatsDBSCAN" class="quarto-xref">figure&nbsp;<span>4.5</span></a>, d).</p></li>
 </ul>
-<div id="fig-VariationResultatsDBSCAN" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap04/DbscanResultatsVariation.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.5: Variations de résultats de l’algorithme DBSCAN selon la taille du rayon</figcaption></figure>
+<div id="fig-VariationResultatsDBSCAN" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-VariationResultatsDBSCAN-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap04/DbscanResultatsVariation.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-VariationResultatsDBSCAN-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.5: Variations de résultats de l’algorithme DBSCAN selon la taille du rayon
+</figcaption></figure>
 </div>
 <p>Concernant le paramètre <span class="math inline">\(MinPts\)</span>, plusieurs stratégies ont été proposées pour fixer sa valeur&nbsp;:</p>
 <ul>
@@ -450,17 +505,21 @@ div.csl-indent {
 <ul>
 <li><p>Pour chacun des points, calculer la distance au <em>k</em><sup>ième</sup> point le plus proche.</p></li>
 <li><p>Trier les valeurs obtenues pour construire un graphique en courbe.</p></li>
-<li><p>Dans ce graphique, utiliser le <em>critère du coude</em> pour repérer la ou les valeurs signalant un décrochement dans la courbe. À la lecture de la <a href="#fig-KPlusProcheDbScan">figure&nbsp;<span>4.6</span></a>, les valeurs d’epsilon (<span class="math inline">\(\epsilon\)</span>) à retenir pourraient être 300, 350, 425 et 450&nbsp;mètres.</p></li>
+<li><p>Dans ce graphique, utiliser le <em>critère du coude</em> pour repérer la ou les valeurs signalant un décrochement dans la courbe. À la lecture de la <a href="#fig-KPlusProcheDbScan" class="quarto-xref">figure&nbsp;<span>4.6</span></a>, les valeurs d’epsilon (<span class="math inline">\(\epsilon\)</span>) à retenir pourraient être 300, 350, 425 et 450&nbsp;mètres.</p></li>
 </ul>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-KPlusProcheDbScan" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="04-AgregatsSpatiaux_files/figure-html/fig-KPlusProcheDbScan-1.png" class="img-fluid figure-img" style="width:65.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.6: Optimisation de la valeur d’epsilon</figcaption></figure>
+<div id="fig-KPlusProcheDbScan" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-KPlusProcheDbScan-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="04-AgregatsSpatiaux_files/figure-html/fig-KPlusProcheDbScan-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-KPlusProcheDbScan-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.6: Optimisation de la valeur d’epsilon
+</figcaption></figure>
 </div>
 </div>
 </div>
-<p>Si vous repérez plusieurs seuils de distance dans le graphique des distances au <em>k</em><sup>ième</sup> plus proche voisin, réalisez et comparez les résultats des DBSCAN avec ces valeurs d’epsilon. À la <a href="#fig-DbscanResultatsOptimatisationEpsilon">figure&nbsp;<span>4.7</span></a>, nous constatons que les résultats avec des seuils de 425 et 450&nbsp;mètres sont identiques et semblent optimaux. Par contre, la solution avec un rayon de 350&nbsp;mètres identifie deux points aberrants qui pourraient être intégrés au deuxième agrégat tandis que celle avec un rayon de 300&nbsp;mètres identifie un agrégat supplémentaire, mais classifie de nombreux points comme aberrants.</p>
+<p>Si vous repérez plusieurs seuils de distance dans le graphique des distances au <em>k</em><sup>ième</sup> plus proche voisin, réalisez et comparez les résultats des DBSCAN avec ces valeurs d’epsilon. À la <a href="#fig-DbscanResultatsOptimatisationEpsilon" class="quarto-xref">figure&nbsp;<span>4.7</span></a>, nous constatons que les résultats avec des seuils de 425 et 450&nbsp;mètres sont identiques et semblent optimaux. Par contre, la solution avec un rayon de 350&nbsp;mètres identifie deux points aberrants qui pourraient être intégrés au deuxième agrégat tandis que celle avec un rayon de 300&nbsp;mètres identifie un agrégat supplémentaire, mais classifie de nombreux points comme aberrants.</p>
 <div class="bloc_attention">
 <div class="bloc_attention-header">
 <div class="bloc_attention-icon">
@@ -472,9 +531,13 @@ div.csl-indent {
 <p>Comme pour toute analyse de classification, votre choix peut être objectif et reposer uniquement sur des indicateurs statistiques (ici, le graphique des distances au <em>k</em> plus proche voisin). Il devrait aussi s’appuyer sur vos connaissances du terrain. Par exemple, l’identification d’un troisième agrégat avec une valeur d’epsilon fixée à 300&nbsp;mètres pourrait refléter selon vous une réalité terrain particulièrement intéressante qui motiverait fortement le choix de cette solution.</p>
 </div>
 </div>
-<div id="fig-DbscanResultatsOptimatisationEpsilon" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="images/Chap04/DbscanResultatsOptimatisationEpsilon.png" class="img-fluid figure-img" style="width:75.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.7: Comparaison de solutions DBSCAN avec différentes valeurs d’epsilon</figcaption></figure>
+<div id="fig-DbscanResultatsOptimatisationEpsilon" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-DbscanResultatsOptimatisationEpsilon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/Chap04/DbscanResultatsOptimatisationEpsilon.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:75.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-DbscanResultatsOptimatisationEpsilon-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.7: Comparaison de solutions DBSCAN avec différentes valeurs d’epsilon
+</figcaption></figure>
 </div>
 <div class="bloc_aller_loin">
 <div class="bloc_aller_loin-header">
@@ -490,7 +553,7 @@ div.csl-indent {
 <li><p>OPTICS (<em><strong>O</strong>rdering <strong>P</strong>oints <strong>T</strong>o <strong>I</strong>dentify the <strong>C</strong>lustering <strong>S</strong>tructure</em>) <span class="citation" data-cites="HDBSCAN2013">(<a href="references.html#ref-HDBSCAN2013" role="doc-biblioref">Campello, Moulavi et Sander 2013</a>)</span>. Avec OPTICS, la distance de voisinage (<span class="math inline">\(\epsilon\)</span>) n’a pas besoin d’être spécifiée. Succinctement, pour chaque point du jeu de données, il utilise la distance au <span class="math inline">\(k\)</span> (<span class="math inline">\(MinPts\)</span>) plus proche voisin.</p></li>
 </ul>
 <p><strong>Application à des évènements localisés sur un réseau de rues</strong></p>
-<p>Lorsque les évènements sont localisés sur un réseau de rues (des accidents par exemple), il convient d’utiliser une autre métrique que la distance euclidienne pour le rayon de recherche (<span class="math inline">\(\epsilon\)</span>), soit la distance du chemin le plus court à travers le réseau de rues, ce que nous verrons au chapitre suivant (<a href="06-AnalyseReseauEvenements.html#sec-064">section&nbsp;<span>6.4</span></a>). Geoff Boeing a aussi proposé un <a href="https://geoffboeing.com/2018/04/network-based-spatial-clustering/">un code Python</a> basé sur la librairie <a href="https://geoffboeing.com/2016/11/osmnx-python-street-networks/">OSMnx</a>.</p>
+<p>Lorsque les évènements sont localisés sur un réseau de rues (des accidents par exemple), il convient d’utiliser une autre métrique que la distance euclidienne pour le rayon de recherche (<span class="math inline">\(\epsilon\)</span>), soit la distance du chemin le plus court à travers le réseau de rues, ce que nous verrons au chapitre suivant (<a href="06-AnalyseReseauEvenements.html#sec-064" class="quarto-xref">section&nbsp;<span>6.4</span></a>). Geoff Boeing a aussi proposé un <a href="https://geoffboeing.com/2018/04/network-based-spatial-clustering/">un code Python</a> basé sur la librairie <a href="https://geoffboeing.com/2016/11/osmnx-python-street-networks/">OSMnx</a>.</p>
 </div>
 </div>
 </section></section><section id="sec-0412" class="level3" data-number="4.1.2"><h3 data-number="4.1.2" class="anchored" data-anchor-id="sec-0412">
@@ -523,12 +586,16 @@ div.csl-indent {
 <li>
 <code>weights</code>: un vecteur numérique optionnel pour pondérer les points.</li>
 </ul>
-<p>Pour illustrer le fonctionnement de la méthode DBSCAN, nous avons extrait les accidents d’un <a href="https://donneesouvertes-sherbrooke.opendata.arcgis.com/datasets/64d19d62f0804f5896e4b24c32aea49d_0/explore?location=45.403675%2C-71.960143%2C12.65">jeu de données sur les incidents de sécurité publique survenus sur le territoire de la Ville de Sherbrooke de juillet 2019 à juin 2022</a> (<a href="#fig-CartoAccidents">figure&nbsp;<span>4.8</span></a>).</p>
+<p>Pour illustrer le fonctionnement de la méthode DBSCAN, nous avons extrait les accidents d’un <a href="https://donneesouvertes-sherbrooke.opendata.arcgis.com/datasets/64d19d62f0804f5896e4b24c32aea49d_0/explore?location=45.403675%2C-71.960143%2C12.65">jeu de données sur les incidents de sécurité publique survenus sur le territoire de la Ville de Sherbrooke de juillet 2019 à juin 2022</a> (<a href="#fig-CartoAccidents" class="quarto-xref">figure&nbsp;<span>4.8</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="cell-output-display">
-<div id="fig-CartoAccidents" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="04-AgregatsSpatiaux_files/figure-html/fig-CartoAccidents-1.png" class="img-fluid figure-img" style="width:65.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.8: Accidents survenus entre juillet 2019 et juin 2022, Ville de Sherbrooke</figcaption></figure>
+<div id="fig-CartoAccidents" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CartoAccidents-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="04-AgregatsSpatiaux_files/figure-html/fig-CartoAccidents-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-CartoAccidents-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.8: Accidents survenus entre juillet 2019 et juin 2022, Ville de Sherbrooke
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -538,7 +605,7 @@ div.csl-indent {
 <li>Récupération des coordonnées (<span class="math inline">\(x\)</span>, <span class="math inline">\(y\)</span>) des accidents et stockage dans une matrice.</li>
 <li>Construction du graphique à partir de la distance au quatrième point le plus proche.</li>
 </ul>
-<p>Nous n’observons pas de décrochement particulier dans la courbe de la <a href="#fig-GraphiqueAccidentsDist4">figure&nbsp;<span>4.9</span></a>. Par conséquent, nous pourrions tout aussi bien retenir une distance euclidienne de 250, 500, 1000 ou 1500&nbsp;mètres pour epsilon.</p>
+<p>Nous n’observons pas de décrochement particulier dans la courbe de la <a href="#fig-GraphiqueAccidentsDist4" class="quarto-xref">figure&nbsp;<span>4.9</span></a>. Par conséquent, nous pourrions tout aussi bien retenir une distance euclidienne de 250, 500, 1000 ou 1500&nbsp;mètres pour epsilon.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-tmap.github.io/tmap/">tmap</a></span><span class="op">)</span></span>
@@ -561,9 +628,13 @@ div.csl-indent {
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept<span class="op">=</span><span class="fl">1000</span>, color <span class="op">=</span> <span class="st">"#67000d"</span>, linetype<span class="op">=</span><span class="st">"dashed"</span>, size<span class="op">=</span><span class="fl">1</span><span class="op">)</span><span class="op">+</span></span>
 <span>  <span class="fu"><a href="https://ggplot2.tidyverse.org/reference/geom_abline.html">geom_hline</a></span><span class="op">(</span>yintercept<span class="op">=</span><span class="fl">1500</span>, color <span class="op">=</span> <span class="st">"#3f007d"</span>, linetype<span class="op">=</span><span class="st">"dashed"</span>, size<span class="op">=</span><span class="fl">1</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-GraphiqueAccidentsDist4" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="04-AgregatsSpatiaux_files/figure-html/fig-GraphiqueAccidentsDist4-1.png" class="img-fluid figure-img" style="width:65.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.9: Optimisation de la valeur d’epsilon pour les accidents</figcaption></figure>
+<div id="fig-GraphiqueAccidentsDist4" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-GraphiqueAccidentsDist4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="04-AgregatsSpatiaux_files/figure-html/fig-GraphiqueAccidentsDist4-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-GraphiqueAccidentsDist4-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.9: Optimisation de la valeur d’epsilon pour les accidents
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -664,19 +735,31 @@ Available fields: cluster, eps, minPts, dist, borderPoints</code></pre>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_mode.html">tmap_mode</a></span><span class="op">(</span><span class="st">"plot"</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">Accidents.sf</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"Dbscan250"</span>, title <span class="op">=</span> <span class="st">"DBSCAN 250"</span>, size <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="04-AgregatsSpatiaux_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="04-AgregatsSpatiaux_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode" id="cb12"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">Accidents.sf</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"Dbscan500"</span>, title <span class="op">=</span> <span class="st">"DBSCAN 500"</span>, size <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="04-AgregatsSpatiaux_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="04-AgregatsSpatiaux_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode" id="cb13"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">Accidents.sf</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"Dbscan1000"</span>, title <span class="op">=</span> <span class="st">"DBSCAN 1000"</span>, size <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="04-AgregatsSpatiaux_files/figure-html/unnamed-chunk-9-3.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="04-AgregatsSpatiaux_files/figure-html/unnamed-chunk-9-3.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">Accidents.sf</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_symbols.html">tm_dots</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"Dbscan1500"</span>, title <span class="op">=</span> <span class="st">"DBSCAN 1500"</span>, size <span class="op">=</span> <span class="fl">.5</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<p><img src="04-AgregatsSpatiaux_files/figure-html/unnamed-chunk-9-4.png" class="img-fluid" width="672"></p>
+<div>
+<figure class="figure"><p><img src="04-AgregatsSpatiaux_files/figure-html/unnamed-chunk-9-4.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
 </div>
 </div>
 </section><section id="sec-04142" class="level4" data-number="4.1.3.2"><h4 data-number="4.1.3.2" class="anchored" data-anchor-id="sec-04142">
@@ -777,7 +860,7 @@ Available fields: cluster, eps, minPts, dist, borderPoints</code></pre>
 26 26                    3 2021-04-13 2021-04-26               13</code></pre>
 </div>
 </div>
-<p>La <a href="#fig-GraphStScanEps1000Eps21">figure&nbsp;<span>4.10</span></a> présente les points et l’étendue temporelle de chaque agrégat.</p>
+<p>La <a href="#fig-GraphStScanEps1000Eps21" class="quarto-xref">figure&nbsp;<span>4.10</span></a> présente les points et l’étendue temporelle de chaque agrégat.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb22"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Construction du graphique</span></span>
 <span><span class="fu"><a href="https://ggplot2.tidyverse.org/reference/ggplot.html">ggplot</a></span><span class="op">(</span><span class="va">Agregats</span><span class="op">)</span> <span class="op">+</span> </span>
@@ -790,13 +873,17 @@ Available fields: cluster, eps, minPts, dist, borderPoints</code></pre>
 <span>       y<span class="op">=</span> <span class="st">"Identifiant de l'agrégat"</span>,</span>
 <span>       title <span class="op">=</span> <span class="st">"ST-DBSCAN avec Esp1 = 1000, Esp2 = 21 et MinPts = 4"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-GraphStScanEps1000Eps21" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="04-AgregatsSpatiaux_files/figure-html/fig-GraphStScanEps1000Eps21-1.png" class="img-fluid figure-img" style="width:65.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.10: Intervalles temporels des agrégats ST-DBSCAN</figcaption></figure>
+<div id="fig-GraphStScanEps1000Eps21" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-GraphStScanEps1000Eps21-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="04-AgregatsSpatiaux_files/figure-html/fig-GraphStScanEps1000Eps21-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-GraphStScanEps1000Eps21-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.10: Intervalles temporels des agrégats ST-DBSCAN
+</figcaption></figure>
 </div>
 </div>
 </div>
-<p>La cartographie des agrégats est présentée à la <a href="#fig-CarteStScanEps1000Eps21">figure&nbsp;<span>4.11</span></a> avec en noir les points aberrants.</p>
+<p>La cartographie des agrégats est présentée à la <a href="#fig-CarteStScanEps1000Eps21" class="quarto-xref">figure&nbsp;<span>4.11</span></a> avec en noir les points aberrants.</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb23"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Création de deux couches : l'une pour les agrégats, l'autre pour les points aberrants</span></span>
 <span><span class="va">stdbcan.Agregats</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/subset.html">subset</a></span><span class="op">(</span><span class="va">Accidents.sf</span>, <span class="va">Accidents.sf</span><span class="op">$</span><span class="va">stdbscan.1000_21</span> <span class="op">!=</span> <span class="st">"00"</span><span class="op">)</span></span>
@@ -811,9 +898,13 @@ Available fields: cluster, eps, minPts, dist, borderPoints</code></pre>
 <span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame <span class="op">=</span> <span class="cn">FALSE</span>, legend.position <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"center"</span>, <span class="st">"bottom"</span><span class="op">)</span>,</span>
 <span>          legend.text.size <span class="op">=</span> <span class="fl">.85</span>, legend.outside <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
-<div id="fig-CarteStScanEps1000Eps21" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure"><p><img src="04-AgregatsSpatiaux_files/figure-html/fig-CarteStScanEps1000Eps21-1.png" class="img-fluid figure-img" style="width:65.0%"></p>
-<figcaption class="figure-caption">Figure&nbsp;4.11: Agrégats identifiés avec ST-DBSCAN</figcaption></figure>
+<div id="fig-CarteStScanEps1000Eps21" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
+<figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CarteStScanEps1000Eps21-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="04-AgregatsSpatiaux_files/figure-html/fig-CarteStScanEps1000Eps21-1.png" class="img-fluid quarto-figure quarto-figure-center figure-img" style="width:65.0%">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-CarteStScanEps1000Eps21-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4.11: Agrégats identifiés avec ST-DBSCAN
+</figcaption></figure>
 </div>
 </div>
 </div>
@@ -894,10 +985,9 @@ function handleAnswers(quiz, question, no, correct) {
 L’algorithme DBSCAN est basé sur :
 </div>
 <div>
-Relisez au besoin la <a href="#sec-04111">section&nbsp;<span>4.1.1.1</span></a>.
+Relisez au besoin la <a href="#sec-04111" class="quarto-xref">section&nbsp;<span>4.1.1.1</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -923,10 +1013,9 @@ Relisez au besoin la <a href="#sec-04111">section&nbsp;<span>4.1.1.1</span></a>.
 Avec l’algorithme DBSCAN, vous devez spécifier le nombre de groupes (agrégats).
 </div>
 <div>
-Relisez au besoin la <a href="#sec-04111">section&nbsp;<span>4.1.1.1</span></a>.
+Relisez au besoin la <a href="#sec-04111" class="quarto-xref">section&nbsp;<span>4.1.1.1</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -952,10 +1041,9 @@ Relisez au besoin la <a href="#sec-04111">section&nbsp;<span>4.1.1.1</span></a>.
 Quels sont les trois types de points identifiés par DBSCAN?
 </div>
 <div>
-Relisez au besoin l’encadré à la <a href="#sec-04111">section&nbsp;<span>4.1.1.1</span></a>.
+Relisez au besoin l’encadré à la <a href="#sec-04111" class="quarto-xref">section&nbsp;<span>4.1.1.1</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -997,10 +1085,9 @@ Relisez au besoin l’encadré à la <a href="#sec-04111">section&nbsp;<span>4.1
 Quels sont les deux paramètres de l’algorithme DBSCAN?
 </div>
 <div>
-Relisez au besoin la <a href="#sec-04111">section&nbsp;<span>4.1.1.1</span></a>.
+Relisez au besoin la <a href="#sec-04111" class="quarto-xref">section&nbsp;<span>4.1.1.1</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -1034,10 +1121,9 @@ Relisez au besoin la <a href="#sec-04111">section&nbsp;<span>4.1.1.1</span></a>.
 Plus la valeur d’epsilon est grande, plus le nombre d’agrégats diminue.
 </div>
 <div>
-Relisez au besoin la <a href="#sec-04112">section&nbsp;<span>4.1.1.2</span></a>.
+Relisez au besoin la <a href="#sec-04112" class="quarto-xref">section&nbsp;<span>4.1.1.2</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -1063,10 +1149,9 @@ Relisez au besoin la <a href="#sec-04112">section&nbsp;<span>4.1.1.2</span></a>.
 Quels sont les trois paramètres de l’algorithme ST-DBSCAN?
 </div>
 <div>
-Relisez au besoin la <a href="#sec-0412">section&nbsp;<span>4.1.2</span></a>.
+Relisez au besoin la <a href="#sec-0412" class="quarto-xref">section&nbsp;<span>4.1.2</span></a>.
 </div>
 <div class="quizlib-question-answers">
-
 <table class="table table-sm table-striped small">
 <tbody><tr>
 <td>
@@ -1120,7 +1205,7 @@ Vérifier votre résultat
 <p><strong>Exercice 1.</strong> Application de l’algorithme DBSCAN</p>
 </div>
 <div class="bloc_exercice-body">
-<p>L’objectif est d’appliquer cet algorithme sur des accidents impliquant des personnes à vélo sur l’île de Montréal (voir la <a href="#sec-04141">section&nbsp;<span>4.1.3.1</span></a>). Ces données ouvertes sur les collisions routières et leur documentation sont disponibles au <a href="https://donnees.montreal.ca/dataset/collisions-routieres">lien suivant</a>.</p>
+<p>L’objectif est d’appliquer cet algorithme sur des accidents impliquant des personnes à vélo sur l’île de Montréal (voir la <a href="#sec-04141" class="quarto-xref">section&nbsp;<span>4.1.3.1</span></a>). Ces données ouvertes sur les collisions routières et leur documentation sont disponibles au <a href="https://donnees.montreal.ca/dataset/collisions-routieres">lien suivant</a>.</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
 <span id="cb24-2"><a href="#cb24-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
@@ -1177,7 +1262,7 @@ Vérifier votre résultat
 <span id="cb24-53"><a href="#cb24-53" aria-hidden="true" tabindex="-1"></a><span class="fu">tmap_mode</span>(<span class="st">"plot"</span>)</span>
 <span id="cb24-54"><a href="#cb24-54" aria-hidden="true" tabindex="-1"></a>à compléter</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Correction à la <a href="12-Exercices.html#sec-12041">section&nbsp;<span>12.4.1</span></a>.</p>
+<p>Correction à la <a href="12-Exercices.html#sec-12041" class="quarto-xref">section&nbsp;<span>12.4.1</span></a>.</p>
 </div>
 </div>
 <div class="bloc_exercice">
@@ -1188,7 +1273,7 @@ Vérifier votre résultat
 <p><strong>Exercice 2.</strong> Application de l’algorithme ST-DBSCAN</p>
 </div>
 <div class="bloc_exercice-body">
-<p>Avec le même jeu de données, réaliser un ST-DBSCAN avec les paramètres suivants&nbsp;: distance spatiale de 500&nbsp;mètres, distance temporelle de&nbsp;30 jours et quatre points minimum (voir la <a href="#sec-04142">section&nbsp;<span>4.1.3.2</span></a>).</p>
+<p>Avec le même jeu de données, réaliser un ST-DBSCAN avec les paramètres suivants&nbsp;: distance spatiale de 500&nbsp;mètres, distance temporelle de&nbsp;30 jours et quatre points minimum (voir la <a href="#sec-04142" class="quarto-xref">section&nbsp;<span>4.1.3.2</span></a>).</p>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(sf)</span>
 <span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tmap)</span>
@@ -1233,12 +1318,12 @@ Vérifier votre résultat
 <span id="cb25-41"><a href="#cb25-41" aria-hidden="true" tabindex="-1"></a><span class="do">## Cartographie</span></span>
 <span id="cb25-42"><a href="#cb25-42" aria-hidden="true" tabindex="-1"></a>À compléter</span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<p>Correction à la <a href="12-Exercices.html#sec-12042">section&nbsp;<span>12.4.2</span></a>.</p>
+<p>Correction à la <a href="12-Exercices.html#sec-12042" class="quarto-xref">section&nbsp;<span>12.4.2</span></a>.</p>
 </div>
 </div>
 
 
-<div id="refs" class="references csl-bib-body hanging-indent" role="list" style="display: none">
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-birant2007st" class="csl-entry" role="listitem">
 Birant, Derya et Alp Kut. 2007. <span>«&nbsp;ST-DBSCAN: An algorithm for clustering spatial–temporal data.&nbsp;»</span> <em>Data &amp; knowledge engineering</em> 60 (1): 208‑221. <a href="https://doi.org/10.1016/j.datak.2006.01.013">https://doi.org/10.1016/j.datak.2006.01.013</a>.
 </div>
@@ -1296,18 +1381,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -1339,11 +1413,50 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
-  function tippyHover(el, contentFn) {
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp("https:\/\/serieboldr\.github\.io\/MethodesAnalyseSpatiale\/index\.html");
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -1353,8 +1466,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -1366,7 +1488,130 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -1410,6 +1655,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -1435,6 +1681,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -1494,23 +1766,27 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   }
 });
 </script><nav class="page-navigation"><div class="nav-page nav-page-previous">
-      <a href="./03-MethodesRepartitionPonctuelle.html" class="pagination-link">
+      <a href="./03-MethodesRepartitionPonctuelle.html" class="pagination-link" aria-label="Méthodes de répartition ponctuelle">
         <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Méthodes de répartition ponctuelle</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./05-AnalyseReseau.html" class="pagination-link">
+      <a href="./05-AnalyseReseau.html" class="pagination-link" aria-label="Mesures d'accessibilité spatiale selon différents modes de transport">
         <span class="nav-page-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Mesures d’accessibilité spatiale selon différents modes de transport</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
 </div> <!-- /content -->
 <footer class="footer"><div class="nav-footer">
-    <div class="nav-footer-left">Méthodes d’analyse spatiale : un grand bol d’R.</div>   
+    <div class="nav-footer-left">
+<p>Méthodes d’analyse spatiale : un grand bol d’R.</p>
+</div>   
     <div class="nav-footer-center">
       &nbsp;
-    </div>
-    <div class="nav-footer-right">Ce livre a été réalisé avec <a href="https://quarto.org/">Quarto</a>.</div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale/issues/new" class="toc-action"><i class="bi bi-github"></i>Signaler un problème ou<br>formuler une suggestion</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>Ce livre a été réalisé avec <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
   </div>
 </footer>
 
