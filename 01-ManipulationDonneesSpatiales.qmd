@@ -248,11 +248,32 @@ Les points ainsi créés sont localisés dans la ville de Sherbrooke.
 #| echo: true
 #| message: false
 #| warning: false
+#| eval: false
 ## Affichage des points avec le package tmap
+library("tmap")
 tmap_mode("view") ## Mode actif de tmap
 tm_shape(PointsGPS)+
   tm_dots(size = 0.05, shape = 21, col = "red")
 ```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| eval: true
+library(knitr)
+
+if(is_latex_output()) {
+  knitr::include_graphics("images/Chap01/gps.jpg")
+}else{
+  library("tmap")
+  tmap_mode("view") ## Mode actif de tmap
+  tm_shape(PointsGPS)+
+  tm_dots(size = 0.05, shape = 21, col = "red")
+}
+```
+
+
 
 ##### Importation de coordonnées GPS au format *GPX* {#sec-011141}
 
@@ -286,10 +307,30 @@ La trace GPS correspond à un trajet réalisé à vélo à Abidjan (Côte d'Ivoi
 #| echo: true
 #| message: false
 #| warning: false
+#| eval: false
 tmap_mode("view")
 tm_basemap(leaflet::providers$OpenStreetMap)+
 tm_shape(TraceGPS)+
   tm_dots(size = 0.001, shape = 21, col = "red")
+```
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| eval: true
+library(knitr)
+
+if(is_latex_output()) {
+  knitr::include_graphics("images/Chap01/gps_abidjan.jpg")
+}else{
+  library("tmap")
+  tmap_mode("view")
+  tm_basemap(leaflet::providers$OpenStreetMap)+
+  tm_shape(TraceGPS)+
+  tm_dots(size = 0.001, shape = 21, col = "red")
+}
 ```
 
 ::: bloc_aller_loin
@@ -519,7 +560,9 @@ La couche résultante de l'opération `fs_mbr(x, returnShape = TRUE)` (@fig-Enve
 #| echo: true 
 #| message: false 
 #| warning: false
-library(foot)
+
+# devtools::install_github("wpgp/foot", build_vignettes = TRUE) 
+library(foot, quietly = TRUE)
 ## Rectangles (enveloppes) orientés 
 rectangles_oriented <- fs_mbr(Arrondissements, returnShape = TRUE)
 rectangles_oriented <- st_as_sf(rectangles_oriented,
@@ -1214,26 +1257,46 @@ table(PistesCyclables$ParcMB.intersect)
 ## Création d'une nouvelle couche pour la sélection
 PistesCyclables.Selection <- PistesCyclables[PistesCyclables$ParcMB.intersect== TRUE, ]
 ## Visualisation
-tmap_mode("view")
 tm_shape(MontBellevue) + tm_fill(col="lightgreen")+ tm_borders(col = "black", lwd=2)+
 tm_shape(PistesCyclables.Selection)+tm_lines(col="red", lwd=1)
 ```
 
 Créons une deuxième requête spatiale pour sélectionner les points GPS situés à moins de cinq kilomètres de l'hôtel de ville de Sherbrooke avec la méthode `st_is_within_distance`.
 
+
 ```{r}
-#| echo: false 
-#| message: false 
+#| echo: true
+#| message: false
 #| warning: false
+#| eval: false
 tmap_mode("view")
-tm_shape(PointsGPS) + tm_dots(col="green", size = .05)+
+tm_shape(PointsGPS) + tm_dots(col="green", size = .05) +
 tm_shape(HotelVille)+tm_dots(col="black", size = .25)
 ```
 
+
 ```{r}
-#| echo: true 
-#| message: false 
+#| echo: false
+#| message: false
 #| warning: false
+#| eval: true
+library(knitr)
+
+if(is_latex_output()) {
+  knitr::include_graphics("images/Chap01/points5kmhoteldeville.jpg")
+}else{
+    tmap_mode("view")
+    tm_shape(PointsGPS) + tm_dots(col="green", size = .05) +
+    tm_shape(HotelVille)+tm_dots(col="black", size = .25)
+}
+```
+
+
+```{r}
+#| echo: true
+#| message: false
+#| warning: false
+#| eval: false
 ## Requête spatiale
 RequeteSpatiale <- st_is_within_distance(PointsGPS, HotelVille, 
                                          5000, sparse = FALSE)
@@ -1242,11 +1305,39 @@ PointsGPS$HotelVille2km <- RequeteSpatiale[, 1]
 ## Nous constatons que 17 points GPS sont à moins de 5 km
 table(PointsGPS$HotelVille2km)
 ## Création d'une nouvelle couche pour la sélection
-PointsGPS.selection <- PointsGPS[PointsGPS$HotelVille2km== TRUE, ]
+PointsGPS.selection <- PointsGPS[PointsGPS$HotelVille2km == TRUE, ]
 ## Visualisation
 tm_shape(PointsGPS.selection) + tm_dots(col="red", size = .05)+
 tm_shape(HotelVille)+tm_dots(col="black", size = .25)
 ```
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| eval: true
+library(knitr)
+
+if(is_latex_output()) {
+  knitr::include_graphics("images/Chap01/points5kmhoteldeville_b.jpg")
+}else{
+    ## Requête spatiale
+    RequeteSpatiale <- st_is_within_distance(PointsGPS, HotelVille, 
+                                             5000, sparse = FALSE)
+    ## Ajout d'un champ pour la requête
+    PointsGPS$HotelVille2km <- RequeteSpatiale[, 1]
+    ## Nous constatons que 17 points GPS sont à moins de 5 km
+    table(PointsGPS$HotelVille2km)
+    ## Création d'une nouvelle couche pour la sélection
+    PointsGPS.selection <- PointsGPS[PointsGPS$HotelVille2km == TRUE, ]
+    ## Visualisation
+    tm_shape(PointsGPS.selection) + tm_dots(col="red", size = .05)+
+    tm_shape(HotelVille)+tm_dots(col="black", size = .25)
+}
+```
+
+
 
 Finalement, avec la méthode `st_within`, nous constatons que seuls deux points GPS sont situés dans le parc du Mont-Bellevue.
 
@@ -1684,6 +1775,7 @@ L'exportation d'objets `SpatRasters` de `terra` est très simple avec la méthod
 #| echo: true 
 #| message: false 
 #| warning: false
+#| eval: false
 terra::writeRaster(MosaicSherbCrop, "data/chap01/export/MosaicSherb.tif", 
                    filetype = "GTiff", 
                    overwrite = TRUE)
@@ -1751,10 +1843,10 @@ Il existe trois catégories de fonctions pour paramétrer l'affichage de couches
 #| message: false
 
 df1 <- data.frame(
-  Fonction = c("`tm_shape`",
-               "`tm_polygons`", "`tm_symbols`", "`tm_lines`", "`tm_text`", "`tm_raster`",
-               "`tm_fill`", "`tm_border`", "`tm_bubbles`", "`tm_squares`", "`tm_dots`", "`tm_markers`"),
-  Description = c("Crée un élément `tmap` à partir d'une couche géographique vectorielle (`sf`) ou matricielle (`raster`)",
+  Fonction = c("tm_shape",
+               "tm_polygons", "tm_symbols", "tm_lines", "tm_text", "tm_raster",
+               "tm_fill", "tm_border", "tm_bubbles", "tm_squares", "tm_dots", "tm_markers"),
+  Description = c("Crée un élément tmap à partir d'une couche géographique vectorielle (sf) ou matricielle (raster)",
                   "Dessine des polygones (couleur et contour)", 
                   "Dessine des symboles", 
                   "Dessine des lignes", 
@@ -2121,7 +2213,7 @@ Vous constaterez ci-dessous que par défaut, trois fonds de carte sont disponibl
 #| echo: true
 #| message: false
 #| warning: false
-#| out-width: 75%
+#| eval: false
 
 ## Mode active tmap
 tmap_mode("view")
@@ -2132,6 +2224,30 @@ InstallSR.sf = read_sf("data/chap01/shp/Installations_sportives_et_recreatives.s
 tm_shape(InstallSR.sf)+ tm_dots(size = 0.05, shape = 21, col = "red")+
 tm_shape(Arrond.sf)+ tm_borders(col="black", lwd= .5)
 ```
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| eval: true
+library(knitr)
+
+if(is_latex_output()) {
+  knitr::include_graphics("images/Chap01/interactif_a.jpg")
+}else{
+  ## Mode active tmap
+  tmap_mode("view")
+  ## Importation des couches
+  Arrond.sf = read_sf("data/chap01/shp/Arrondissements.shp")
+  InstallSR.sf = read_sf("data/chap01/shp/Installations_sportives_et_recreatives.shp")
+  ## Carte
+  tm_shape(InstallSR.sf)+ tm_dots(size = 0.05, shape = 21, col = "red")+
+  tm_shape(Arrond.sf)+ tm_borders(col="black", lwd= .5)
+}
+```
+
+
 
 Il est aussi possible de changer les fonds de carte avec la fonction `tm_basemap` tandis que la fonction `tm_tiles` permet de superposer une tuile (pour la toponymie par exemple) (@tbl-TmapCarteInteractive).
 
@@ -2159,10 +2275,10 @@ knitr::kable(df2,
 Dans le code ci-dessous, nous utilisons uniquement deux fonds de carte. Remarquez les lignes avec l'argument `popup.vars` qui permet de définir les champs visibles dans la fenêtre surgissante (*pop-up*). Cliquez sur une installation sportive pour activer la fenêtre surgissante.
 
 ```{r}
-#| echo: true 
+#| echo: true
 #| message: false
 #| warning: false
-#| out-width: 75%
+#| eval: false
 ## Carte
 tm_basemap(c("OpenStreetMap", "Esri.WorldTopoMap"))+
 tm_shape(InstallSR.sf)+ 
@@ -2174,8 +2290,31 @@ tm_shape(InstallSR.sf)+
                        "Éclairage : " = "SURFACE"),
           id = "OBJECTID")+
 tm_shape(Arrond.sf)+ tm_borders(col="black", lwd= .5)
-
 ```
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| eval: true
+library(knitr)
+
+if(is_latex_output()) {
+  knitr::include_graphics("images/Chap01/gps.jpg")
+}else{
+  tm_basemap(c("OpenStreetMap", "Esri.WorldTopoMap"))+
+  tm_shape(InstallSR.sf)+ 
+    tm_dots(size = 0.05, shape = 21, col = "red",
+            # définition pour le pop-up (clic sur une installation)
+            popup.vars=c("Nom : "="NOM",
+                         "Type : " = "TYPE",
+                         "Éclairage : " = "ECLAIRAGE",
+                         "Éclairage : " = "SURFACE"),
+            id = "OBJECTID")+
+  tm_shape(Arrond.sf)+ tm_borders(col="black", lwd= .5)
+}
+```
+
 
 ::: bloc_astuce
 ::: bloc_astuce-header
@@ -2639,3 +2778,4 @@ tm_shape(Point1_sf)+
 Correction à la [section @sec-12014].
 :::
 :::
+

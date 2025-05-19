@@ -56,7 +56,7 @@ Prenons un jeu de données fictives (@fig-DonnesFictivesDBSCAN, a). À l'œil nu
 #| label: fig-DonnesFictivesDBSCAN
 #| fig-align: center
 #| fig-cap: Jeu de données fictives et classification DBSCAN avec cinq classes
-#| out-width: 75%
+#| out-width: 65%
 
 library("dbscan")
 library("factoextra")
@@ -68,25 +68,20 @@ library("ggpubr")
 set.seed(123456789)
 points <- multishapes[, 1:2]
 
-# Graphique 1
-G1 <- ggplot(data = points)+
-        geom_point(aes(x = x, y = y))+
-        labs(x = "X", y = 'Y', title = 'Jeu de données initial')
-
 # dbscan
 points$dbscan5 <- as.character(dbscan(points[, 1:2], eps = 0.15, minPts = 5)$cluster)
 
 couleurs <- c("#000000", "#e41a1c", "#377eb8", "#4daf4a", "#984ea3", "#ff7f00")
 
-G1 <- ggplot(data = points)+
+g1 <- ggplot(data = points)+
   geom_point(aes(x = x, y = y))+
   labs(x = "X", y = 'Y', title = 'a. Jeu de données fictives')
 
-G2 <- ggplot(data = points,
+g2 <- ggplot(data = points,
              aes(x = x, y = y, color = dbscan5))+
   geom_point()+ scale_color_manual(values=couleurs)+
   labs(x = "X", y = 'Y', title = 'b. DBSCAN')+
-  theme(legend.position="none")
+  theme(legend.position = "none")
 
 # K-moyennes, K-médianes, K-médoïdes
 points$Kmoyennes5 <- as.character(kmeans(points[, 1:2], centers = 5, iter.max = 100)$cluster)
@@ -94,33 +89,34 @@ points$Kmedianes5 <- as.character(kGmedian(points[, 1:2], ncenters = 5, iter.max
 points$Kmedoides5 <- as.character(pam(points[, 1:2], k = 5)$cluster)
 points$CAHWard5   <- as.character(cutree(hclust(dist(points[, 1:2], method = "euclidean"), method = "ward.D"), k= 5))
 
-G3 <- ggplot(data = points,
+g3 <- ggplot(data = points,
              aes(x = x, y = y, color = Kmoyennes5))+
-  geom_point()+ scale_color_manual(values=couleurs)+
+  geom_point()+ scale_color_manual(values = couleurs)+
   labs(x = "X", y = 'Y', title = 'a. K-moyennes')+
   theme(legend.position="none")
 
-G4 <- ggplot(data = points,
+g4 <- ggplot(data = points,
              aes(x = x, y = y, color = Kmedianes5))+
-  geom_point()+ scale_color_manual(values=couleurs)+
+  geom_point()+ scale_color_manual(values = couleurs)+
   labs(x = "X", y = 'Y', title = 'b. K-médianes')+
   theme(legend.position="none")
 
-G5 <- ggplot(data = points,
+g5 <- ggplot(data = points,
              aes(x = x, y = y, color = Kmedoides5))+
   geom_point()+ scale_color_manual(values=couleurs)+
   labs(x = "X", y = 'Y', title = 'c. K-médoïdes')+
   theme(legend.position="none")
 
-G6 <- ggplot(data = points,
+g6 <- ggplot(data = points,
              aes(x = x, y = y, color = CAHWard5))+
   geom_point()+ scale_color_manual(values=couleurs)+
   labs(x = "X", y = 'Y', 
        title = "d. Classif. ascendante hiérarchique")+
   theme(legend.position="none")
 
-ggarrange(G1, G2)
+ggarrange(g1, g2)
 ```
+
 
 L'intérêt majeur de l'algorithme DBSCAN est qu'il est basé sur la **densité des points** et non sur la **distance entre les points** comme les algorithmes classiques de classification non supervisée que sont les k-moyennes, k-médianes, k-médoïdes ou la classification ascendante hiérarchique. Tel qu'illustré à la @fig-AutresMethodesClassifNonSuperv, l'utilisation de la distance pour identifier cinq groupes de points renvoie des résultats peu convaincants. D'une part, tous les points appartiennent à une classe, sans séparer les régions de fortes et de faibles densités. D'autre part, les algorithmes classiques basés sur la distance ne parviennent pas à bien identifier les deux agrégats circulaires (bleu et rouge à la @fig-DonnesFictivesDBSCAN, b) et parfois linéaires (vert et mauve à la @fig-DonnesFictivesDBSCAN, b).
 
@@ -131,8 +127,8 @@ L'intérêt majeur de l'algorithme DBSCAN est qu'il est basé sur la **densité 
 #| label: fig-AutresMethodesClassifNonSuperv
 #| fig-align: center
 #| fig-cap: Classification avec d'autres algorithmes basés sur la distance
-#| out-width: 75%
-ggarrange(G3, G4, G5, G6)
+#| out-width: 65%
+ggarrange(g3, g4, g5, g6)
 ```
 
 L'algorithme DBSCAN comprend deux paramètres qui doivent être définis par la personne utilisatrice :
@@ -207,7 +203,7 @@ Carte2 <- tm_shape(points.sf, unit = "m")+
                     legend.text.size = .85, legend.outside = TRUE)
 ```
 
-![Trois types de points identifiés par l'algorithme DBSCAN](images/Chap04/DbscanTypesPoints.png){#fig-TypesPointsDBSCAN width="75%" fig-align="center"}
+![Trois types de points identifiés par l'algorithme DBSCAN](images/Chap04/DbscanTypesPoints.png){#fig-TypesPointsDBSCAN width="65%" fig-align="center"}
 
 Par la suite, les étapes de l'algorithme sont les suivantes :
 
@@ -229,7 +225,7 @@ Par la suite, les étapes de l'algorithme sont les suivantes :
 
 Nous obtenons ainsi *k* agrégats (valeurs de 1 à *k*) tandis que les points aberrants sont affectés à la même classe (valeur de 0 habituellement). Appliqué au semis de points, DBSCAN a détecté deux agrégats et quatre points aberrants (@fig-ResultatsDBSCAN).
 
-![Résultats de l'algorithme DBSCAN](images/Chap04/DbscanResultats.png){#fig-ResultatsDBSCAN width="75%" fig-align="center"}
+![Résultats de l'algorithme DBSCAN](images/Chap04/DbscanResultats.png){#fig-ResultatsDBSCAN width="65%" fig-align="center"}
 
 #### Sensibilité et optimisation des paramètres de DBSCAN {#sec-04112}
 
@@ -245,7 +241,7 @@ Concernant le paramètre $\epsilon$, plus sa valeur est réduite, plus le nombre
 
 -   Avec un rayon de 1500 mètres, tous les points sont affectés à un et un seul agrégat (@fig-VariationResultatsDBSCAN, d).
 
-![Variations de résultats de l'algorithme DBSCAN selon la taille du rayon](images/Chap04/DbscanResultatsVariation.png){#fig-VariationResultatsDBSCAN width="75%" fig-align="center"}
+![Variations de résultats de l'algorithme DBSCAN selon la taille du rayon](images/Chap04/DbscanResultatsVariation.png){#fig-VariationResultatsDBSCAN width="65%" fig-align="center"}
 
 Concernant le paramètre $MinPts$, plusieurs stratégies ont été proposées pour fixer sa valeur :
 
@@ -308,7 +304,7 @@ Comme pour toute analyse de classification, votre choix peut être objectif et r
 :::
 :::
 
-![Comparaison de solutions DBSCAN avec différentes valeurs d'epsilon](images/Chap04/DbscanResultatsOptimatisationEpsilon.png){#fig-DbscanResultatsOptimatisationEpsilon width="75%" fig-align="center"}
+![Comparaison de solutions DBSCAN avec différentes valeurs d'epsilon](images/Chap04/DbscanResultatsOptimatisationEpsilon.png){#fig-DbscanResultatsOptimatisationEpsilon width="65%" fig-align="center"}
 
 ::: bloc_aller_loin
 ::: bloc_aller_loin-header

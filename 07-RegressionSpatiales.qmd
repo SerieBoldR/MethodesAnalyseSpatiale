@@ -1,6 +1,6 @@
 # Introduction aux modèles de régression spatiale {#sec-chap07}
 
-Depuis une trentaine d'années, économètres, épidémiologistes et géographes développent et utilisent abondamment des méthodes de régression intégrant l'espace : modèles économétriques spatiaux, modèles géographiquement pondérés, analyses multiniveaux, etc. L'objectif de ce chapitre est de donner un aperçu de ces méthodes. Nous y décrivons principalement les différents modèles économétriques spatiaux, les modèles généralisés additifs avec une *spline* bivariée sur les coordonnées géographiques et les modèles géographiquement pondérés.
+Depuis une trentaine d'années, économètres, épidémiologistes et géographes développent et utilisent abondamment des méthodes de régression intégrant l'espace : modèles économétriques spatiaux, modèles géographiquement pondérés, analyses multiniveaux, etc. L'objectif de ce chapitre est de donner un aperçu de ces méthodes. Nous y décrivons principalement les différents modèles économétriques spatiaux, les modèles généralisés additifs avec une *spline* bivariée sur les coordonnées géographiques et les modèles géographiquement pondérés. Afin d'explorer un plus large éventail de méthodes de régression spatiale, nous vous recommandons la lecture d’un autre ouvrage de la Série *Un grand Bol d'R* intitulé [*Méthodes de régression spatiale : un grand bol d’R*](https://serieboldr.com/RegressionsSpatiales/) [@RBoldAirRegSpatiales].
 
 ::: bloc_package
 ::: bloc_package-header
@@ -1299,6 +1299,20 @@ tm_shape(LyonIris)+ tm_borders(col="gray25", lwd=.5)+
 
 :::
 :::
+
+
+::: bloc_aller_loin
+::: bloc_aller_loin-header
+::: bloc_aller_loin-icon
+:::
+**Autres méthodes de régression spatiales**
+:::
+::: bloc_aller_loin-body
+Comme signalé en introduction, si vous souhaitez maîtriser une plus large éventail de méthodes de régression spatiale, nous vous recommandons la lecture d’un autre ouvrage de la Série *Un grand Bol d'R* intitulé [**Méthodes de régression spatiale : un grand bol d’R**](https://serieboldr.com/RegressionsSpatiales/) [@RBoldAirRegSpatiales].
+:::
+:::
+
+
 
 ## Quiz de révision du chapitre {#sec-074}
 

@@ -1,0 +1,47 @@
+{
+  "index.qmd": {
+    "index.html": "9ab80e52"
+  },
+  "00-auteurs.qmd": {
+    "00-auteurs.html": "9c4c47ea"
+  },
+  "01-ManipulationDonneesSpatiales.qmd": {
+    "01-ManipulationDonneesSpatiales.html": "002115fe"
+  },
+  "02-Autocorrelation.qmd": {
+    "02-Autocorrelation.html": "31174638"
+  },
+  "03-MethodesRepartitionPonctuelle.qmd": {
+    "03-MethodesRepartitionPonctuelle.html": "32d8a243"
+  },
+  "04-AgregatsSpatiaux.qmd": {
+    "04-AgregatsSpatiaux.html": "4fbf9322"
+  },
+  "05-AnalyseReseau.qmd": {
+    "05-AnalyseReseau.html": "159875e0"
+  },
+  "06-AnalyseReseauEvenements.qmd": {
+    "06-AnalyseReseauEvenements.html": "1a873450"
+  },
+  "07-RegressionSpatiales.qmd": {
+    "07-RegressionSpatiales.html": "a2202bb1"
+  },
+  "08-ClassificationsSpatiales.qmd": {
+    "08-ClassificationsSpatiales.html": "b85eda59"
+  },
+  "09-EchantillonnageSpatial.qmd": {
+    "09-EchantillonnageSpatial.html": "8521babe"
+  },
+  "10-InterpolationSpatiale.qmd": {
+    "10-InterpolationSpatiale.html": "9c3ae930"
+  },
+  "11-DesagregationSpatiale.qmd": {
+    "11-DesagregationSpatiale.html": "f11f87b2"
+  },
+  "12-Exercices.qmd": {
+    "12-Exercices.html": "1cac84d2"
+  },
+  "references.qmd": {
+    "references.html": "e3ba894d"
+  }
+}

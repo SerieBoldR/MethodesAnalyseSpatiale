@@ -678,7 +678,7 @@ La méthode *ClustGeo*, proposée par Marie Chavent et ses collègues [-@package
 
     -   Avec $\alpha=1$, le poids accordé à la matrice spatiale est maximal; la classification est alors purement spatiale et ignore les différences attributaires.
 
-Par conséquent, « \[...\] l'enjeu principal est de fixer la valeur du paramètre 𝛼, considérant qu'une augmentation de 𝛼 revient à améliorer l'inertie expliquée de la matrice spatiale, au détriment d'une perte de l'inertie expliquée sur le plan sémantique » [@ClassificationFloue, p. 16].
+Par conséquent, « \[...\] l'enjeu principal est de fixer la valeur du paramètre $\alpha$, considérant qu'une augmentation de $\alpha$ revient à améliorer l'inertie expliquée de la matrice spatiale, au détriment d'une perte de l'inertie expliquée sur le plan sémantique » [@ClassificationFloue, p. 16].
 
 #### Calcul de la CAH classique {#sec-08212}
 
@@ -846,7 +846,7 @@ Matrice.Spatiale <- dist(xy, method = "euclidean")
 
 **Optimisation de la valeur de** $\alpha$
 
-Pour la méthode *ClustGeo* (avec k = 5), nous évaluons l'impact du paramètre α pour des valeurs de 0 à 1, avec un saut de 0,05. Pour ce faire, nous utilisons la fonction `choicealpha` du *package* `ClustGeo`. À la lecture de la @fig-GraphAlpha, nous constatons que :
+Pour la méthode *ClustGeo* (avec k = 5), nous évaluons l'impact du paramètre $\alpha$ pour des valeurs de 0 à 1, avec un saut de 0,05. Pour ce faire, nous utilisons la fonction `choicealpha` du *package* `ClustGeo`. À la lecture de la @fig-GraphAlpha, nous constatons que :
 
 -   Plus la valeur de $\alpha$ augmente, plus l'inertie expliquée par la matrice sémantique diminue (trait noir) et inversement, plus l'inertie expliquée par la matrice spatiale est forte.
 
@@ -1273,7 +1273,7 @@ render_quizz(Chap08Quiz)
 ::: bloc_exercice-icon
 :::
 
-**Exercice 1.** Réalisation de classification avec contrainte spatiale avec des variables socioéconomiques
+**Exercice 1.** Réalisation de classification avec contrainte spatiale
 :::
 
 ::: bloc_exercice-body

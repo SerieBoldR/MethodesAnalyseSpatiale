@@ -827,7 +827,6 @@ tm_shape(lixels) +
 ```
 
 
-
 ## Exercices du chapitre 7 {#sec-1207}
 
 ### Exercice 1 {#sec-12071}
@@ -939,7 +938,7 @@ library(rgeoda)
 library(sf)
 library(tmap)
 ## Préparation des données
-load("data/chap06/DonneesLyon.Rdata")
+load("data/Lyon.Rdata")
 VarSocioEco <- c("Pct0_14", "Pct_65", "Pct_Img", "Pct_brevet", "NivVieMed")
 Data2 <- st_drop_geometry(LyonIris[VarSocioEco])
 queen_w <- queen_weights(LyonIris)

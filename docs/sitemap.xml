@@ -2,62 +2,66 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/index.html</loc>
-    <lastmod>2025-01-12T16:19:02.592Z</lastmod>
+    <lastmod>2025-05-18T18:28:53.725Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/00-auteurs.html</loc>
-    <lastmod>2025-01-12T16:19:01.610Z</lastmod>
+    <lastmod>2024-10-29T04:40:20.000Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/01-ManipulationDonneesSpatiales.html</loc>
-    <lastmod>2025-01-12T16:19:01.612Z</lastmod>
+    <lastmod>2025-05-19T00:14:51.643Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/02-Autocorrelation.html</loc>
-    <lastmod>2025-01-12T16:19:01.614Z</lastmod>
+    <lastmod>2025-05-18T23:47:40.790Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/03-MethodesRepartitionPonctuelle.html</loc>
-    <lastmod>2025-01-12T16:22:33.941Z</lastmod>
+    <lastmod>2025-05-18T14:06:15.248Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/04-AgregatsSpatiaux.html</loc>
-    <lastmod>2025-01-12T16:19:01.616Z</lastmod>
+    <lastmod>2025-05-18T18:09:32.893Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/05-AnalyseReseau.html</loc>
-    <lastmod>2025-01-12T18:48:47.155Z</lastmod>
+    <lastmod>2025-05-18T20:54:07.480Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/06-AnalyseReseauEvenements.html</loc>
-    <lastmod>2025-01-12T16:19:01.618Z</lastmod>
+    <lastmod>2025-05-18T20:32:04.374Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/07-RegressionSpatiales.html</loc>
-    <lastmod>2025-01-12T17:12:15.396Z</lastmod>
+    <lastmod>2025-05-18T20:15:39.324Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/08-ClassificationsSpatiales.html</loc>
-    <lastmod>2025-01-12T16:33:15.172Z</lastmod>
+    <lastmod>2025-05-18T21:13:36.525Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/09-EchantillonnageSpatial.html</loc>
-    <lastmod>2025-01-12T16:19:01.619Z</lastmod>
+    <lastmod>2025-01-13T14:51:04.000Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/10-InterpolationSpatiale.html</loc>
-    <lastmod>2025-01-12T16:19:01.619Z</lastmod>
+    <lastmod>2025-01-13T14:51:04.000Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/11-DesagregationSpatiale.html</loc>
-    <lastmod>2025-01-12T16:19:01.619Z</lastmod>
+    <lastmod>2025-01-13T14:51:04.000Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/12-Exercices.html</loc>
-    <lastmod>2025-01-12T16:19:01.620Z</lastmod>
+    <lastmod>2025-05-18T19:39:56.279Z</lastmod>
   </url>
   <url>
     <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/references.html</loc>
-    <lastmod>2024-03-23T01:06:13.574Z</lastmod>
+    <lastmod>2025-05-17T18:31:08.875Z</lastmod>
+  </url>
+  <url>
+    <loc>https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html/Méthodes-d’analyse-spatiale---un-grand-bol-d’R.pdf</loc>
+    <lastmod>2025-05-19T01:00:39.252Z</lastmod>
   </url>
 </urlset>

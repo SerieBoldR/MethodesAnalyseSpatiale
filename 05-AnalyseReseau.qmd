@@ -636,7 +636,7 @@ Pour le calcul d'itinéraires en transport en commun, nous devons fixer une heur
 -   entre deux arrêts de bus de lignes différentes;
 -   du dernier arrêt de bus à la destination finale.
 
-Dans le code ci-dessous, nous fixons les heures de départ et d'arrivée à 8 h et à 18 h pour le 3 juin 2024 et un temps de marche maximal de 20 minutes.
+Dans le code ci-dessous, nous fixons les heures de départ et d'arrivée à 8 h et à 18 h pour le 24 avril 2025 et un temps de marche maximal de 20 minutes.
 
 ```{r}
 #| echo: true 
@@ -644,13 +644,13 @@ Dans le code ci-dessous, nous fixons les heures de départ et d'arrivée à 8 h
 #| eval: true
 
 ### Définition de la journée et de l'heure de départ
-dateheure.matin <- as.POSIXct("03-06-2024 08:00:00",
-                              format = "%d-%m-%Y %H:%M:%S")
+dateheure.matin <- as.POSIXct("24-04-2025 08:00:00",
+                               format = "%d-%m-%Y %H:%M:%S")
 
-dateheure.soir  <- as.POSIXct("03-06-2024 18:00:00",
-                              format = "%d-%m-%Y %H:%M:%S")
+dateheure.soir  <- as.POSIXct("24-04-2025 18:00:00",
+                               format = "%d-%m-%Y %H:%M:%S")
 ### Définition du temps de marche maximal
-minutes_marches_max <- 15
+minutes_marches_max <- 20
 ```
 
 Toujours avec la fonction `detailed_itineraries`, nous modifions les paramètres comme suit :
@@ -659,9 +659,9 @@ Toujours avec la fonction `detailed_itineraries`, nous modifions les paramètres
 
 -   `walk_speed = 4.5` pour une vitesse moyenne à la marche de 4,5 km/h.
 
--   `departure_datetime = dateheure.matin` pour un départ le 28 février 2024 à 8 h.
+-   `departure_datetime = dateheure.matin` pour un départ le 24 avril 2025 à 8 h.
 
--   `departure_datetime = dateheure.soir` pour un départ le 28 février 2024 à 18 h.
+-   `departure_datetime = dateheure.soir` pour un départ le 24 avril 2025 à 18 h.
 
 -   `max_walk_time = minutes_marches_max` pour un temps maximal de marche de 20 minutes.
 
@@ -678,6 +678,7 @@ TC.Aller <- detailed_itineraries(r5r_core = r5r_core,
                                    departure_datetime = dateheure.matin,
                                    shortest_path = FALSE,
                                    drop_geometry = FALSE)
+
 TC.Retour <- detailed_itineraries(r5r_core = r5r_core,
                                     origins = UDeS,
                                     destinations = Point,
@@ -702,7 +703,7 @@ Pour l'option 1, la durée du trajet à 8 h vers l'Université de Sherbrooke e
 #| message: true 
 #| eval: true
 #TC.Aller
-subset(TC.Aller, option==1)
+subset(TC.Aller, option == 1)
 ```
 
 Pour l'option 1, la durée du trajet à 18 h au départ de l'Université de Sherbrooke est estimée à 51,8 minutes avec trois segments :
@@ -768,7 +769,7 @@ Dans l'exemple ci-dessous, nous calculons plusieurs isochrones à partir du camp
 
 3.  Trois isochrones de 5, 10 et 20 minutes en automobile.
 
-4.  Deux isochrone de 20 et 40 minutes en transport en commun le 28 février 2024 à 18 h avec un durée maximale de marche de 15 minutes.
+4.  Deux isochrone de 20 et 40 minutes en transport en commun le 24 avril 2025 à 18 h avec un durée maximale de marche de 15 minutes.
 
 ```{r}
 #| echo: true 
@@ -832,7 +833,7 @@ Carto.Auto <- tm_shape(Isochrome.auto)+
                     tm_shape(UDeS)+tm_dots(col="darkred", size = .25)
 
 ## Deux isochrones en transport en commun de 20, 40 et 60 minutes
-dateheure.soir  <- as.POSIXct("28-02-2024 18:00:00",
+dateheure.soir  <- as.POSIXct("24-04-2025 08:00:00",
                               format = "%d-%m-%Y %H:%M:%S")
 Isochrome.tc <- isochrone(r5r_core,
                       origins = UDeS,
@@ -936,7 +937,7 @@ matriceOD.Velo <- travel_time_matrix(r5r_core = r5r_core,
 t2 <-Sys.time()
 duree.velo = as.numeric(difftime(t2, t1), units = "secs")
 ## Matrice OD en transport en commun
-dateheure.soir  <- as.POSIXct("04-05-2023 18:00:00",
+dateheure.soir  <- as.POSIXct("24-04-2025 08:00:00",
                               format = "%d-%m-%Y %H:%M:%S")
 t1 <-Sys.time()
 matriceOD.TC <- travel_time_matrix(r5r_core = r5r_core,
@@ -976,28 +977,6 @@ save(matriceOD.Auto, matriceOD.Marche,
      matriceOD.Velo, matriceOD.TC,
      file="data/chap05/Resultats/MatricesOD.Rdata")
 ```
-
-::: bloc_attention
-::: bloc_attention-header
-::: bloc_attention-icon
-:::
-
-**Libération de la mémoire allouée à JAVA**
-:::
-
-::: bloc_attention-body
-Une fois les calculs avec `R5R` terminés, il convient de détruire l'objet `r5r_core` et d'arrêter le processus JAVA avec les deux lignes de code ci-dessous.
-
-```{r}
-#| echo: true 
-#| message: false 
-#| warning: false 
-#| eval: false
-r5r::stop_r5(r5r_core)
-rJava::.jgc(R.gc = TRUE)
-```
-:::
-:::
 
 À partir de ces matrices, nous extrayons la valeur minimale pour chacune des adresses pour les quatre modes de transport. Puis, nous opérons une jointure attributaire avec la couche des adresses aléatoires avec la fonction `merge`.
 
@@ -1903,11 +1882,30 @@ Carte2p <- tm_shape(arrondissements)+tm_borders(lwd = 2)+
 ## Figure avec les trois cartes
 tmap_arrange(Carte0p, Carte1p, Carte2p,
              nrow=2, ncol=2)
-## Arrêt de Java
+```
+
+
+::: bloc_attention
+::: bloc_attention-header
+::: bloc_attention-icon
+:::
+
+**Libération de la mémoire allouée à JAVA**
+:::
+
+::: bloc_attention-body
+Une fois les calculs avec `R5R` terminés, il convient de détruire l'objet `r5r_core` et d'arrêter le processus JAVA avec les deux lignes de code ci-dessous.
+
+```{r}
+#| echo: true 
+#| message: false 
+#| warning: false 
+#| eval: false
 r5r::stop_r5(r5r_core)
 rJava::.jgc(R.gc = TRUE)
 ```
-
+:::
+:::
 ## Quiz de révision du chapitre {#sec-055}
 
 ```{r}

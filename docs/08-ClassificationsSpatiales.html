@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr"><head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.5.57">
+<meta name="generator" content="quarto-1.6.42">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 <title>8&nbsp; Méthodes de classification non supervisée spatiale – Méthodes d’analyse spatiale : un grand bol d’R</title>
 <style>
@@ -82,16 +82,16 @@ div.csl-indent {
 <meta name="quarto:offset" content="./">
 <link href="./09-EchantillonnageSpatial.html" rel="next">
 <link href="./07-RegressionSpatiales.html" rel="prev">
-<link href="./images/introduction/Couverture_16_01-01.png" rel="icon" type="image/png">
+<link href="./images/introduction/CouvertureP1.png" rel="icon" type="image/png">
 <script src="site_libs/quarto-html/quarto.js"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
 <script src="site_libs/quarto-html/tippy.umd.min.js"></script>
 <script src="site_libs/quarto-html/anchor.min.js"></script>
 <link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-2f5df379a58b258e96c21c0638c20c03.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
+<link href="site_libs/bootstrap/bootstrap-1283f6371e261d803dbf5a1069d8a278.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light"><script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
   "collapse-after": 3,
@@ -165,6 +165,7 @@ window.Quarto = {
       <a href="./">Méthodes d’analyse spatiale : un grand bol d’R</a> 
         <div class="sidebar-tools-main">
     <a href="https://github.com/SerieBoldR/MethodesAnalyseSpatiale" title="Code source" class="quarto-navigation-tool px-1" aria-label="Code source"><i class="bi bi-github"></i></a>
+    <a href="./Méthodes-d’analyse-spatiale---un-grand-bol-d’R.pdf" title="Download PDF" class="quarto-navigation-tool px-1" aria-label="Download PDF"><i class="bi bi-file-pdf"></i></a>
 </div>
     </div>
       </div>
@@ -474,7 +475,7 @@ Figure&nbsp;8.2: Classification non supervisée avec et sans contrainte spatiale
 <div class="cell">
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/geodacenter/rgeoda/">rgeoda</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-spatial.github.io/sf/">sf</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-tmap.github.io/tmap/">tmap</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap">tmap</a></span><span class="op">)</span></span>
 <span><span class="co">## Variables</span></span>
 <span><span class="va">VarsEnv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Lden"</span>, <span class="st">"NO2"</span>, <span class="st">"PM25"</span>, <span class="st">"VegHautPrt"</span><span class="op">)</span></span>
 <span><span class="co">## Dataframe sans la géométrie et les quatre variables</span></span>
@@ -497,25 +498,25 @@ Figure&nbsp;8.2: Classification non supervisée avec et sans contrainte spatiale
 <p>Cartographions les résultats des trois algorithmes AZP (<a href="#fig-CartoAZP" class="quarto-xref">figure&nbsp;<span>8.3</span></a>).</p>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Cartographie des résultats</span></span>
-<span><span class="va">Carte.AZP1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"Azp"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
+<span><span class="va">Carte.AZP1</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"Azp"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
 <span>                main.title <span class="op">=</span> <span class="st">"a. AZP"</span>, </span>
 <span>                main.title.position <span class="op">=</span> <span class="st">"center"</span>, </span>
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">Carte.AZP2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"Azp_sa"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
+<span><span class="va">Carte.AZP2</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"Azp_sa"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
 <span>                main.title <span class="op">=</span> <span class="st">"b. AZP Simulated Annealing"</span>, </span>
 <span>                main.title.position <span class="op">=</span> <span class="st">"center"</span>, </span>
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">Carte.AZP3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"Azp_tab"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
+<span><span class="va">Carte.AZP3</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"Azp_tab"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
 <span>                main.title <span class="op">=</span> <span class="st">"c. AZP Tabu Search"</span>, </span>
 <span>                main.title.position <span class="op">=</span> <span class="st">"center"</span>, </span>
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte.AZP1</span>, <span class="va">Carte.AZP2</span>, <span class="va">Carte.AZP3</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte.AZP1</span>, <span class="va">Carte.AZP2</span>, <span class="va">Carte.AZP3</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-CartoAZP" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CartoAZP-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -723,7 +724,7 @@ Figure&nbsp;8.5: Méthode du coude reposant sur l’inertie expliquée pour l’
 <p>Le code ci-dessous permet de centrer et de réduire les quatre variables (fonction <code>scale</code>) et de construire la matrice de voisinage entre les polygones de la couche <code>LyonIris</code> (fonction <code>poly2nb</code> de <code>spdep</code>).</p>
 <div class="cell">
 <div class="sourceCode" id="cb18"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-spatial/spdep/">spdep</a></span><span class="op">)</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-tmap.github.io/tmap/">tmap</a></span><span class="op">)</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap">tmap</a></span><span class="op">)</span></span>
 <span><span class="co">## Variables</span></span>
 <span><span class="va">VarsEnv</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html">c</a></span><span class="op">(</span><span class="st">"Lden"</span>, <span class="st">"NO2"</span>, <span class="st">"PM25"</span>, <span class="st">"VegHautPrt"</span><span class="op">)</span></span>
 <span><span class="co">## Dataframe sans la géométrie et les quatre variables</span></span>
@@ -798,7 +799,7 @@ Figure&nbsp;8.6: Graphe de connectivité et arbre couvrant de poids minimal
 <div class="cell-output cell-output-stdout">
 <pre><code>
   1   2   3   4   5 
-436  11  43   7   9 </code></pre>
+ 48 215  89  57  97 </code></pre>
 </div>
 </div>
 <p>Toutefois, il est plus simple d’utiliser la fonction <code>skater</code> de <code>rgeoda</code> qui ne nécessite pas de créer au préalable l’arbre couvrant de poids minimal.</p>
@@ -823,19 +824,19 @@ Figure&nbsp;8.6: Graphe de connectivité et arbre couvrant de poids minimal
 <div class="sourceCode" id="cb30"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="va">LyonIris</span><span class="op">$</span><span class="va">skater5spdep</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">skater5.spdep</span><span class="op">$</span><span class="va">groups</span><span class="op">)</span></span>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">skater5rgeoda</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">skater5.rgeoda</span><span class="op">$</span><span class="va">Clusters</span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">Carte.SkaterA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"skater5spdep"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
+<span><span class="va">Carte.SkaterA</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"skater5spdep"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
 <span>                main.title <span class="op">=</span> <span class="st">"a. SKATER spdep"</span>, </span>
 <span>                main.title.position <span class="op">=</span> <span class="st">"center"</span>, </span>
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">Carte.SkaterB</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"skater5rgeoda"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
+<span><span class="va">Carte.SkaterB</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"skater5rgeoda"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
 <span>                main.title <span class="op">=</span> <span class="st">"b. SKATER rgeoda"</span>, </span>
 <span>                main.title.position <span class="op">=</span> <span class="st">"center"</span>, </span>
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte.SkaterA</span>, <span class="va">Carte.SkaterB</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte.SkaterA</span>, <span class="va">Carte.SkaterB</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-SkaterAB" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-SkaterAB-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -941,31 +942,31 @@ Figure&nbsp;8.7: Résultats de l’algorithme SKATER avec cinq classes obtenus a
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">RC5.FOsinglelinkage</span>    <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">redcap5.D</span><span class="op">$</span><span class="va">Clusters</span><span class="op">)</span></span>
 <span><span class="va">LyonIris</span><span class="op">$</span><span class="va">RC5.FOwardlinkage</span>      <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/character.html">as.character</a></span><span class="op">(</span><span class="va">redcap5.E</span><span class="op">$</span><span class="va">Clusters</span><span class="op">)</span></span>
 <span><span class="co">## Cartographie des résultats</span></span>
-<span><span class="va">Carte.RCb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"RC5.FOcompletelinkage"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
+<span><span class="va">Carte.RCb</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"RC5.FOcompletelinkage"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
 <span>                main.title <span class="op">=</span> <span class="st">"a. Saut maximal"</span>, </span>
 <span>                main.title.position <span class="op">=</span> <span class="st">"center"</span>, </span>
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">Carte.RCc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"RC5.FOaveragelinkage"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
+<span><span class="va">Carte.RCc</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"RC5.FOaveragelinkage"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
 <span>                main.title <span class="op">=</span> <span class="st">"b. Saut moyen"</span>, </span>
 <span>                main.title.position <span class="op">=</span> <span class="st">"center"</span>, </span>
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">Carte.RCd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"RC5.FOsinglelinkage"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
+<span><span class="va">Carte.RCd</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"RC5.FOsinglelinkage"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
 <span>                main.title <span class="op">=</span> <span class="st">"c. Saut minimal"</span>, </span>
 <span>                main.title.position <span class="op">=</span> <span class="st">"center"</span>, </span>
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="va">Carte.RCe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"RC5.FOwardlinkage"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
+<span><span class="va">Carte.RCe</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"RC5.FOwardlinkage"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
 <span>                main.title <span class="op">=</span> <span class="st">"d. Critère de Ward"</span>, </span>
 <span>                main.title.position <span class="op">=</span> <span class="st">"center"</span>, </span>
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte.RCb</span>, <span class="va">Carte.RCc</span>, <span class="va">Carte.RCd</span>, <span class="va">Carte.RCe</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte.RCb</span>, <span class="va">Carte.RCc</span>, <span class="va">Carte.RCd</span>, <span class="va">Carte.RCe</span>, ncol <span class="op">=</span> <span class="fl">2</span>, nrow <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-CartoREDCAP" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-CartoREDCAP-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1006,7 +1007,7 @@ Figure&nbsp;8.8: Regroupements des 505 IRIS en cinq régions selon les quatre ve
 </ul>
 </li>
 </ul>
-<p>Par conséquent, «&nbsp;[…] l’enjeu principal est de fixer la valeur du paramètre 𝛼, considérant qu’une augmentation de 𝛼 revient à améliorer l’inertie expliquée de la matrice spatiale, au détriment d’une perte de l’inertie expliquée sur le plan sémantique&nbsp;» <span class="citation" data-cites="ClassificationFloue">(<a href="references.html#ref-ClassificationFloue" role="doc-biblioref">Gelb et Apparicio 2021, 16</a>)</span>.</p>
+<p>Par conséquent, «&nbsp;[…] l’enjeu principal est de fixer la valeur du paramètre <span class="math inline">\(\alpha\)</span>, considérant qu’une augmentation de <span class="math inline">\(\alpha\)</span> revient à améliorer l’inertie expliquée de la matrice spatiale, au détriment d’une perte de l’inertie expliquée sur le plan sémantique&nbsp;» <span class="citation" data-cites="ClassificationFloue">(<a href="references.html#ref-ClassificationFloue" role="doc-biblioref">Gelb et Apparicio 2021, 16</a>)</span>.</p>
 </section><section id="sec-08212" class="level4" data-number="8.2.1.2"><h4 data-number="8.2.1.2" class="anchored" data-anchor-id="sec-08212">
 <span class="header-section-number">8.2.1.2</span> Calcul de la CAH classique</h4>
 <div class="bloc_attention">
@@ -1113,11 +1114,11 @@ Figure&nbsp;8.10: Méthode du coude reposant sur l’inertie expliquée pour CAH
 </div>
 <p>Les résultats de la CAH sont cartographiés à la <a href="#fig-CAHCarto" class="quarto-xref">figure&nbsp;<span>8.11</span></a> tandis que le nombre d’observations et les valeurs moyennes des classes sont reportés au tableau <a href="#tbl-dataCAHtab" class="quarto-xref">tableau&nbsp;<span>8.2</span></a>.</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://r-tmap.github.io/tmap/">tmap</a></span><span class="op">)</span></span>
+<div class="sourceCode" id="cb42"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/r-tmap/tmap">tmap</a></span><span class="op">)</span></span>
 <span><span class="co">## Cartographie des résultats</span></span>
-<span><span class="va">Carte.CAH5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"CAH5"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
-<span>              <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
+<span><span class="va">Carte.CAH5</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"CAH5"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
+<span>              <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
 <span>                main.title <span class="op">=</span> <span class="st">"CAH (critère de Ward)"</span>, </span>
 <span>                main.title.position <span class="op">=</span> <span class="st">"center"</span>, </span>
 <span>                main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
@@ -1218,7 +1219,7 @@ Tableau&nbsp;8.2: Valeurs moyennes des variables pour les cinq classes obtenues 
 <span><span class="va">Matrice.Spatiale</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/dist.html">dist</a></span><span class="op">(</span><span class="va">xy</span>, method <span class="op">=</span> <span class="st">"euclidean"</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>Optimisation de la valeur de</strong> <span class="math inline">\(\alpha\)</span></p>
-<p>Pour la méthode <em>ClustGeo</em> (avec k&nbsp;=&nbsp;5), nous évaluons l’impact du paramètre α pour des valeurs de 0 à 1, avec un saut de 0,05. Pour ce faire, nous utilisons la fonction <code>choicealpha</code> du <em>package</em> <code>ClustGeo</code>. À la lecture de la <a href="#fig-GraphAlpha" class="quarto-xref">figure&nbsp;<span>8.12</span></a>, nous constatons que&nbsp;:</p>
+<p>Pour la méthode <em>ClustGeo</em> (avec k&nbsp;=&nbsp;5), nous évaluons l’impact du paramètre <span class="math inline">\(\alpha\)</span> pour des valeurs de 0 à 1, avec un saut de 0,05. Pour ce faire, nous utilisons la fonction <code>choicealpha</code> du <em>package</em> <code>ClustGeo</code>. À la lecture de la <a href="#fig-GraphAlpha" class="quarto-xref">figure&nbsp;<span>8.12</span></a>, nous constatons que&nbsp;:</p>
 <ul>
 <li><p>Plus la valeur de <span class="math inline">\(\alpha\)</span> augmente, plus l’inertie expliquée par la matrice sémantique diminue (trait noir) et inversement, plus l’inertie expliquée par la matrice spatiale est forte.</p></li>
 <li><p>Avec <span class="math inline">\(\alpha = \text{0,30}\)</span>, l’inertie expliquée par la matrice spatiale est de 50&nbsp;% pour une perte d’inertie expliquée par la matrice sémantique de seulement 7&nbsp;%. Avec <span class="math inline">\(\alpha = \text{0,35}\)</span>, nous constatons une chute importante de l’inertie sémantique expliquée. Par conséquent, nous retenons la valeur de 0,30 pour la méthode <em>ClustGeo</em>. Ce choix donne un excellent compromis entre la préservation de l’inertie expliquée des données attributaires et la cohérence spatiale de la classification finale.</p></li>
@@ -1279,9 +1280,9 @@ Figure&nbsp;8.12: Impact des deux matrices dans la classification
 </div>
 <div class="cell" data-layout-align="center">
 <div class="sourceCode" id="cb49"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="co">## Cartographie des résultats</span></span>
-<span><span class="va">Carte.ClusteGeo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
-<span>                    <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"ClustGeo5"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
-<span>                    <span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
+<span><span class="va">Carte.ClusteGeo</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_shape.html">tm_shape</a></span><span class="op">(</span><span class="va">LyonIris</span><span class="op">)</span><span class="op">+</span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_borders</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"gray"</span>, lwd<span class="op">=</span><span class="fl">.5</span><span class="op">)</span><span class="op">+</span></span>
+<span>                    <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_polygons.html">tm_fill</a></span><span class="op">(</span>col<span class="op">=</span><span class="st">"ClustGeo5"</span>, palette <span class="op">=</span> <span class="st">"Set1"</span>, title <span class="op">=</span><span class="st">""</span><span class="op">)</span><span class="op">+</span></span>
+<span>                    <span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tm_layout.html">tm_layout</a></span><span class="op">(</span>frame<span class="op">=</span><span class="cn">FALSE</span>, </span>
 <span>                      main.title <span class="op">=</span> <span class="st">"ClustGeo avec alpha = 0,30"</span>, </span>
 <span>                      main.title.position <span class="op">=</span> <span class="st">"center"</span>, </span>
 <span>                      main.title.size <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
@@ -1362,7 +1363,7 @@ Tableau&nbsp;8.3: Valeurs moyennes des variables pour cinq classes obtenues par 
 </div>
 <p>La comparaison des typologies obtenues avec la CAH et la ClusteGeo démontre clairement que l’introduction d’une matrice spatiale dans la classification <em>ClustGeo</em> génère des classes qui sont moins discontinues spatialement (<a href="#fig-ComparaisonCAHClusteo" class="quarto-xref">figure&nbsp;<span>8.14</span></a>).</p>
 <div class="cell" data-layout-align="center">
-<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte.CAH5</span>, <span class="va">Carte.ClusteGeo</span>, nrow <span class="op">=</span> <span class="fl">1</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb50"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Carte.CAH5</span>, <span class="va">Carte.ClusteGeo</span>, nrow <span class="op">=</span> <span class="fl">1</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-ComparaisonCAHClusteo" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-ComparaisonCAHClusteo-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -1475,7 +1476,7 @@ $Explained.inertia
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] "ProbaMaps"   "ClusterPlot"</code></pre>
 </div>
-<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://r-tmap.github.io/tmap/reference/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Cartes.FCM</span><span class="op">$</span><span class="va">ProbaMaps</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb58"><pre class="downlit sourceCode r code-with-copy"><code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/pkg/tmap/man/tmap_arrange.html">tmap_arrange</a></span><span class="op">(</span><span class="va">Cartes.FCM</span><span class="op">$</span><span class="va">ProbaMaps</span>, ncol <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code><button title="Copier vers le presse-papier" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-FigureCmeansProb" class="quarto-float quarto-figure quarto-figure-center anchored" data-fig-align="center">
 <figure class="quarto-float quarto-float-fig figure"><div aria-describedby="fig-FigureCmeansProb-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -2101,7 +2102,7 @@ Relisez la <a href="#sec-08222" class="quarto-xref">section&nbsp;<span>8.2.2.2</
 </div>
 </div>
 <button type="button" onclick="showResults(quizz_Chap08);" id="buttonID">
-Vérifier votre résultat
+Vérifiez votre résultat
 </button>
 <div id="quiz-result" class="card">
 <p><span id="quiz-percent"></span></p>
@@ -2114,7 +2115,7 @@ Vérifier votre résultat
 <div class="bloc_exercice-icon">
 
 </div>
-<p><strong>Exercice 1.</strong> Réalisation de classification avec contrainte spatiale avec des variables socioéconomiques</p>
+<p><strong>Exercice 1.</strong> Réalisation de classification avec contrainte spatiale</p>
 </div>
 <div class="bloc_exercice-body">
 <div class="cell">
@@ -2162,7 +2163,7 @@ Vérifier votre résultat
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
 <div id="ref-RBoldAir" class="csl-entry" role="listitem">
-Apparicio, Philippe et Jérémy Gelb. 2022. <em>Méthodes quantitatives en sciences sociales : un grand bol d’R</em>. FabriqueREL, Licence CC BY-SA. <a href="https://serieboldr.github.io/MethodesQuantitatives/">https://serieboldr.github.io/MethodesQuantitatives/</a>.
+Apparicio, Philippe et Jérémy Gelb. 2022. <em>Méthodes quantitatives en sciences sociales : un grand bol d’R</em>. FabriqueREL, Licence CC BY-SA. <a href="https://serieboldr.com/MethodesQuantitatives/">https://serieboldr.com/MethodesQuantitatives/</a>.
 </div>
 <div id="ref-assunccao2006efficient" class="csl-entry" role="listitem">
 Assunção, Renato M, Marcos Corrêa Neves, Gilberto Câmara et Corina da Costa Freitas. 2006. <span>«&nbsp;Efficient regionalization techniques for socio-economic geographical units using minimum spanning trees.&nbsp;»</span> <em>International Journal of Geographical Information Science</em> 20 (7): 797‑811. <a href="https://doi.org/10.1080/13658810600665111">https://doi.org/10.1080/13658810600665111</a>.
@@ -2192,7 +2193,7 @@ Jain, Anil K et Richard C Dubes. 1988. <em>Algorithms for clustering data</em>. 
 Kaufman, Leonard. 1990. <span>«&nbsp;Partitioning around medoids (program pam).&nbsp;»</span> <em>Finding groups in data</em> 344: 68‑125. <a href="https://doi.org/10.1002/9780470316801.ch2">https://doi.org/10.1002/9780470316801.ch2</a>.
 </div>
 <div id="ref-lebart1995statistique" class="csl-entry" role="listitem">
-Lebart, Ludovic, Alain Morineau et Marie Piron. 1995. <em>Statistique exploratoire multidimensionnelle</em>. Dunod.
+Lebart, Ludovic, Alain Morineau et Marie Piron. 1995. <em>Statistique exploratoire multidimensionnelle</em>. Vol. 3. Dunod Paris.
 </div>
 <div id="ref-packagergeoda" class="csl-entry" role="listitem">
 Li, Xun et Luc Anselin. 2023. <em>rgeoda: R Library for Spatial Data Analysis</em>. s.n. <a href="https://CRAN.R-project.org/package=rgeoda">https://CRAN.R-project.org/package=rgeoda</a>.
@@ -2286,8 +2287,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
   });
   clipboard.on('success', onCopySuccess);
   if (window.document.getElementById('quarto-embedded-source-code-modal')) {
-    // For code content inside modals, clipBoardJS needs to be initialized with a container option
-    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
     const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
       text: getTextToCopy,
       container: window.document.getElementById('quarto-embedded-source-code-modal')
@@ -2398,7 +2397,6 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       if (window.Quarto?.typesetMath) {
         window.Quarto.typesetMath(note);
       }
-      // TODO in 1.5, we should make sure this works without a callout special case
       if (note.classList.contains("callout")) {
         return note.outerHTML;
       } else {

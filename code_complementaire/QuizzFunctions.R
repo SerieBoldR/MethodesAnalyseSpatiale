@@ -30,9 +30,9 @@ question <- function(label, type, response, answers = NULL, section = NULL){
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 quizz <- function(yml_file, quizz_id){
-
+  
   questions <- yaml::read_yaml(yml_file, fileEncoding = "UTF-8")
-
+  
   return(
     list("questions" = questions,
          "id" = quizz_id)
@@ -44,9 +44,9 @@ quizz <- function(yml_file, quizz_id){
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 build_html_response <- function(quest, i){
-
+  
   b1 <- tags$div(class = "quizlib-question-answers")
-
+  
   ## pour une question de type uc
   if(quest$type == "uc"){
     j <- 1
@@ -65,7 +65,7 @@ build_html_response <- function(quest, i){
       j <- j+1
     }
   }
-
+  
   ## pour une question de type mc
   if(quest$type == "mc"){
     j <- 1
@@ -84,13 +84,13 @@ build_html_response <- function(quest, i){
       j <- j+1
     }
   }
-
+  
   ## pour une question de type stat
   if(quest$type == "stat"){
     b2 <- tags$input(type = "text", name = paste0("q",i))
   }
   b1$children[[1]] <- b2
-
+  
   return(b1)
 }
 
@@ -99,7 +99,7 @@ build_html_response <- function(quest, i){
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 build_pdf_responses <- function(myquizz){
-
+  
   string <- ""
   for(quest in myquizz$questions){
     string <- paste0(string,"\n * ",quest$label)
@@ -114,8 +114,8 @@ build_pdf_responses <- function(myquizz){
       string <- paste0(string, s2)
     }
   }
-
-
+  
+  
   return(string)
 }
 
@@ -126,15 +126,15 @@ build_pdf_responses <- function(myquizz){
 
 render_quizz_pdf <- function(myquizz){
   string <- ""
-
+  
   for (quest in myquizz$questions){
-
+    
     string <- paste0(string, "\n* ","**",quest$label,"**")
-
+    
     if(is.null(quest$image) == FALSE){
       string <- paste0(string, "\n\n\t ![",quest$alt_txt,"](",quest$image,"){width=50%}", "\n")
     }
-
+    
     if(quest$type == "stat"){
       string <- paste0(string, "\n\t+ ","...")
     }else{
@@ -144,15 +144,15 @@ render_quizz_pdf <- function(myquizz){
     if(is.null(quest$help) == FALSE){
       string <- paste0(string, "\n\n\t",quest$help, "\n")
     }
-
+    
   }
-
+  
   questions <- string
   responses <- build_pdf_responses(myquizz)
-
+  
   el2 <- "**Réponses**\n"
   Encoding(el2) <- "UTF-8"
-
+  
   final_string <- paste0(
     "**Questions**\n",
     questions,"\n\n",
@@ -167,13 +167,13 @@ render_quizz_pdf <- function(myquizz){
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 build_html_quizz <- function(myquizz){
-
+  
   # creation de la balise centrale pour le quizz
   quizz_div <- list()
-
+  
   # creation des questions dans le quizz
   i <- 1
-
+  
   for(quest in myquizz$questions){
     balise <- tags$div(class = "card quizlib-question")
     # creation de la balise question
@@ -186,7 +186,7 @@ build_html_quizz <- function(myquizz){
     }
     # creation de la balise reponses
     resp <- build_html_response(quest, i)
-
+    
     # ajouter l'astuce
     if(is.null(quest$help) == FALSE){
       div_sec <- tags$div(
@@ -194,35 +194,35 @@ build_html_quizz <- function(myquizz){
         quest$help
       )
     }
-
+    
     childs <- list(b1)
-
+    
     if(is.null(quest$image) == FALSE){
       childs[[length(childs)+1]] <- bimg
     }
-
+    
     if(is.null(quest$help) == FALSE){
       childs[[length(childs)+1]] <- div_sec
     }
-
+    
     childs[[length(childs)+1]] <- resp
     balise$children <- childs
-
+    
     quizz_div[[i]] <- balise
     i <- i+1
   }
-
+  
   # ajouter le bouton de verification
   on_click <- paste0("showResults(quizz_",myquizz$id,");")
-  result <- tags$button("Vérifier votre résultat", type="button", onclick=on_click, id="buttonID")
-
+  result <- tags$button("Vérifiez votre résultat", type="button", onclick=on_click, id="buttonID")
+  
   quizz_div[[length(quizz_div)+1]] <- result
-
+  
   # ajout d'une balise de resultat
   res_div <- tags$div(tags$span(id = "quiz-percent"),id="quiz-result", class="card")
-
+  
   quizz_div[[length(quizz_div)+1]] <- res_div
-
+  
   return(quizz_div)
 }
 
@@ -278,7 +278,7 @@ function handleAnswers(quiz, question, no, correct) {
 
 prep_jscode <- function(myquizz){
   id <- myquizz$id
-
+  
   # preparer le code pour les reponses
   rep_string <- ""
   for (quest in myquizz$questions){
@@ -290,21 +290,21 @@ prep_jscode <- function(myquizz){
     }
     if(quest$type == "mc"){
       string2 <- paste0("['",paste(quest$response, collapse = "', '"),"']")
-
+      
       rep_string <- paste0(rep_string,string2,",")
     }
   }
   rep_string <- substr(rep_string, 1, nchar(rep_string)-1)
   rep_string <- paste0("[",rep_string,"]")
-
+  
   total_code <- paste0("
   var quizz_",id,";
   window.onload = function() {
     quizz_",id," = new Quiz('",id,"', ",rep_string,");
   };")
-
+  
   final_code <- paste(js_code1, js_code, total_code, sep = "\n")
-
+  
 }
 
 
@@ -313,19 +313,19 @@ prep_jscode <- function(myquizz){
 #%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 render_quizz_html<-function(myquizz){
-
+  
   ## generating the base html
   html_code <- build_html_quizz(myquizz)
-
+  
   ## linking the javascript code
   tag1 <- tags$link(type="text/javascript", src="libs/quizlib.1.0.1.min.js")
   tag3 <- tags$link(rel="stylesheet", type="text/css", src="css/quizlib.min.css")
   js_code <- prep_jscode(myquizz)
   tag2 <- tags$script(js_code)
-
+  
   global_div <- tags$div(id = myquizz$id, class = "card")
   global_div$children <- c(list(tag1, tag2, tag3), html_code)
-
+  
   #string <- doRenderTags(global_div)
   string <- doRenderTags(global_div, indent = FALSE)
   string <- as.character(string)
@@ -333,7 +333,7 @@ render_quizz_html<-function(myquizz){
   string <- gsub(pattern = "&lt;", replacement = "<",string, fixed = TRUE)
   string <- gsub(pattern = "&amp;&amp;", replacement = "&&",string, fixed = TRUE)
   return(string)
-
+  
 }
 
 

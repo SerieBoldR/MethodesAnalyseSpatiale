@@ -64,18 +64,24 @@ Par exemple, le @tbl-TableauMetros renvoie le nombre et la densité des stations
 #| message: false
 #| warning: false
 
-DfMetro <- data.frame(Ville=c("New York", "Paris", "Île de Montréal"),
-                      Pop=c(8804000, 2165000, 2004000),
-                      Metro=c(424, 309, 68))
-DfMetro$Densite <- round(DfMetro$Metro / (DfMetro$Pop /10000), 1)
+df_metro <- data.frame(Ville=c("New York", "Paris", "Île de Montréal"),
+                       Pop=c(8804000, 2165000, 2004000),
+                       Metro=c(424, 309, 68))
 
-knitr::kable(DfMetro, 
-           format.args = list(decimal.mark = ',', big.mark = " "),
-		   col.names = c("Ville", "Population",
-                         "Stations de métro", 
-                         "Densité (stations / 10 000 hab.)"),
-           align=c("l", "l", "r", "c"),
-		   format = "markdown")
+df_metro$Densite <- round(df_metro$Metro / (df_metro$Pop /10000), 1)
+
+knitr::kable(
+  df_metro,
+  format.args = list(decimal.mark = ',', big.mark = " "),
+  col.names = c(
+    "Ville",
+    "Population",
+    "Stations de métro",
+    "Densité (stations / 10 000 hab.)"
+  ),
+  align = c("l", "l", "r", "c"),
+  format = "markdown"
+)
 ```
 
 ## Analyse centrographique {#sec-032}
@@ -346,7 +352,7 @@ knitr::kable(dfB,
                          "$y_i$", 
                          "$(x_{i}-\\bar{x}_{cm})^2$",
                          "$(y_{i}-\\bar{y}_{cm})^2$",
-                         "$(x_{i}-\\bar{x}_{cm})^2+$\\n $(y_{i}-\\bar{y}_{cm})^2$"),
+                         "$(x_{i}-\\bar{x}_{cm})^2+(y_{i}-\\bar{y}_{cm})^2$"),
            align=c("r", "r", "r", "r", "r", "r")
            )
 ```
@@ -1311,7 +1317,7 @@ Visualisons les résultats à la @fig-fig2PointsCarresHex. Il y a clairement une
 
 ## Visualisation
 tmap_mode("plot")
-Carte1 =
+Carte1 <-
   tm_shape(subset(Carres.sf, Mefaits2020 == 0))+
      tm_polygons(col="gray90", border.col = "white", lwd = 1)+
    tm_shape(subset(Carres.sf, Mefaits2020!= 0))+
@@ -1319,7 +1325,7 @@ Carte1 =
                   border.col = "white", lwd = 1)+
    tm_shape(Arrondissements)+tm_borders(col="black", lwd=2)+
    tm_layout(frame = FALSE)
-Carte2 =
+Carte2 <-
   tm_shape(subset(Hexagones.sf, Mefaits2020 == 0))+
      tm_polygons(col="gray90", border.col = "white", lwd = 1)+
    tm_shape(subset(Hexagones.sf, Mefaits2020!= 0))+
@@ -1552,7 +1558,7 @@ Le principe de base d'une cartographie de la densité dans une maille régulièr
 
 1.  Juxtaposer une grille de cellules sur l'espace d'étude, soit les pixels d'une image de *n* mètres de côté (par exemple, 50 mètres).
 2.  Pour chaque pixel, juxtaposer une zone de recherche de *n* mètres de rayon (1000 mètres par exemple) et calculer le nombre de points présents dans cette zone de recherche.
-3.  Calculer la densité à partir d'une fonction simple (appelée habituellement fonction uniforme) ou d'une fonction de densité (*kernel*). Pour une fonction simple, nous divisons simplement le nombre de points présents dans la zone de recherche par la superficie de la zone, soit $πr^2$; cette approche est toutefois peu recommandée puisqu'elle accorde la même pondération à chaque point situé de la zone d'influence! En utilisant une fonction de densité (*kernel*) (@eq-KernelDensity), nous accordons une pondération à chacun des points compris dans la zone de recherche : plus le point est proche du centre de la cellule, plus son poids est important dans l'estimation de la densité.
+3.  Calculer la densité à partir d'une fonction simple (appelée habituellement fonction uniforme) ou d'une fonction de densité (*kernel*). Pour une fonction simple, nous divisons simplement le nombre de points présents dans la zone de recherche par la superficie de la zone, soit $\pi r^2$; cette approche est toutefois peu recommandée puisqu'elle accorde la même pondération à chaque point situé de la zone d'influence! En utilisant une fonction de densité (*kernel*) (@eq-KernelDensity), nous accordons une pondération à chacun des points compris dans la zone de recherche : plus le point est proche du centre de la cellule, plus son poids est important dans l'estimation de la densité.
 
 $$
 \lambda(s) = \sum_{i=1}^n \frac{1}{\pi r^2} k\biggl(\frac{d_{si}}{r}\biggl)\text{ avec }
@@ -1625,9 +1631,9 @@ library(spatstat)
 library(tmap)
 library(terra)
 ## Importation des données 
-Arrondissements <-  st_read(dsn = "data/chap03/Arrondissements.shp", quiet=TRUE)
-Incidents <- st_read(dsn = "data/chap03/IncidentsSecuritePublique.shp", quiet=TRUE)
-Arrondissements <- st_transform(Arrondissements, crs = 3798) 
+Arrondissements <-  st_read(dsn = "data/chap03/Arrondissements.shp", quiet = TRUE)
+Arrondissements <-  st_transform(Arrondissements, crs = 3798) 
+incidents <- st_read(dsn = "data/chap03/IncidentsSecuritePublique.shp", quiet = TRUE)
 Incidents <- st_transform(Incidents, crs = 3798)
 ## Couche pour les accidents
 Accidents <- subset(Incidents, Incidents$DESCRIPTIO %in% 
@@ -1947,7 +1953,26 @@ Une représentation particulièrement efficace de la STKDE est une carte animée
 #                width = 1000, height = 1000, dpi = 300, delay = 50)
 ```
 
-![Visualisation animée de la STKDE](images/Chap03/animated_STKDE.gif){#fig-ExampleSTKDEanim width="50%" fig-align="center"}
+
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+#| include: true
+#| label: fig-ExampleSTKDEanim
+#| fig-cap: Visualisation animée de la STKDE
+#| fig-align: center
+#| out-width: '50%'
+
+library(knitr)
+
+if(is_latex_output()) {
+  knitr::include_graphics("images/Chap03/animated_STKDE.jpg")
+}else{
+  knitr::include_graphics("images/Chap03/animated_STKDE.gif")
+}
+```
 
 En résumé, la seule différence avec la KDE et la STKDE est que cette dernière nécessite de déterminer une *bandwidth* temporelle (en plus de la *bandwidth* spatiale).
 
@@ -2057,7 +2082,27 @@ tmap_animation(all_maps, filename = "images/Chap03/animated_STKDE_sherbrooke.gif
                width = 500, height = 500, dpi = 150, delay = 25)
 ```
 
-![Distribution spatio-temporelle de la densité des accidents](images/Chap03/animated_STKDE_sherbrooke.gif){#fig-spacetimemapSherb width="50%" fig-align="center"}
+
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+#| include: true
+#| label: fig-spacetimemapSherb
+#| fig-cap: Distribution spatio-temporelle de la densité des accidents
+#| fig-align: center
+#| out-width: '50%'
+
+library(knitr)
+
+if(is_latex_output()) {
+  knitr::include_graphics("images/Chap03/animated_STKDE_sherbrooke.jpg")
+}else{
+  knitr::include_graphics("images/Chap03/animated_STKDE_sherbrooke.gif")
+}
+```
+
 
 ## Quiz de révision du chapitre {#sec-035}
 

@@ -300,8 +300,12 @@ Un aperçu en 3D de la répartition de la masse est disponible à la figure ci-d
 #| fig-align: center
 #| fig-cap: "Visualisation du Geo-NKDE"
 #| out-width: 100%
-
-d3_plot_situation(all_lines, event, samples_pts, simple_kernel, scales = c(1,1,3))
+library(knitr)
+if(is_latex_output()) {
+  knitr::include_graphics("images/Chap06/image3D_a.jpg")
+}else{
+  d3_plot_situation(all_lines, event, samples_pts, simple_kernel, scales = c(1,1,3))
+}
 ```
 
 La formule pour calculer la Geo-NKDE est :
@@ -327,7 +331,12 @@ $$ {#eq-GeoNKDEeq}
 #| fig-align: center
 #| fig-cap: Visualisation du Geo-NKDE
 #| out-width: 100%
-d3_plot_situation(all_lines, event, samples_pts, discontinuous_kernel, scales = c(1,1,3))
+library(knitr)
+if(is_latex_output()) {
+  knitr::include_graphics("images/Chap06/image3D_b.jpg")
+}else{
+  d3_plot_situation(all_lines, event, samples_pts, discontinuous_kernel, scales = c(1,1,3))
+}
 ```
 
 La formule pour calculer la ESD-NKDE est la suivante :
@@ -350,7 +359,12 @@ $$ {#eq-ESDNKDEeq}
 #| fig-align: center
 #| fig-cap: Visualisation du Geo-NKDE
 #| out-width: 100%
-d3_plot_situation(all_lines, event, samples_pts, continuous_kernel, scales = c(1,1,3))
+library(knitr)
+if(is_latex_output()) {
+  knitr::include_graphics("images/Chap06/image3D_c.jpg")
+}else{
+  d3_plot_situation(all_lines, event, samples_pts, continuous_kernel, scales = c(1,1,3))
+}
 ```
 
 Du fait de sa nature récursive, il est difficile de présenter la ESC-NKDE avec une équation. Cependant, l'algorithme complet est décrit par Atsuyuki Okabe et Sugihara Kokichi [-@okabe2012spatial].
@@ -1051,7 +1065,28 @@ tmap_animation(all_maps, filename = "images/Chap06/animated_TNKDE_sherbrooke.gif
                width = 1000, height = 1000, dpi = 150, delay = 50)
 ```
 
-![Densité spatio-temporelle des collisions routières à Sherbrooke](images/Chap06/animated_TNKDE_sherbrooke.gif){#fig-animated_tnkde width="85%" fig-align="center"}
+
+
+```{r}
+#| eval: true
+#| echo: false
+#| message: false
+#| warning: false
+#| include: true
+#| label: fig-animated_tnkde
+#| fig-cap: Densité spatio-temporelle des collisions routières à Sherbrooke
+#| fig-align: center
+#| out-width: 85%
+
+library(knitr)
+
+if(is_latex_output()) {
+  knitr::include_graphics("images/Chap06/animated_TNKDE_sherbrooke.jpg")
+}else{
+  knitr::include_graphics("images/Chap06/animated_TNKDE_sherbrooke.gif")
+}
+```
+
 
 ## Mesure d'autocorrélation spatiale sur un réseau {#sec-063}
 

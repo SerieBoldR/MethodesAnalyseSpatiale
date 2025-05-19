@@ -85,10 +85,10 @@ Il existe huit principales matrices de pondération spatiale regroupées en deux
 #| warning: false
 
 df1 <- data.frame(
-  Matrice = c("Partage d'un nœud (*Queen*)", 
-              "Partage d'un segment (*Rook*)",
-              "Partage d'un nœud et ordre d'adjacence (*Queen*)", 
-               "Partage d'un segment et ordre d'adjacence (*Rook*)",
+  Matrice = c("Partage d'un nœud (Queen)", 
+              "Partage d'un segment (Rook)",
+              "Partage d'un nœud et ordre d'adjacence (Queen)", 
+               "Partage d'un segment et ordre d'adjacence (Rook)",
               
                "Connectivité selon la distance",
                "Inverse de la distance",
@@ -102,7 +102,7 @@ df1 <- data.frame(
 
 my_table <- knitr::kable(df1,
            format.args = list(decimal.mark = ',', big.mark = " "),
-		   col.names = c("Matrice", "Points", "Lignes", "Polyg.", "*Raster*"),
+		   col.names = c("Matrice", "Points", "Lignes", "Polyg.", "Raster"),
            align=c("l", "c", "c", "c", "c"))
    
 kableExtra::pack_rows(my_table,
@@ -1971,7 +1971,7 @@ L_{X, Y}= \frac{\sum_i\left[\left(\sum_j v_{i j}\left(x_j-\bar{x}\right)\right) 
 \end{aligned}
 $$ {#eq-Lee2}
 
-Cet indicateur varie entre −1 (autocorrélation spatiale bivariée négative) et +1 (autocorrélation bivariée positive).
+Cet indicateur varie entre -1 (autocorrélation spatiale bivariée négative) et +1 (autocorrélation bivariée positive).
 
 Nous présentons trois cas à la @fig-ExMapBivar3 pour illustrer son interprétation. Prenons trois variables X, Y et X', avec X' étant l'inverse spatial de X. Pour simplifier l'exemple, ces trois variables ne peuvent avoir que trois valeurs (1, 2 ou 3).
 
@@ -2028,7 +2028,8 @@ map3 <- tm_shape(shapes) +
 tmap_arrange(map1,map2,map3, ncol = 3)
 ```
 
-Si nous calculons l'autocorrélation spatiale entre toutes les paires de variables avec une matrice de contiguïté standardisée, nous obtenons la matrice au @tbl-ExampleBivarLeeTab1. Les résultats démontrent que les variables X et Y partagent un patron d'autocorrélation spatiale positive modérée (0,327), alors que les variables X et X' partagent un patron d'autocorrélation spatiale négative (−0,512). En d'autres termes, les endroits où X tend à avoir des regroupements d'observations avec des valeurs fortes, X' tend à avoir des regroupements d'observations avec des valeurs faibles.
+Si nous calculons l'autocorrélation spatiale entre toutes les paires de variables avec une matrice de contiguïté standardisée, nous obtenons la matrice au @tbl-ExampleBivarLeeTab1. Les résultats démontrent que les variables $X$ et $Y$ partagent un patron d'autocorrélation spatiale positive modérée ($0{,}327$), alors que les variables $X$ et $X^{\prime}$ partagent un patron d'autocorrélation spatiale négative ($-0{,}512$). En d'autres termes, les endroits où $X$ tend à avoir des regroupements d'observations avec des valeurs fortes, $X^{\prime}$ tend à avoir des regroupements d'observations avec des valeurs faibles.
+
 
 ```{r}
 #| label: tbl-ExampleBivarLeeTab1
@@ -3214,6 +3215,7 @@ La @fig-chap02FigureElsaLaval révèle que l'utilisation d'une matrice circulair
 #| echo: true
 #| message: false
 #| warning: false
+#| eval: false
 # Nous isolons les bâtiments avec forte dissimilarité à proximité
 # la valeur de l'image de sortie (buildings_green) sera 1
 buildings_green <- (laval_data == 1) & (elsa_100 >= 0.4)
@@ -3232,6 +3234,34 @@ tm_basemap(c("Esri.WorldImagery", "OpenStreetMap"))+
                        "Gris (2) : faible dissimilarité"),
             style = 'cat', zindex = 1)
 ```
+
+
+```{r}
+#| echo: false
+#| message: false
+#| warning: false
+#| eval: true
+
+library(knitr)
+if(is_latex_output()) {
+  knitr::include_graphics("images/Chap02/batiments.jpg")
+}else{
+  buildings_green <- (laval_data == 1) & (elsa_100 >= 0.4)
+  buildings_other <- ((laval_data == 1) & (elsa_100 < 0.4)) * 2
+  raster_buildings <- buildings_green + buildings_other
+  tmap_mode("view")
+  tm_basemap(c("Esri.WorldImagery", "OpenStreetMap"))+
+    tm_shape(raster_buildings) + 
+    tm_raster(palette = c(alpha("white",0),  "green", "grey"),
+              title = "Bâtiments",
+              labels = c("Transparent (0) : autre que bâtiments",
+                         "Vert (1) : forte dissimilarité", 
+                         "Gris (2) : faible dissimilarité"),
+              style = 'cat', zindex = 1)
+}
+```
+
+
 
 Sur la carte ci-dessus, nous distinguons clairement deux groupes de bâtiments avec une forte hétérogénéité spatiale dans leur environnement immédiat (en vert) : ceux en bordure du quartier résidentiel et ceux situés le long des rangs Saint-Elzéar Est et Haut-Saint-François au nord-ouest. À l'inverse, les bâtiments au cœur du quartier résidentiel de banlieue affichent une faible hétérogénéité spatiale dans leur environnement immédiat (en gris).
 
@@ -3550,3 +3580,4 @@ tmap_mode("plot")
 Correction à la [section @sec-12024].
 :::
 :::
+

@@ -6,9 +6,12 @@ latex-auto-install: true
 
 lang: fr
 language:
+  toc-title-document: "Table des matières"
   title-block-author-plural: "Auteurs"
   repo-action-links-issue: "Signaler un problème ou<br>formuler une suggestion"
 crossref:
+  lof-title: "Liste des figures"
+  lot-title: "Listes des tableaux"
   fig-prefix: figure
   tbl-prefix: tableau
   sec-prefix: section
@@ -36,14 +39,14 @@ book:
       Méthodes d’analyse spatiale : un grand bol d’R.
     right: |
       Ce livre a été réalisé avec <a href="https://quarto.org/">Quarto</a>.
-  cover-image: images/introduction/Couverture_16_01-01.png
-  favicon: images/introduction/Couverture_16_01-01.png
+  cover-image: images/introduction/CouvertureP1.png
+  favicon: images/introduction/CouvertureP1.png
   site-url: https://serieboldr.github.io/MethodesAnalyseSpatiale/index.html
   repo-url: https://github.com/SerieBoldR/MethodesAnalyseSpatiale
   repo-branch: main
   repo-actions:
   - issue
-  # downloads: pdf
+  downloads: pdf
   chapters:
   - index.qmd
   - 00-auteurs.qmd
@@ -83,56 +86,52 @@ format:
     fontsize: 11pt
     mainfont: Helvetica Neue,Helvetica,Arial,sans-serif
     monofont: SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace
-  # pdf:
-  #   pdf-engine: pdflatex
-  #   documentclass: scrbook
-  #   papersize: letter
-  #   keep-tex: true
-  #   classoption: 
-  #     # Remove odd-even page breaks (for printing PDF)
-  #     - open=any
-  #     - twoside=false # don't use even/odd pages, no blank pages
-  #     # pass french to book class (babel will see it automatically)
-  #     - french
-  #   output: "Méthodes_analyse_spatiale.pdf"
-  #   hyperrefoptions: 
-  #     - pdfstartview={XYZ null null 0.75}
-  #     - pdfpagemode=UseOutlines
-  #     - pdfdisplaydoctitle=true
-  #     - pdfpagelayout=SinglePage
-  #     - pdfstartpage=1
-  #   geometry:
-  #     - top=20mm
-  #     - left=15mm
-  #     - right=15mm
-  #     - heightrounded
-  #   fontfamily: libertinus
-  #   fontfamilyoptions: 
-  #     - p
-  #   lof: false
-  #   lot: false
-  #   toc: true
-  #   toc-depth: 3
-  #   code-block-border-left: false
-  #   fontsize: 11pt
-  #   urlcolor: Green4
-  #   citecolor: violet
-  #   linkcolor: violet
-  #   colorlinks: true
-  #   include-in-header: 
-  #     - tex-hacks/color-tables.tex
-  #     - tex-hacks/code-font.tex
-  #     - tex-hacks/fix-unicode-chars.tex
-  #     - tex-hacks/image-on-title-page.tex
-  #     - tex-hacks/callout.tex
-  #   header-includes:
-  #     - \renewcommand{\thepart}{} % Enlever numérotation des parties
-  #     - \setcounter{secnumdepth}{3} % Activer la numérotation des sections jusqu'au niveau des sous-sections
-
-
-
-
-
-
-
-
+  pdf:
+    filters:
+      - lua/callout_custom_pdf.lua
+    pdf-engine: pdflatex
+    documentclass: scrbook
+    papersize: letter
+    keep-tex: false
+    fig-dpi: 100
+    classoption:
+      # Remove odd-even page breaks (for printing PDF)
+      - open=any
+      - twoside=false # don't use even/odd pages, no blank pages
+      # pass french to book class (babel will see it automatically)
+      - french
+    output-file: "Méthodes_analyses_spatiales.pdf"
+    hyperrefoptions:
+      # - pdfstartview={XYZ null null 0.75}
+      - pdfpagemode=UseOutlines
+      - pdfdisplaydoctitle=true
+      - pdfpagelayout=SinglePage
+      - pdfstartpage=1
+    geometry:
+      - top=20mm
+      - left=15mm
+      - right=15mm
+      - heightrounded
+    fontfamily: libertinus
+    fontfamilyoptions:
+      - p
+    lof: true
+    lot: true
+    toc: true
+    toc-depth: 4
+    code-block-border-left: false
+    fontsize: 11pt
+    urlcolor: Green4
+    citecolor: violet
+    linkcolor: violet
+    colorlinks: true
+    include-in-header:
+      - tex-hacks/color-tables.tex
+      - tex-hacks/code-font.tex
+      - tex-hacks/fix-unicode-chars.tex
+      - tex-hacks/image-on-title-page.tex
+      - tex-hacks/callout.tex
+    header-includes:
+      - \usepackage{xparse}
+      - \renewcommand{\thepart}{} % Enlever numérotation des parties
+      - \setcounter{secnumdepth}{3} % Activer la numérotation des sections jusqu'au niveau des sous-sections

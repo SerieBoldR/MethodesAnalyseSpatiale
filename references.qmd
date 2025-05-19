@@ -1,4 +1,4 @@
-# Bibliographie {.unnumbered}
+# Bibliographie {#chap-biblio .unnumbered}
 
 ::: {#refs}
 :::
